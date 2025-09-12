@@ -1,38 +1,81 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Math Resources - Maths by Vansh</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resources - Maths by Vansh</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
-    body { font-family: Arial; margin: 0; padding: 20px; background: #f9f9f9; text-align: center; }
-    h1 { color: #0077cc; margin-bottom: 30px; }
-    h1 i { margin-right: 10px; color: #ff7f50; }
+    body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f9f9f9; color:#333; }
+    
+    /* Header */
+    header { background:#0077cc; color:white; padding:15px 20px; display:flex; justify-content:center; flex-wrap:wrap; position: sticky; top:0; z-index:1000; }
+    header a { color:white; margin:5px 15px; font-weight:bold; font-size:16px; transition: color 0.3s; display:flex; align-items:center; gap:5px; }
+    header a:hover { color:#ff7f50; }
 
-    .resource-list { display: flex; flex-direction: column; align-items: center; gap: 15px; }
-    .resource-item { background: white; padding: 15px 20px; border-radius: 8px; width: 80%; max-width: 600px; text-align: left; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: transform 0.2s; }
-    .resource-item:hover { transform: translateY(-3px); }
-    .resource-item i { margin-right: 10px; color: #0077cc; }
-    .resource-item a { text-decoration: none; color: #0077cc; font-weight: bold; }
-    .resource-item a:hover { color: #ff7f50; }
+    /* Main Section */
+    .resources { padding:60px 20px; max-width:1000px; margin:auto; }
+    .resources h1 { color:#0077cc; font-size:36px; margin-bottom:20px; text-align:center; }
+    .resources p { font-size:18px; margin-bottom:40px; text-align:center; }
 
-    @media (max-width: 600px) {
-      .resource-item { width: 95%; font-size: 16px; }
-    }
+    /* Resource List */
+    .resource-list { list-style:none; padding:0; display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:20px; }
+    .resource-list li { background:white; border-radius:10px; padding:20px; box-shadow:0 4px 8px rgba(0,0,0,0.1); transition: transform 0.3s; }
+    .resource-list li:hover { transform: translateY(-5px); }
+    .resource-list a { color:#0077cc; font-weight:bold; font-size:18px; display:block; margin-top:10px; text-decoration:none; }
+    .resource-list a:hover { color:#ff7f50; }
+
+    /* Footer */
+    footer { background:#0077cc; color:white; text-align:center; padding:20px 10px; margin-top:40px; font-size:16px; }
+
+    /* Responsive */
+    @media(max-width:480px){ .resources h1 { font-size:28px; } .resources p { font-size:16px; } }
   </style>
 </head>
 <body>
 
-  <h1><i class="fas fa-book"></i> Math Resources - Maths by Vansh</h1>
-  <p>Explore study materials, formula sheets, and practice problems for students up to Class 12th.</p>
+  <!-- Header -->
+  <header>
+    <a href="index.html"><i class="fas fa-home"></i> Home</a>
+    <a href="solver_keyboard.html"><i class="fas fa-calculator"></i> Maths Solver</a>
+    <a href="graph.html"><i class="fas fa-chart-line"></i> Graph</a>
+    <a href="resources.html"><i class="fas fa-book"></i> Resources</a>
+    <a href="contact.html"><i class="fas fa-envelope"></i> Contact</a>
+  </header>
 
-  <div class="resource-list">
-    <div class="resource-item"><i class="fas fa-file-pdf"></i> <a href="#">Algebra Notes PDF</a></div>
-    <div class="resource-item"><i class="fas fa-file-pdf"></i> <a href="#">Trigonometry Formula Sheet</a></div>
-    <div class="resource-item"><i class="fas fa-file-pdf"></i> <a href="#">Calculus Practice Problems</a></div>
-    <div class="resource-item"><i class="fas fa-file-pdf"></i> <a href="#">Geometry Notes</a></div>
-    <div class="resource-item"><i class="fas fa-file-pdf"></i> <a href="#">Previous Year Question Papers</a></div>
-  </div>
+  <!-- Resources Section -->
+  <section class="resources">
+    <h1>Math Learning Resources</h1>
+    <p>Here you can find helpful materials to enhance your learning. Access PDFs, notes, videos, and interactive tools for all topics up to Class 12th.</p>
+
+    <ul class="resource-list">
+      <li>
+        <i class="fas fa-file-pdf fa-2x"></i>
+        <strong>Algebra Notes</strong>
+        <a href="resources/algebra_notes.pdf" target="_blank">Download PDF</a>
+      </li>
+      <li>
+        <i class="fas fa-file-pdf fa-2x"></i>
+        <strong>Calculus Guide</strong>
+        <a href="resources/calculus_guide.pdf" target="_blank">Download PDF</a>
+      </li>
+      <li>
+        <i class="fas fa-video fa-2x"></i>
+        <strong>Trigonometry Videos</strong>
+        <a href="https://www.youtube.com/playlist?list=EXAMPLE" target="_blank">Watch Videos</a>
+      </li>
+      <li>
+        <i class="fas fa-file-alt fa-2x"></i>
+        <strong>Interactive Practice Sheets</strong>
+        <a href="resources/practice_sheets.html" target="_blank">Open</a>
+      </li>
+      <!-- Add more resources here -->
+    </ul>
+  </section>
+
+  <footer>
+    &copy; 2025 Maths by Vansh. All Rights Reserved.
+  </footer>
 
 </body>
 </html>
