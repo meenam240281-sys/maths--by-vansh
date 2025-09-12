@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Math Solver - Maths by Vansh</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.10.0/math.min.js"></script>
+  <style>
+    body { font-family: Arial; margin: 20px; max-width: 900px; }
+    input { width: 100%; font-size: 18px; padding: 10px; margin-bottom: 10px; }
+    button { padding: 10px 20px; font-size: 18px; cursor: pointer; margin-bottom: 20px; }
+    #answer { font-size: 20px; font-weight: bold; color: green; }
+  </style>
+</head>
+<body>
+  <h1>AI-Powered Math Solver - Maths by Vansh</h1>
+  <input type="text" id="problemInput" placeholder="Enter your math problem here...">
+  <button onclick="solveProblem()">Solve</button>
+  <div id="answer"></div>
+
+  <script>
+    function solveProblem() {
+      const problem = document.getElementById('problemInput').value;
+      try {
+        const result = math.evaluate(problem);
+        document.getElementById('answer').innerText = "Answer: " + result;
+      } catch (err) {
+        document.getElementById('answer').innerText = "Error: Invalid problem!";
+      }
+    }
+  </script>
+</body>
+</html>
