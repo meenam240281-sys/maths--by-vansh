@@ -1,94 +1,76 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Maths by Vansh</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
-    body { font-family: Arial; margin: 0; padding: 0; line-height: 1.6; }
-    header { background: #0077cc; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
-    nav a { color: white; margin: 0 10px; text-decoration: none; font-weight: bold; transition: color 0.3s; }
-    nav a:hover { color: #ffdd57; }
+    /* General Styles */
+    body { font-family: 'Arial', sans-serif; margin:0; padding:0; background:#f9f9f9; color:#333; }
+    a { text-decoration:none; }
 
-    .hero { background: #e6f2ff; padding: 80px 20px; text-align: center; }
-    .hero h2 { font-size: 2.5em; margin-bottom: 20px; }
-    .hero p { font-size: 1.2em; margin-bottom: 30px; }
-    .btn { background: #0077cc; color: white; padding: 12px 25px; text-decoration: none; display: inline-block; margin-top: 10px; border-radius: 6px; transition: background 0.3s; }
-    .btn:hover { background: #005fa3; }
+    /* Header */
+    header { background:#0077cc; color:white; padding:15px 20px; display:flex; justify-content:center; flex-wrap:wrap; position: sticky; top:0; z-index:1000; }
+    header a { color:white; margin:5px 15px; font-weight:bold; font-size:16px; transition: color 0.3s; display:flex; align-items:center; gap:5px; }
+    header a:hover { color:#ff7f50; }
 
-    .section { padding: 60px 20px; max-width: 900px; margin: auto; }
-    .section:nth-child(even) { background: #f2f2f2; }
-    .section h2 { color: #0077cc; display: flex; align-items: center; font-size: 1.8em; }
-    .section h2 i { margin-right: 10px; color: #ff7f50; }
+    /* Hero Section */
+    .hero { background: linear-gradient(to right, #e6f2ff, #cce6ff); padding:80px 20px; text-align:center; }
+    .hero h1 { font-size:42px; color:#0077cc; margin-bottom:20px; line-height:1.2; }
+    .hero p { font-size:20px; max-width:700px; margin:auto; line-height:1.6; }
 
-    footer { background: #333; color: white; text-align: center; padding: 20px; margin-top: 40px; }
+    /* About Section */
+    .about { padding:60px 20px; text-align:center; background:white; }
+    .about h2 { color:#0077cc; font-size:32px; margin-bottom:20px; }
+    .about p { max-width:800px; margin:auto; font-size:18px; line-height:1.7; }
 
-    @media (max-width: 600px) {
-      header { flex-direction: column; text-align: center; }
-      nav a { margin: 5px; display: inline-block; }
-      .hero h2 { font-size: 2em; }
+    /* Footer */
+    footer { background:#0077cc; color:white; text-align:center; padding:20px 10px; margin-top:40px; font-size:16px; }
+
+    /* Responsive */
+    @media(max-width:768px){
+      .hero h1 { font-size:32px; }
+      .hero p { font-size:18px; }
+      .about h2 { font-size:26px; }
+      .about p { font-size:16px; }
+      header a { font-size:14px; margin:5px 10px; }
+    }
+
+    @media(max-width:480px){
+      .hero h1 { font-size:28px; }
+      .hero p { font-size:16px; }
+      .about h2 { font-size:22px; }
+      .about p { font-size:14px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Header -->
+  <!-- Header / Navigation -->
   <header>
-    <h1>Maths by Vansh</h1>
-    <nav>
-      <a href="index.html"><i class="fas fa-home"></i> Home</a>
-      <a href="solver_keyboard.html"><i class="fas fa-calculator"></i> Solve Math</a>
-      <a href="graph.html"><i class="fas fa-chart-line"></i> Graph</a>
-      <a href="resources.html"><i class="fas fa-book"></i> Resources</a>
-      <a href="contact.html"><i class="fas fa-envelope"></i> Contact</a>
-    </nav>
+    <a href="index.html"><i class="fas fa-home"></i> Home</a>
+    <a href="solver_keyboard.html"><i class="fas fa-calculator"></i> SolveOMath</a>
+    <a href="graph.html"><i class="fas fa-chart-line"></i> Graph</a>
+    <a href="resources.html"><i class="fas fa-book"></i> Resources</a>
+    <a href="contact.html"><i class="fas fa-envelope"></i> Contact</a>
   </header>
 
   <!-- Hero Section -->
-  <div class="hero">
-    <h2><i class="fas fa-brain"></i> Welcome to Maths by Vansh</h2>
-    <p>Your Up to Class 12th Maths Assistant – AI-powered tools to learn, solve, and visualize math problems.</p>
-    <a href="solver_keyboard.html" class="btn">Start Solving</a>
-  </div>
+  <section class="hero">
+    <h1>Welcome to Maths by Vansh</h1>
+    <p>Your AI-powered math assistant. Solve problems, plot graphs, and access resources for students up to Class 12th.</p>
+  </section>
 
   <!-- About Section -->
-  <div class="section" id="about">
-    <h2><i class="fas fa-info-circle"></i> About Maths by Vansh</h2>
-    <p>Maths by Vansh is an AI-powered website to help students learn and solve math problems up to Class 12th.  
-    It includes a custom math keyboard, interactive solver, and graph plotting tools to make learning fun and easy.</p>
-  </div>
-
-  <!-- Solver Section -->
-  <div class="section" id="solver">
-    <h2><i class="fas fa-calculator"></i> AI-Powered Problem Solver</h2>
-    <p>Type your math problems or use the custom math keyboard to solve them instantly.</p>
-    <a href="solver_keyboard.html" class="btn">Use Solver</a>
-  </div>
-
-  <!-- Graph Section -->
-  <div class="section" id="graph">
-    <h2><i class="fas fa-chart-line"></i> Advanced Graph Plotting</h2>
-    <p>Visualize any math function and understand it better with interactive graphs.</p>
-    <a href="graph.html" class="btn">Plot Graph</a>
-  </div>
-
-  <!-- Resources Section -->
-  <div class="section" id="resources">
-    <h2><i class="fas fa-book"></i> Math Resources</h2>
-    <p>Explore study materials, formula sheets, and practice problems for students up to Class 12th.</p>
-    <a href="resources.html" class="btn">View Resources</a>
-  </div>
-
-  <!-- Contact Section -->
-  <div class="section" id="contact">
-    <h2><i class="fas fa-envelope"></i> Contact Us</h2>
-    <p>Have questions or feedback? Reach out to us.</p>
-    <a href="contact.html" class="btn">Contact Now</a>
-  </div>
+  <section class="about">
+    <h2>About Maths by Vansh</h2>
+    <p>This website is designed to help students learn and solve math problems efficiently. You can solve arithmetic, algebra, trigonometry, and calculus problems, plot graphs, and access study resources—all in one place. Our AI-powered tools provide instant solutions and interactive learning experiences for students of all levels up to Class 12th.</p>
+  </section>
 
   <!-- Footer -->
   <footer>
-    &copy; 2025 Maths by Vansh | All Rights Reserved
+    &copy; 2025 Maths by Vansh. All Rights Reserved.
   </footer>
 
 </body>
