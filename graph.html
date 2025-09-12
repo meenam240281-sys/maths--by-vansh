@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Graph Plotter - Maths by Vansh</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <style>
+    body { font-family: Arial; margin: 20px; max-width: 900px; }
+    input { font-size: 18px; padding: 10px; width: 70%; }
+    button { padding: 10px 15px; font-size: 18px; cursor: pointer; }
+    #graph { width: 100%; height: 500px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Advanced Graph Plotting - Maths by Vansh</h1>
+  <p>Enter a function of x (e.g., x^2 + 3*x - 5):</p>
+  <input type="text" id="funcInput" placeholder="f(x) = ">
+  <button onclick="plotGraph()">Plot Graph</button>
+  <div id="graph"></div>
+
+  <script>
+    function plotGraph() {
+      const expr = document.getElementById('funcInput').value;
+      const xValues = [];
+      const yValues = [];
+
+      // Generate x from -10 to 10
+      for(let x=-10; x<=10; x+=0.1){
+        xValues.push(x);
+        try {
+          yValues.push(math.evaluate(expr.replace(/x/g, x)));
+        } catch(e){
+          yValues.push(null);
+        }
+      }
+
+      const trace = {
+        x: xValues,
+        y: yValues,
+        type: 'scatter',
+        mode: 'lines+markers',
+        marker: {color: 'blue'},
+      };
+
+      const layout = { title: 'Graph of ' + expr };
+
+      Plotly.newPlot('graph', [trace], layout);
+    }
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.10.0/math.min.js"></script>
+</body>
+</html>
