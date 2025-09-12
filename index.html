@@ -3,15 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <title>Maths by Vansh</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
-    body { font-family: Arial; margin: 0; padding: 0; }
-    header { background: #0077cc; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
-    nav a { color: white; margin: 0 10px; text-decoration: none; font-weight: bold; }
-    .hero { background: #e6f2ff; padding: 60px 20px; text-align: center; }
-    .section { padding: 40px 20px; max-width: 900px; margin: auto; }
-    .section h2 { color: #0077cc; }
-    .btn { background: #0077cc; color: white; padding: 10px 20px; text-decoration: none; display: inline-block; margin-top: 10px; }
-    footer { background: #f2f2f2; text-align: center; padding: 20px; margin-top: 40px; }
+    body { font-family: Arial; margin: 0; padding: 0; line-height: 1.6; }
+    header { background: #0077cc; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+    nav a { color: white; margin: 0 10px; text-decoration: none; font-weight: bold; transition: color 0.3s; }
+    nav a:hover { color: #ffdd57; }
+
+    .hero { background: #e6f2ff; padding: 80px 20px; text-align: center; }
+    .hero h2 { font-size: 2.5em; margin-bottom: 20px; }
+    .hero p { font-size: 1.2em; margin-bottom: 30px; }
+    .btn { background: #0077cc; color: white; padding: 12px 25px; text-decoration: none; display: inline-block; margin-top: 10px; border-radius: 6px; transition: background 0.3s; }
+    .btn:hover { background: #005fa3; }
+
+    .section { padding: 60px 20px; max-width: 900px; margin: auto; }
+    .section:nth-child(even) { background: #f2f2f2; }
+    .section h2 { color: #0077cc; display: flex; align-items: center; font-size: 1.8em; }
+    .section h2 i { margin-right: 10px; color: #ff7f50; }
+
+    footer { background: #333; color: white; text-align: center; padding: 20px; margin-top: 40px; }
+
+    @media (max-width: 600px) {
+      header { flex-direction: column; text-align: center; }
+      nav a { margin: 5px; display: inline-block; }
+      .hero h2 { font-size: 2em; }
+    }
   </style>
 </head>
 <body>
@@ -20,52 +36,52 @@
   <header>
     <h1>Maths by Vansh</h1>
     <nav>
-      <a href="index.html">Home</a>
-      <a href="solver_keyboard.html">Solve Math</a>
-      <a href="graph.html">Graph</a>
-      <a href="resources.html">Resources</a>
-      <a href="contact.html">Contact</a>
+      <a href="index.html"><i class="fas fa-home"></i> Home</a>
+      <a href="solver_keyboard.html"><i class="fas fa-calculator"></i> Solve Math</a>
+      <a href="graph.html"><i class="fas fa-chart-line"></i> Graph</a>
+      <a href="resources.html"><i class="fas fa-book"></i> Resources</a>
+      <a href="contact.html"><i class="fas fa-envelope"></i> Contact</a>
     </nav>
   </header>
 
   <!-- Hero Section -->
   <div class="hero">
-    <h2>Welcome to Maths by Vansh</h2>
-    <p>Your Up to Class 12th Maths Assistant</p>
+    <h2><i class="fas fa-brain"></i> Welcome to Maths by Vansh</h2>
+    <p>Your Up to Class 12th Maths Assistant – AI-powered tools to learn, solve, and visualize math problems.</p>
     <a href="solver_keyboard.html" class="btn">Start Solving</a>
   </div>
 
   <!-- About Section -->
   <div class="section" id="about">
-    <h2>About Maths by Vansh</h2>
+    <h2><i class="fas fa-info-circle"></i> About Maths by Vansh</h2>
     <p>Maths by Vansh is an AI-powered website to help students learn and solve math problems up to Class 12th.  
     It includes a custom math keyboard, interactive solver, and graph plotting tools to make learning fun and easy.</p>
   </div>
 
   <!-- Solver Section -->
   <div class="section" id="solver">
-    <h2>AI-Powered Problem Solver</h2>
+    <h2><i class="fas fa-calculator"></i> AI-Powered Problem Solver</h2>
     <p>Type your math problems or use the custom math keyboard to solve them instantly.</p>
     <a href="solver_keyboard.html" class="btn">Use Solver</a>
   </div>
 
   <!-- Graph Section -->
   <div class="section" id="graph">
-    <h2>Advanced Graph Plotting</h2>
+    <h2><i class="fas fa-chart-line"></i> Advanced Graph Plotting</h2>
     <p>Visualize any math function and understand it better with interactive graphs.</p>
     <a href="graph.html" class="btn">Plot Graph</a>
   </div>
 
   <!-- Resources Section -->
   <div class="section" id="resources">
-    <h2>Math Resources</h2>
+    <h2><i class="fas fa-book"></i> Math Resources</h2>
     <p>Explore study materials, formula sheets, and practice problems for students up to Class 12th.</p>
     <a href="resources.html" class="btn">View Resources</a>
   </div>
 
   <!-- Contact Section -->
   <div class="section" id="contact">
-    <h2>Contact Us</h2>
+    <h2><i class="fas fa-envelope"></i> Contact Us</h2>
     <p>Have questions or feedback? Reach out to us.</p>
     <a href="contact.html" class="btn">Contact Now</a>
   </div>
