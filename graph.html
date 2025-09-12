@@ -4,18 +4,33 @@
   <meta charset="UTF-8">
   <title>Graph Plotter - Maths by Vansh</title>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.10.0/math.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
-    body { font-family: Arial; margin: 20px; max-width: 900px; }
-    input { font-size: 18px; padding: 10px; width: 70%; }
-    button { padding: 10px 15px; font-size: 18px; cursor: pointer; }
-    #graph { width: 100%; height: 500px; margin-top: 20px; }
+    body { font-family: Arial; margin: 0; padding: 20px; background: #f9f9f9; text-align: center; }
+    h1 { color: #0077cc; margin-bottom: 20px; }
+    h1 i { margin-right: 10px; color: #ff7f50; }
+
+    #funcInput { width: 80%; font-size: 20px; padding: 15px; margin-bottom: 20px; border-radius: 8px; border: 2px solid #0077cc; }
+    #plotBtn { background: #ff7f50; color: white; padding: 12px 25px; font-size: 18px; border: none; border-radius: 6px; cursor: pointer; transition: background 0.3s; }
+    #plotBtn:hover { background: #e65c3c; }
+
+    #graph { width: 90%; max-width: 900px; height: 500px; margin: 30px auto; border-radius: 10px; }
+
+    @media (max-width: 600px) {
+      #funcInput { width: 95%; }
+      #plotBtn { width: 95%; }
+    }
   </style>
 </head>
 <body>
-  <h1>Advanced Graph Plotting - Maths by Vansh</h1>
-  <p>Enter a function of x (e.g., x^2 + 3*x - 5):</p>
+
+  <h1><i class="fas fa-chart-line"></i> Advanced Graph Plotting</h1>
+  <p>Enter a function of x (e.g., x^2 + 3*x - 5)</p>
+
   <input type="text" id="funcInput" placeholder="f(x) = ">
-  <button onclick="plotGraph()">Plot Graph</button>
+  <button id="plotBtn" onclick="plotGraph()">Plot Graph</button>
+
   <div id="graph"></div>
 
   <script>
@@ -24,7 +39,6 @@
       const xValues = [];
       const yValues = [];
 
-      // Generate x from -10 to 10
       for(let x=-10; x<=10; x+=0.1){
         xValues.push(x);
         try {
@@ -42,11 +56,17 @@
         marker: {color: 'blue'},
       };
 
-      const layout = { title: 'Graph of ' + expr };
+      const layout = { 
+        title: 'Graph of ' + expr,
+        xaxis: { title: 'x' },
+        yaxis: { title: 'y' },
+        plot_bgcolor: "#f2f2f2",
+        paper_bgcolor: "#f9f9f9"
+      };
 
       Plotly.newPlot('graph', [trace], layout);
     }
   </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.10.0/math.min.js"></script>
+
 </body>
 </html>
