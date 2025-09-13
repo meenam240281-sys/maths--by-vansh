@@ -1,85 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Probability & Statistics - Maths by Vansh</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Probability Formula Sheet – Maths by Vansh</title>
+  <!-- MathJax -->
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+
   <style>
-    body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f8f9fb; color:#222; }
-    header { background:#0077cc; color:#fff; padding:14px 16px; text-align:center; }
-    header .nav { margin-top:8px; }
-    header .nav a { color:#fff; text-decoration:none; margin:0 10px; font-weight:600; }
-    .container { max-width:980px; margin:24px auto; padding:0 16px; }
-    h1 { color:#0077cc; margin-bottom:6px; }
-    section { margin-top:22px; }
-    .card { background:#fff; border-radius:8px; padding:14px; box-shadow:0 4px 10px rgba(0,0,0,0.06); margin-bottom:14px; }
-    .card ul { margin:0; padding-left:18px; }
-    footer { text-align:center; padding:18px 8px; color:#666; font-size:14px; margin-top:28px; }
-    @media (max-width:600px){ header .nav a { display:inline-block; margin:6px 8px; } .container{padding:0 12px;} }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f6fa;
+      color: #2f3640;
+      margin: 0;
+      padding: 0;
+    }
+
+    header, footer {
+      background-color: #273c75;
+      color: white;
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+      letter-spacing: 1px;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 900px;
+      margin: 20px auto;
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      color: #273c75;
+      border-bottom: 2px solid #dcdde1;
+      padding-bottom: 5px;
+      margin-top: 25px;
+    }
+
+    ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    ul li {
+      margin: 10px 0;
+      font-size: 16px;
+    }
   </style>
 </head>
 <body>
 
   <header>
-    <div style="font-size:20px; font-weight:700;">Maths by Vansh</div>
-    <div class="nav">
-      <a href="index.html">Home</a>
-      <a href="solver_keyboard.html">Maths Solver</a>
-      <a href="graph.html">Graph Tool</a>
-      <a href="Resources.html">Resources</a>
-      <a href="contact.html">Contact</a>
-    </div>
+    <h1>Probability Formula Sheet</h1>
   </header>
 
-  <main class="container">
-    <h1>Probability & Statistics Formulas (up to Class 12)</h1>
+  <div class="container">
 
-    <!-- Probability -->
-    <section>
-      <div class="card">
-        <h2>Probability</h2>
-        <ul>
-          <li>P(E) = Number of favorable outcomes / Total outcomes</li>
-          <li>P(A') = 1 - P(A) (Complement rule)</li>
-          <li>P(A ∪ B) = P(A) + P(B) - P(A ∩ B)</li>
-          <li>P(A ∩ B) = P(A) × P(B) (Independent events)</li>
-          <li>P(A|B) = P(A ∩ B) / P(B) (Conditional probability)</li>
-        </ul>
-      </div>
-    </section>
+    <h2>Basic Probability</h2>
+    <ul>
+      <li>Probability of an event: $P(E) = \frac{\text{Number of favorable outcomes}}{\text{Total number of outcomes}}$</li>
+      <li>Probability of not E: $P(E') = 1 - P(E)$</li>
+      <li>Probability of sure event: $P(S) = 1$</li>
+      <li>Probability of impossible event: $P(\emptyset) = 0$</li>
+    </ul>
 
-    <!-- Statistics -->
-    <section>
-      <div class="card">
-        <h2>Statistics</h2>
-        <ul>
-          <li>Mean: x̄ = (Σxᵢ) / n</li>
-          <li>Median: Middle value after arranging data</li>
-          <li>Mode: Value that occurs most frequently</li>
-          <li>Variance (population): σ² = Σ(xᵢ - μ)² / n</li>
-          <li>Variance (sample): s² = Σ(xᵢ - x̄)² / (n-1)</li>
-          <li>Standard deviation: σ = √Variance</li>
-          <li>Probability distribution: P(x) for discrete random variable</li>
-        </ul>
-      </div>
-    </section>
+    <h2>Events</h2>
+    <ul>
+      <li>Union of two events: $P(A \cup B) = P(A) + P(B) - P(A \cap B)$</li>
+      <li>Mutually exclusive events: $P(A \cap B) = 0$</li>
+      <li>Complementary events: $P(A) + P(A') = 1$</li>
+    </ul>
 
-    <!-- Combinations & Permutations -->
-    <section>
-      <div class="card">
-        <h2>Combinations & Permutations</h2>
-        <ul>
-          <li>nPr = n! / (n-r)! (Permutation of r objects from n)</li>
-          <li>nCr = n! / [r!(n-r)!] (Combination of r objects from n)</li>
-          <li>nPr = nCr × r!</li>
-        </ul>
-      </div>
-    </section>
+    <h2>Conditional Probability</h2>
+    <ul>
+      <li>$P(A|B) = \frac{P(A \cap B)}{P(B)}, \text{ if } P(B) \neq 0$</li>
+      <li>Independent events: $P(A \cap B) = P(A) \cdot P(B)$</li>
+    </ul>
 
-  </main>
+    <h2>Random Variables & Expectation</h2>
+    <ul>
+      <li>Expected value: $E(X) = \sum x_i P(X=x_i)$</li>
+      <li>Variance: $\text{Var}(X) = E(X^2) - (E(X))^2$</li>
+      <li>Standard deviation: $\sigma = \sqrt{\text{Var}(X)}$</li>
+    </ul>
+
+    <h2>Miscellaneous Formulas</h2>
+    <ul>
+      <li>Complement Rule: $P(A') = 1 - P(A)$</li>
+      <li>Addition Rule for 3 events: $P(A \cup B \cup C) = P(A)+P(B)+P(C)-P(A \cap B)-P(A \cap C)-P(B \cap C)+P(A \cap B \cap C)$</li>
+      <li>Number of outcomes in equally likely events: $n(E)$ for event $E$</li>
+    </ul>
+
+  </div>
 
   <footer>
-    &copy; 2025 Maths by Vansh — Probability & Statistics Formulas up to Class 12.
+    <p>&copy; 2025 Maths by Vansh. All rights reserved.</p>
   </footer>
 
 </body>
