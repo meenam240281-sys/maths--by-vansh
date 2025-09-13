@@ -1,99 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Trigonometry Formulas - Maths by Vansh</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trigonometry Formula Sheet – Maths by Vansh</title>
+  <!-- MathJax -->
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+
   <style>
-    body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f8f9fb; color:#222; }
-    header { background:#0077cc; color:#fff; padding:14px 16px; text-align:center; }
-    header .nav { margin-top:8px; }
-    header .nav a { color:#fff; text-decoration:none; margin:0 10px; font-weight:600; }
-    .container { max-width:980px; margin:24px auto; padding:0 16px; }
-    h1 { color:#0077cc; margin-bottom:6px; }
-    section { margin-top:22px; }
-    .card { background:#fff; border-radius:8px; padding:14px; box-shadow:0 4px 10px rgba(0,0,0,0.06); margin-bottom:14px; }
-    .card ul { margin:0; padding-left:18px; }
-    footer { text-align:center; padding:18px 8px; color:#666; font-size:14px; margin-top:28px; }
-    @media (max-width:600px){ header .nav a { display:inline-block; margin:6px 8px; } .container{padding:0 12px;} }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f6fa;
+      color: #2f3640;
+      margin: 0;
+      padding: 0;
+    }
+
+    header, footer {
+      background-color: #273c75;
+      color: white;
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+      letter-spacing: 1px;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 900px;
+      margin: 20px auto;
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      color: #273c75;
+      border-bottom: 2px solid #dcdde1;
+      padding-bottom: 5px;
+      margin-top: 25px;
+    }
+
+    ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    ul li {
+      margin: 10px 0;
+      font-size: 16px;
+    }
   </style>
 </head>
 <body>
 
   <header>
-    <div style="font-size:20px; font-weight:700;">Maths by Vansh</div>
-    <div class="nav">
-      <a href="index.html">Home</a>
-      <a href="solver_keyboard.html">Maths Solver</a>
-      <a href="graph.html">Graph Tool</a>
-      <a href="Resources.html">Resources</a>
-      <a href="contact.html">Contact</a>
-    </div>
+    <h1>Trigonometry Formula Sheet</h1>
   </header>
 
-  <main class="container">
-    <h1>Trigonometry Formulas (up to Class 12)</h1>
+  <div class="container">
 
-    <!-- Basic Ratios -->
-    <section>
-      <div class="card">
-        <h2>Basic Trigonometric Ratios</h2>
-        <ul>
-          <li>sin θ = opposite/hypotenuse</li>
-          <li>cos θ = adjacent/hypotenuse</li>
-          <li>tan θ = opposite/adjacent</li>
-          <li>cosec θ = 1/sin θ</li>
-          <li>sec θ = 1/cos θ</li>
-          <li>cot θ = 1/tan θ</li>
-        </ul>
-      </div>
-    </section>
+    <h2>Basic Ratios</h2>
+    <ul>
+      <li>$\sin \theta = \frac{\text{opposite}}{\text{hypotenuse}}$</li>
+      <li>$\cos \theta = \frac{\text{adjacent}}{\text{hypotenuse}}$</li>
+      <li>$\tan \theta = \frac{\text{opposite}}{\text{adjacent}}$</li>
+      <li>$\cot \theta = \frac{1}{\tan \theta} = \frac{\text{adjacent}}{\text{opposite}}$</li>
+      <li>$\sec \theta = \frac{1}{\cos \theta}$</li>
+      <li>$\csc \theta = \frac{1}{\sin \theta}$</li>
+    </ul>
 
-    <!-- Pythagorean Identities -->
-    <section>
-      <div class="card">
-        <h2>Pythagorean Identities</h2>
-        <ul>
-          <li>sin²θ + cos²θ = 1</li>
-          <li>1 + tan²θ = sec²θ</li>
-          <li>1 + cot²θ = cosec²θ</li>
-        </ul>
-      </div>
-    </section>
+    <h2>Fundamental Identities</h2>
+    <ul>
+      <li>$\sin^2 \theta + \cos^2 \theta = 1$</li>
+      <li>$1 + \tan^2 \theta = \sec^2 \theta$</li>
+      <li>$1 + \cot^2 \theta = \csc^2 \theta$</li>
+    </ul>
 
-    <!-- Angle Formulas -->
-    <section>
-      <div class="card">
-        <h2>Angle Formulas</h2>
-        <ul>
-          <li>sin(A ± B) = sin A cos B ± cos A sin B</li>
-          <li>cos(A ± B) = cos A cos B ∓ sin A sin B</li>
-          <li>tan(A ± B) = (tan A ± tan B) / (1 ∓ tan A tan B)</li>
-          <li>sin 2A = 2 sin A cos A</li>
-          <li>cos 2A = cos² A − sin² A = 2 cos² A − 1 = 1 − 2 sin² A</li>
-          <li>tan 2A = 2 tan A / (1 − tan² A)</li>
-        </ul>
-      </div>
-    </section>
+    <h2>Angle Sum and Difference</h2>
+    <ul>
+      <li>$\sin(A \pm B) = \sin A \cos B \pm \cos A \sin B$</li>
+      <li>$\cos(A \pm B) = \cos A \cos B \mp \sin A \sin B$</li>
+      <li>$\tan(A \pm B) = \frac{\tan A \pm \tan B}{1 \mp \tan A \tan B}$</li>
+    </ul>
 
-    <!-- Multiple & Half Angle -->
-    <section>
-      <div class="card">
-        <h2>Multiple & Half Angle Formulas</h2>
-        <ul>
-          <li>sin 3A = 3 sin A − 4 sin³ A</li>
-          <li>cos 3A = 4 cos³ A − 3 cos A</li>
-          <li>sin²(A/2) = (1 − cos A)/2</li>
-          <li>cos²(A/2) = (1 + cos A)/2</li>
-        </ul>
-      </div>
-    </section>
+    <h2>Double Angle Formulas</h2>
+    <ul>
+      <li>$\sin 2A = 2 \sin A \cos A$</li>
+      <li>$\cos 2A = \cos^2 A - \sin^2 A = 2\cos^2 A -1 = 1 - 2 \sin^2 A$</li>
+      <li>$\tan 2A = \frac{2 \tan A}{1 - \tan^2 A}$</li>
+    </ul>
 
-    
-  </main>
+    <h2>Half Angle Formulas</h2>
+    <ul>
+      <li>$\sin^2 \frac{A}{2} = \frac{1 - \cos A}{2}$</li>
+      <li>$\cos^2 \frac{A}{2} = \frac{1 + \cos A}{2}$</li>
+      <li>$\tan \frac{A}{2} = \frac{1 - \cos A}{\sin A} = \frac{\sin A}{1 + \cos A}$</li>
+    </ul>
+
+    <h2>Product to Sum Formulas</h2>
+    <ul>
+      <li>$\sin A \sin B = \frac{1}{2} [\cos(A-B) - \cos(A+B)]$</li>
+      <li>$\cos A \cos B = \frac{1}{2} [\cos(A-B) + \cos(A+B)]$</li>
+      <li>$\sin A \cos B = \frac{1}{2} [\sin(A+B) + \sin(A-B)]$</li>
+    </ul>
+
+    <h2>Sum to Product Formulas</h2>
+    <ul>
+      <li>$\sin A + \sin B = 2 \sin \frac{A+B}{2} \cos \frac{A-B}{2}$</li>
+      <li>$\sin A - \sin B = 2 \cos \frac{A+B}{2} \sin \frac{A-B}{2}$</li>
+      <li>$\cos A + \cos B = 2 \cos \frac{A+B}{2} \cos \frac{A-B}{2}$</li>
+      <li>$\cos A - \cos B = -2 \sin \frac{A+B}{2} \sin \frac{A-B}{2}$</li>
+    </ul>
+
+    <h2>Miscellaneous Formulas</h2>
+    <ul>
+      <li>$\sin^3 A = \frac{3 \sin A - \sin 3A}{4}$</li>
+      <li>$\cos^3 A = \frac{3 \cos A + \cos 3A}{4}$</li>
+      <li>$\tan A \pm \tan B = \frac{\sin(A \pm B)}{\cos A \cos B}$</li>
+    </ul>
+
+  </div>
 
   <footer>
-    &copy; 2025 Maths by Vansh — Trigonometry Formulas up to Class 12.
+    <p>&copy; 2025 Maths by Vansh. All rights reserved.</p>
   </footer>
 
 </body>
