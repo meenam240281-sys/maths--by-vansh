@@ -1,95 +1,133 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Calculus Formulas - Maths by Vansh</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculus Formula Sheet – Maths by Vansh</title>
+  <!-- MathJax -->
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+
   <style>
-    body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f8f9fb; color:#222; }
-    header { background:#0077cc; color:#fff; padding:14px 16px; text-align:center; }
-    header .nav { margin-top:8px; }
-    header .nav a { color:#fff; text-decoration:none; margin:0 10px; font-weight:600; }
-    .container { max-width:980px; margin:24px auto; padding:0 16px; }
-    h1 { color:#0077cc; margin-bottom:6px; }
-    section { margin-top:22px; }
-    .card { background:#fff; border-radius:8px; padding:14px; box-shadow:0 4px 10px rgba(0,0,0,0.06); margin-bottom:14px; }
-    .card ul { margin:0; padding-left:18px; }
-    footer { text-align:center; padding:18px 8px; color:#666; font-size:14px; margin-top:28px; }
-    @media (max-width:600px){ header .nav a { display:inline-block; margin:6px 8px; } .container{padding:0 12px;} }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f6fa;
+      color: #2f3640;
+      margin: 0;
+      padding: 0;
+    }
+
+    header, footer {
+      background-color: #273c75;
+      color: white;
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+      letter-spacing: 1px;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 900px;
+      margin: 20px auto;
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      color: #273c75;
+      border-bottom: 2px solid #dcdde1;
+      padding-bottom: 5px;
+      margin-top: 25px;
+    }
+
+    ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    ul li {
+      margin: 10px 0;
+      font-size: 16px;
+    }
   </style>
 </head>
 <body>
 
   <header>
-    <div style="font-size:20px; font-weight:700;">Maths by Vansh</div>
-    <div class="nav">
-      <a href="index.html">Home</a>
-      <a href="solver_keyboard.html">Maths Solver</a>
-      <a href="graph.html">Graph Tool</a>
-      <a href="Resources.html">Resources</a>
-      <a href="contact.html">Contact</a>
-    </div>
+    <h1>Calculus Formula Sheet</h1>
   </header>
 
-  <main class="container">
-    <h1>Calculus Formulas (up to Class 12)</h1>
+  <div class="container">
 
-    <!-- Limits -->
-    <section>
-      <div class="card">
-        <h2>Limits</h2>
-        <ul>
-          <li>lim (x→a) [c] = c</li>
-          <li>lim (x→a) [x] = a</li>
-          <li>lim (x→a) [xⁿ] = aⁿ</li>
-          <li>lim (x→0) (sin x)/x = 1</li>
-          <li>lim (x→0) (1 - cos x)/x = 0</li>
-        </ul>
-      </div>
-    </section>
+    <h2>Limits</h2>
+    <ul>
+      <li>$\lim_{x \to a} c = c$</li>
+      <li>$\lim_{x \to a} x = a$</li>
+      <li>$\lim_{x \to a} [f(x) \pm g(x)] = \lim_{x \to a} f(x) \pm \lim_{x \to a} g(x)$</li>
+      <li>$\lim_{x \to a} [f(x) \cdot g(x)] = (\lim_{x \to a} f(x)) (\lim_{x \to a} g(x))$</li>
+      <li>$\lim_{x \to a} \frac{f(x)}{g(x)} = \frac{\lim_{x \to a} f(x)}{\lim_{x \to a} g(x)}, \text{if } \lim_{x \to a} g(x) \neq 0$</li>
+    </ul>
 
-    <!-- Derivatives -->
-    <section>
-      <div class="card">
-        <h2>Derivatives</h2>
-        <ul>
-          <li>d/dx [c] = 0</li>
-          <li>d/dx [xⁿ] = n·xⁿ⁻¹</li>
-          <li>d/dx [sin x] = cos x</li>
-          <li>d/dx [cos x] = -sin x</li>
-          <li>d/dx [tan x] = sec² x</li>
-          <li>Product rule: d/dx [u·v] = u'v + uv'</li>
-          <li>Quotient rule: d/dx [u/v] = (u'v - uv') / v²</li>
-          <li>Chain rule: d/dx [f(g(x))] = f'(g(x))·g'(x)</li>
-        </ul>
-      </div>
-    </section>
+    <h2>Derivatives</h2>
+    <ul>
+      <li>$(c)' = 0$</li>
+      <li>$(x^n)' = n x^{n-1}$</li>
+      <li>$(\sin x)' = \cos x$</li>
+      <li>$(\cos x)' = -\sin x$</li>
+      <li>$(\tan x)' = \sec^2 x$</li>
+      <li>$(\cot x)' = -\csc^2 x$</li>
+      <li>$(\sec x)' = \sec x \tan x$</li>
+      <li>$(\csc x)' = -\csc x \cot x$</li>
+      <li>$(e^x)' = e^x$</li>
+      <li>$(a^x)' = a^x \ln a$</li>
+      <li>$(\ln x)' = \frac{1}{x}$</li>
+      <li>$(\log_a x)' = \frac{1}{x \ln a}$</li>
+    </ul>
 
-    <!-- Integrals -->
-    <section>
-      <div class="card">
-        <h2>Integrals</h2>
-        <ul>
-          <li>∫ c dx = cx + C</li>
-          <li>∫ xⁿ dx = xⁿ⁺¹ / (n+1) + C, n ≠ -1</li>
-          <li>∫ eˣ dx = eˣ + C</li>
-          <li>∫ sin x dx = -cos x + C</li>
-          <li>∫ cos x dx = sin x + C</li>
-          <li>∫ sec² x dx = tan x + C</li>
-          <li>∫ csc² x dx = -cot x + C</li>
-          <li>∫ sec x tan x dx = sec x + C</li>
-          <li>∫ csc x cot x dx = -csc x + C</li>
-        </ul>
-      </div>
-    </section>
+    <h2>Rules of Differentiation</h2>
+    <ul>
+      <li>Sum Rule: $(f + g)' = f' + g'$</li>
+      <li>Product Rule: $(fg)' = f'g + fg'$</li>
+      <li>Quotient Rule: $\left(\frac{f}{g}\right)' = \frac{f'g - fg'}{g^2}$</li>
+      <li>Chain Rule: $(f(g(x)))' = f'(g(x)) \cdot g'(x)$</li>
+    </ul>
 
-    
+    <h2>Integrals</h2>
+    <ul>
+      <li>$\int c \, dx = cx + C$</li>
+      <li>$\int x^n \, dx = \frac{x^{n+1}}{n+1} + C, \, n \neq -1$</li>
+      <li>$\int \frac{dx}{x} = \ln |x| + C$</li>
+      <li>$\int e^x \, dx = e^x + C$</li>
+      <li>$\int a^x \, dx = \frac{a^x}{\ln a} + C$</li>
+      <li>$\int \sin x \, dx = -\cos x + C$</li>
+      <li>$\int \cos x \, dx = \sin x + C$</li>
+      <li>$\int \sec^2 x \, dx = \tan x + C$</li>
+      <li>$\int \csc^2 x \, dx = -\cot x + C$</li>
+      <li>$\int \sec x \tan x \, dx = \sec x + C$</li>
+      <li>$\int \csc x \cot x \, dx = -\csc x + C$</li>
+    </ul>
 
-  </main>
+    <h2>Miscellaneous Formulas</h2>
+    <ul>
+      <li>Definite integral property: $\int_a^b f(x) dx = F(b) - F(a)$</li>
+      <li>Linearity: $\int (af(x) + bg(x)) dx = a \int f(x) dx + b \int g(x) dx$</li>
+      <li>Area under curve: $A = \int_a^b f(x) dx$</li>
+    </ul>
+
+  </div>
 
   <footer>
-    &copy; 2025 Maths by Vansh — Calculus Formulas up to Class 12.
+    <p>&copy; 2025 Maths by Vansh. All rights reserved.</p>
   </footer>
 
 </body>
-</html>
+      </html>
