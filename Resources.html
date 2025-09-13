@@ -1,91 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Resources - Maths by Vansh</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f9f9f9;
-    }
-    header {
-      background: #222;
-      color: white;
-      padding: 15px;
-      text-align: center;
-    }
-    nav a {
-      color: white;
-      margin: 0 10px;
-      text-decoration: none;
-    }
-    .container {
-      padding: 20px;
-      max-width: 900px;
-      margin: auto;
-    }
-    h1, h2 {
-      color: #333;
-    }
-    ul {
-      background: white;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-      list-style: square inside;
-      margin-bottom: 25px;
-    }
-    ul li {
-      margin: 6px 0;
-    }
+    body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f8f9fb; color:#222; }
+    header { background:#0077cc; color:#fff; padding:14px 16px; text-align:center; }
+    header .nav { margin-top:8px; }
+    header .nav a { color:#fff; text-decoration:none; margin:0 10px; font-weight:600; }
+    .container { max-width:980px; margin:24px auto; padding:0 16px; }
+    h1 { color:#0077cc; margin-bottom:6px; }
+    p.lead { margin-top:0; color:#444; }
+    section { margin-top:22px; }
+    .card { background:#fff; border-radius:8px; padding:14px; box-shadow:0 4px 10px rgba(0,0,0,0.06); margin-bottom:14px; }
+    .card ul { margin:0; padding-left:18px; }
+    .card a { color:#0077cc; text-decoration:none; font-weight:600; }
+    .card a:hover { color:#0a58ca; text-decoration:underline; }
+    footer { text-align:center; padding:18px 8px; color:#666; font-size:14px; margin-top:28px; }
+    @media (max-width:600px){ header .nav a { display:inline-block; margin:6px 8px; } .container{padding:0 12px;} }
   </style>
 </head>
 <body>
+
   <header>
-    <h1>Maths Resources</h1>
-    <nav>
+    <div style="font-size:20px; font-weight:700;">Maths by Vansh</div>
+    <div class="nav">
       <a href="index.html">Home</a>
-      <a href="Solver.html">Maths Solver</a>
-      <a href="Graph.html">Graph Tool</a>
+      <a href="solver_keyboard.html">Maths Solver</a>
+      <a href="graph.html">Graph Tool</a>
       <a href="Resources.html">Resources</a>
-      <a href="Contact.html">Contact</a>
-    </nav>
+      <a href="contact.html">Contact</a>
+    </div>
   </header>
 
-  <div class="container">
+  <main class="container">
+    <h1>Resources (up to Class 12)</h1>
+    <p class="lead">Here you’ll find formula sheets and practice worksheets organized by topic. Click any topic to open the dedicated page with formulas and examples.</p>
 
-    <h2>NCERT Textbooks</h2>
-    <ul>
-      <li><a href="https://ncert.nic.in/textbook.php" target="_blank">Download NCERT Maths Textbooks (Class 6–12)</a></li>
-    </ul>
+    <section>
+      <div class="card">
+        <h2 style="margin:0 0 8px 0;">NCERT (official textbooks)</h2>
+        <p style="margin:0 0 8px 0;">Official CBSE / school textbooks — recommended for curriculum study.</p>
+        <ul>
+          <li><a href="https://ncert.nic.in/textbook.php" target="_blank" rel="noopener">Download NCERT Maths Textbooks (Class 6–12)</a></li>
+          <li><a href="https://www.cbse.gov.in" target="_blank" rel="noopener">CBSE official website</a></li>
+        </ul>
+      </div>
+    </section>
 
-    <h2>Formula Sheets</h2>
-    <ul>
-      <li><a href="Algebra.html">Algebra Formulas</a></li>
-      <li><a href="Trigonometry.html">Trigonometry Formulas</a></li>
-      <li><a href="Calculus.html">Calculus Formulas</a></li>
-      <li><a href="Geometry.html">Geometry Formulas</a></li>
-      <li><a href="Probability.html">Probability & Statistics Formulas</a></li>
-    </ul>
+    <section>
+      <div class="card">
+        <h2 style="margin:0 0 8px 0;">Formula sheets (topic-wise)</h2>
+        <p style="margin:0 0 8px 0;">Quick reference formula pages for each major topic.</p>
+        <ul>
+          <li><a href="Algebra.html">Algebra — formula sheet</a></li>
+          <li><a href="Trigonometry.html">Trigonometry — formula sheet</a></li>
+          <li><a href="Calculus.html">Calculus — formula sheet</a></li>
+          <li><a href="Geometry.html">Geometry — formula sheet</a></li>
+          <li><a href="Probability.html">Probability &amp; Statistics — formula sheet</a></li>
+        </ul>
+      </div>
+    </section>
 
-    <h2>Practice Worksheets</h2>
-    <ul>
-      <li><a href="AlgebraWorksheet.html">Algebra Practice Worksheet</a></li>
-      <li><a href="TrigonometryWorksheet.html">Trigonometry Practice Worksheet</a></li>
-      <li><a href="CalculusWorksheet.html">Calculus Practice Worksheet</a></li>
-      <li><a href="GeometryWorksheet.html">Geometry Practice Worksheet</a></li>
-      <li><a href="ProbabilityWorksheet.html">Probability & Statistics Practice Worksheet</a></li>
-    </ul>
+    <section>
+      <div class="card">
+        <h2 style="margin:0 0 8px 0;">Practice worksheets (topic-wise)</h2>
+        <p style="margin:0 0 8px 0;">Short practice sets to test and build skill (answers can be added later).</p>
+        <ul>
+          <li><a href="AlgebraWorksheet.html">Algebra practice worksheet</a></li>
+          <li><a href="TrigonometryWorksheet.html">Trigonometry practice worksheet</a></li>
+          <li><a href="CalculusWorksheet.html">Calculus practice worksheet</a></li>
+          <li><a href="GeometryWorksheet.html">Geometry practice worksheet</a></li>
+          <li><a href="ProbabilityWorksheet.html">Probability &amp; Statistics worksheet</a></li>
+        </ul>
+      </div>
+    </section>
 
-    <h2>Useful Official Links</h2>
-    <ul>
-      <li><a href="https://ncert.nic.in" target="_blank">NCERT Official Website</a></li>
-      <li><a href="https://www.cbse.gov.in" target="_blank">CBSE Official Website</a></li>
-    </ul>
+  </main>
 
-  </div>
+  <footer>
+    &copy; 2025 Maths by Vansh — Resources up to Class 12.  
+  </footer>
+
 </body>
 </html>
