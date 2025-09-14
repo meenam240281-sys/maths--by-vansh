@@ -1,147 +1,229 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Graphs</title>
-<style>
-  body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f8f9fa; }
-  header { background: #34495e; color: white; padding: 1rem; text-align: center; }
-  h1 { margin: 0; font-size: 1.8rem; }
-  #inputSection { padding: 1rem; text-align: center; }
-  input[type=text] { width: 80%; padding: 0.5rem; font-size: 1rem; }
-  button { padding: 0.5rem 1rem; font-size: 1rem; margin-left: 0.5rem; cursor: pointer; }
-  #graphContainer { width: 100%; height: 70vh; background: white; margin-top: 1rem; border: 1px solid #ccc; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Graphs</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f6fa;
+      color: #333;
+    }
+    nav {
+      background: #2f3640;
+      padding: 10px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    .container {
+      padding: 20px;
+      text-align: center;
+    }
+    canvas {
+      border: 1px solid #ccc;
+      background: white;
+      touch-action: none; /* stop whole-page zoom on touch */
+    }
+    input, button {
+      padding: 6px;
+      margin: 5px;
+    }
+  </style>
 </head>
 <body>
-<header>
-  <h1>Graphs</h1>
-</header>
+  <nav>
+    <a href="index.html">HOME</a>
+    <a href="resources.html">RESOURCES</a>
+    <a href="contact.html">CONTACT</a>
+    <a href="solver.html">MATH SOLVER</a>
+    <a href="graphs.html">GRAPH</a>
+  </nav>
 
-<div id="inputSection">
-  <input type="text" id="graphInput" placeholder="Enter points (x,y) or equations y=f(x), separated by ;">
-  <button onclick="plotGraph()">Plot</button>
-</div>
+  <div class="container">
+    <h2>Interactive Graph</h2>
+    <input type="text" id="equation" placeholder="Enter equation or point e.g. y=x^2 or (2,3)">
+    <button onclick="plot()">Plot</button>
+    <br><br>
+    <canvas id="graphCanvas" width="800" height="500"></canvas>
+  </div>
 
-<div id="graphContainer">
-  <canvas id="graphCanvas" width="800" height="500"></canvas>
-</div>
+  <script>
+    const canvas = document.getElementById("graphCanvas");
+    const ctx = canvas.getContext("2d");
 
-<script>
-const canvas = document.getElementById("graphCanvas");
-const ctx = canvas.getContext("2d");
+    // Graph state
+    let scale = 40; // pixels per unit
+    let offsetX = canvas.width / 2;
+    let offsetY = canvas.height / 2;
+    let isDragging = false;
+    let dragStart = {};
 
-let scale = 40; // pixels per unit
-let offsetX = canvas.width / 2;
-let offsetY = canvas.height / 2;
-let colors = ["orange", "purple", "green", "blue", "red", "brown", "magenta", "teal", "cyan"];
-let equations = [];
+    const colors = ["#e67e22", "#8e44ad", "#27ae60", "#c0392b", "#2980b9"];
+    let plots = [];
 
-function drawAxes() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.strokeStyle = "#aaa";
-  ctx.lineWidth = 1;
+    function drawGrid() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // vertical lines
-  for (let x = 0; x <= canvas.width; x += scale) {
-    ctx.beginPath();
-    ctx.moveTo(x, 0);
-    ctx.lineTo(x, canvas.height);
-    ctx.stroke();
-  }
-  // horizontal lines
-  for (let y = 0; y <= canvas.height; y += scale) {
-    ctx.beginPath();
-    ctx.moveTo(0, y);
-    ctx.lineTo(canvas.width, y);
-    ctx.stroke();
-  }
+      // Grid spacing depends on zoom
+      let step = 1;
+      if (scale < 20) step = 5;
+      if (scale < 10) step = 10;
 
-  // axes
-  ctx.strokeStyle = "#000";
-  ctx.lineWidth = 2;
-  // x-axis
-  ctx.beginPath();
-  ctx.moveTo(0, offsetY);
-  ctx.lineTo(canvas.width, offsetY);
-  ctx.stroke();
-  // y-axis
-  ctx.beginPath();
-  ctx.moveTo(offsetX, 0);
-  ctx.lineTo(offsetX, canvas.height);
-  ctx.stroke();
+      ctx.strokeStyle = "#ddd";
+      ctx.lineWidth = 1;
 
-  // numbers
-  ctx.fillStyle = "#000";
-  ctx.font = "12px Arial";
-  for (let i = -Math.floor(offsetX/scale); i <= Math.floor(offsetX/scale); i++) {
-    if(i!==0) ctx.fillText(i, offsetX + i*scale - 5, offsetY + 12);
-  }
-  for (let i = -Math.floor(offsetY/scale); i <= Math.floor(offsetY/scale); i++) {
-    if(i!==0) ctx.fillText(-i, offsetX + 2, offsetY + i*scale + 4);
-  }
-}
-
-function plotGraph() {
-  drawAxes();
-  const input = document.getElementById("graphInput").value;
-  if(!input) return;
-  equations = input.split(";").map(s => s.trim());
-
-  equations.forEach((eq, idx) => {
-    const color = colors[idx % colors.length];
-    ctx.strokeStyle = color;
-    ctx.fillStyle = color;
-
-    if(eq.match(/^\([^)]+\)$/)) { // point (x,y)
-      const coords = eq.replace(/[()]/g,"").split(",");
-      const x = parseFloat(coords[0]);
-      const y = parseFloat(coords[1]);
-      ctx.beginPath();
-      ctx.arc(offsetX + x*scale, offsetY - y*scale, 4, 0, Math.PI*2);
-      ctx.fill();
-    } else { // equation y=f(x)
-      ctx.beginPath();
-      let first = true;
-      for(let px = -offsetX/scale; px < (canvas.width-offsetX)/scale; px += 0.01) {
-        let y = 0;
-        try {
-          y = eval(eq.replace(/x/g, `(${px})`));
-        } catch(e) { continue; }
-        const cx = offsetX + px*scale;
-        const cy = offsetY - y*scale;
-        if(first) { ctx.moveTo(cx, cy); first=false; }
-        else { ctx.lineTo(cx, cy); }
+      // vertical lines
+      for (let x = offsetX % (scale * step); x <= canvas.width; x += scale * step) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
       }
+
+      // horizontal lines
+      for (let y = offsetY % (scale * step); y <= canvas.height; y += scale * step) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+      }
+
+      // Axes
+      ctx.strokeStyle = "black";
+      ctx.beginPath();
+      ctx.moveTo(0, offsetY);
+      ctx.lineTo(canvas.width, offsetY);
       ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(offsetX, 0);
+      ctx.lineTo(offsetX, canvas.height);
+      ctx.stroke();
+
+      // Numbers
+      ctx.fillStyle = "black";
+      ctx.font = "12px Arial";
+      for (let x = offsetX % (scale * step); x <= canvas.width; x += scale * step) {
+        const val = Math.round((x - offsetX) / scale);
+        ctx.fillText(val, x + 2, offsetY + 12);
+      }
+      for (let y = offsetY % (scale * step); y <= canvas.height; y += scale * step) {
+        const val = -Math.round((y - offsetY) / scale);
+        if (val !== 0) ctx.fillText(val, offsetX + 4, y - 2);
+      }
     }
-  });
-}
 
-// basic zoom and drag
-let isDragging = false;
-let startX, startY;
-canvas.addEventListener("mousedown", e => { isDragging=true; startX=e.offsetX; startY=e.offsetY; });
-canvas.addEventListener("mouseup", e => { isDragging=false; });
-canvas.addEventListener("mousemove", e => {
-  if(!isDragging) return;
-  const dx = e.offsetX - startX;
-  const dy = e.offsetY - startY;
-  offsetX += dx;
-  offsetY += dy;
-  startX = e.offsetX;
-  startY = e.offsetY;
-  plotGraph();
-});
-canvas.addEventListener("wheel", e => {
-  e.preventDefault();
-  const zoom = e.deltaY < 0 ? 1.1 : 0.9;
-  scale *= zoom;
-  plotGraph();
-});
+    function drawPlots() {
+      plots.forEach((plot, i) => {
+        ctx.strokeStyle = colors[i % colors.length];
+        ctx.fillStyle = colors[i % colors.length];
 
-drawAxes();
-</script>
+        if (plot.type === "equation") {
+          ctx.beginPath();
+          let first = true;
+          for (let px = 0; px < canvas.width; px++) {
+            let x = (px - offsetX) / scale;
+            let y;
+            try {
+              y = eval(plot.expr.replace(/x/g, `(${x})`));
+            } catch {
+              continue;
+            }
+            let py = offsetY - y * scale;
+            if (first) {
+              ctx.moveTo(px, py);
+              first = false;
+            } else {
+              ctx.lineTo(px, py);
+            }
+          }
+          ctx.stroke();
+        } else if (plot.type === "point") {
+          let px = offsetX + plot.x * scale;
+          let py = offsetY - plot.y * scale;
+          ctx.beginPath();
+          ctx.arc(px, py, 4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      });
+    }
+
+    function redraw() {
+      drawGrid();
+      drawPlots();
+    }
+
+    function plot() {
+      const input = document.getElementById("equation").value.trim();
+      if (!input) return;
+
+      if (input.startsWith("(") && input.endsWith(")")) {
+        // Point
+        let coords = input.slice(1, -1).split(",");
+        let x = parseFloat(coords[0]);
+        let y = parseFloat(coords[1]);
+        plots.push({ type: "point", x, y });
+      } else {
+        // Equation
+        let expr = input.replace("^", "**");
+        plots.push({ type: "equation", expr });
+      }
+      document.getElementById("equation").value = "";
+      redraw();
+    }
+
+    // Dragging
+    canvas.addEventListener("mousedown", e => {
+      isDragging = true;
+      dragStart.x = e.clientX - offsetX;
+      dragStart.y = e.clientY - offsetY;
+    });
+    canvas.addEventListener("mousemove", e => {
+      if (isDragging) {
+        offsetX = e.clientX - dragStart.x;
+        offsetY = e.clientY - dragStart.y;
+        redraw();
+      }
+    });
+    canvas.addEventListener("mouseup", () => isDragging = false);
+    canvas.addEventListener("mouseleave", () => isDragging = false);
+
+    // Touch drag
+    canvas.addEventListener("touchstart", e => {
+      if (e.touches.length === 1) {
+        isDragging = true;
+        dragStart.x = e.touches[0].clientX - offsetX;
+        dragStart.y = e.touches[0].clientY - offsetY;
+      }
+    });
+    canvas.addEventListener("touchmove", e => {
+      if (e.touches.length === 1 && isDragging) {
+        offsetX = e.touches[0].clientX - dragStart.x;
+        offsetY = e.touches[0].clientY - dragStart.y;
+        redraw();
+      }
+    });
+    canvas.addEventListener("touchend", () => isDragging = false);
+
+    // Zoom
+    canvas.addEventListener("wheel", e => {
+      e.preventDefault();
+      const zoom = e.deltaY < 0 ? 1.1 : 0.9;
+      scale *= zoom;
+      redraw();
+    });
+
+    redraw();
+  </script>
 </body>
 </html>
