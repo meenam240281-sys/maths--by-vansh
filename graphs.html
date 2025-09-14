@@ -1,619 +1,206 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-<title>Graphs — Math by Vansh</title>
-<style>
-  :root{--nav-h:52px;--bg:#f8f9fa;--nav:#2f3b46;--nav-hover:#8e44ad;}
-  html,body{height:100%;margin:0;}
-  body {
-    font-family: "Poppins", Arial, sans-serif;
-    background: var(--bg);
-    color: #222;
-    -webkit-font-smoothing:antialiased;
-  }
-
-  /* fixed nav (always visible) */
-  nav{
-    position:fixed; top:0; left:0; right:0;
-    height:var(--nav-h);
-    background:var(--nav);
-    display:flex; align-items:center; justify-content:center;
-    gap:22px; z-index:9999;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
-  }
-  nav a{
-    color:#fff; text-decoration:none; font-weight:600; padding:10px 8px;
-  }
-  nav a.active{ background: rgba(255,255,255,0.06); border-radius:6px; }
-  nav a:hover{ color:#fff; text-decoration:underline; }
-
-  .page {
-    padding-top: calc(var(--nav-h) + 16px);
-    text-align:center;
-    max-width:1100px;
-    margin:0 auto;
-  }
-
-  .controls {
-    margin: 12px 10px;
-    display:flex; gap:8px; justify-content:center; align-items:center; flex-wrap:wrap;
-  }
-  input[type="text"]{
-    width:66%;
-    max-width:760px;
-    min-width:240px;
-    padding:10px 12px;
-    border-radius:8px;
-    border:1px solid #ccc;
-    font-size:15px;
-  }
-  button {
-    padding:9px 14px; border-radius:8px; border: none;
-    background:#2f3b46; color:white; font-weight:600; cursor:pointer;
-  }
-  button.secondary { background:#8e44ad; }
-
-  /* canvas container */
-  #canvasWrap{
-    margin: 14px auto;
-    width: 95%;
-    max-width:1200px;
-    height: 68vh;
-    background: #fff;
-    border-radius:8px;
-    box-shadow:0 6px 20px rgba(0,0,0,0.06);
-    overflow:hidden;
-    border:1px solid #ddd;
-    touch-action: none; /* we'll handle pinch/drag */
-  }
-  canvas { width:100%; height:100%; display:block; }
-
-  .legend { display:flex; gap:12px; justify-content:center; margin-top:8px; flex-wrap:wrap; font-size:13px; }
-  .legend .item {display:flex; gap:6px; align-items:center;}
-  .legend .sw { width:14px; height:3px; display:inline-block; border-radius:2px; }
-
-  @media (max-width:720px){
-    input[type="text"]{ width:78%; }
-    .controls { padding: 0 8px; }
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Graphing Tool</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f9f9f9;
+    }
+    nav {
+      background: #0077cc;
+      padding: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin: 5px 15px;
+      font-weight: bold;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    .container {
+      padding: 20px;
+      text-align: center;
+    }
+    input, button {
+      padding: 8px;
+      margin: 5px;
+      font-size: 16px;
+    }
+    #graph {
+      width: 100%;
+      height: 80vh;
+    }
+  </style>
 </head>
 <body>
+  <!-- Navigation -->
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="mathsolver.html">Math Solver</a>
+    <a href="graph.html">Graphs</a>
+    <a href="resources.html">Resources</a>
+    <a href="contact.html">Contact</a>
+  </nav>
 
-<nav>
-  <a href="index.html">Home</a>
-  <a href="solver.html">Maths Solver</a>
-  <a href="graphs.html" class="active">Graphs</a>
-  <a href="resources.html">Resources</a>
-  <a href="contact.html">Contact</a>
-</nav>
-
-<div class="page">
-  <h2 style="margin:6px 0 6px 0">Interactive Graph Plotter</h2>
-
-  <div class="controls">
-    <input id="inputBox" placeholder="Enter equations or points. Examples: y = x^2; x + y = 3; (2,3) ; sin(x) " />
-    <button id="plotBtn">Plot</button>
-    <button id="clearBtn" class="secondary">Clear</button>
+  <!-- Graph Section -->
+  <div class="container">
+    <h2>Interactive Graphing Tool</h2>
+    <p>Enter equation (e.g., <b>x+y=3</b>) or points (e.g., <b>2,3; 3,4; 5,2</b>)</p>
+    <input type="text" id="input" placeholder="Equation or points">
+    <label>
+      <input type="checkbox" id="connectPoints"> Connect Points
+    </label>
+    <button onclick="plotInput()">Plot</button>
+    <div id="graph"></div>
   </div>
 
-  <div id="canvasWrap">
-    <canvas id="graphCanvas" width="1200" height="700"></canvas>
-  </div>
+  <script>
+    // 25 distinct bright colors
+    const colors = [
+      "#FF5733","#33FF57","#3357FF","#FF33A8","#FF8C33",
+      "#33FFF5","#8D33FF","#FFD433","#33FF99","#FF3333",
+      "#33A1FF","#A833FF","#FF33D4","#33FFD4","#FFB833",
+      "#66FF33","#FF6633","#3399FF","#9933FF","#FF3399",
+      "#33FFCC","#FF33CC","#99FF33","#33CCFF","#CC33FF"
+    ];
 
-  <div class="legend" id="legend"></div>
-</div>
+    let traces = [];
+    let colorIndex = 0;
+    let groupActive = false; // track connectPoints mode per group
+    let lastTraceIndex = null;
 
-<script>
-/* ============================
-   Graph engine (self-contained)
-   - multi-equation (separated by ;)
-   - points (x,y)
-   - explicit y=f(x) OR implicit F(x,y)=0 (equations with "=")
-   - numeric solving for implicit equations (per x)
-   - auto-fit initial view to include all objects (padding)
-   - pan (drag), wheel zoom, pinch zoom (two pointers)
-   - labels and grid adapt to zoom
-   ============================ */
+    function plotInput() {
+      const input = document.getElementById("input").value.trim();
+      const connect = document.getElementById("connectPoints").checked;
 
-const canvas = document.getElementById('graphCanvas');
-const wrap = document.getElementById('canvasWrap');
-const ctx = canvas.getContext('2d', { alpha:false });
-const inputBox = document.getElementById('inputBox');
-const plotBtn = document.getElementById('plotBtn');
-const clearBtn = document.getElementById('clearBtn');
-const legendDiv = document.getElementById('legend');
+      if (!input) return;
 
-let DPR = window.devicePixelRatio || 1;
-function resizeCanvasToDisplaySize(){
-  const rect = wrap.getBoundingClientRect();
-  canvas.style.width = rect.width + 'px';
-  canvas.style.height = rect.height + 'px';
-  canvas.width = Math.round(rect.width * DPR);
-  canvas.height = Math.round(rect.height * DPR);
-  ctx.setTransform(DPR,0,0,DPR,0,0); // use CSS pixel coordinates
-}
-resizeCanvasToDisplaySize();
-window.addEventListener('resize', () => { resizeCanvasToDisplaySize(); drawAll(); });
-
-/* viewport state */
-// scale = pixels per unit; offsetX/Y = pixel coordinates of origin (0,0)
-let scale = 40; // px per unit
-let offsetX = canvas.width / (2 * DPR);
-let offsetY = canvas.height / (2 * DPR);
-
-const colors = ["#e67e22","#8e44ad","#2980b9","#27ae60","#c0392b","#16a085","#7f8c8d","#d35400","#2c3e50","#f39c12"];
-let plots = []; // { type: 'point'|'explicit'|'implicit', expr:, rawText:, color: }
-
-/* helpers: safe function building using with(Math) so sin,cos,PI etc are available.
-   we also convert ^ -> ** and replace 'π' -> 'PI' and standalone 'e' -> 'E' for Euler.
-*/
-function preprocessExpr(s) {
-  s = s.replace(/π/g, 'PI');
-  s = s.replace(/\^/g, '**');
-  // replace standalone e with E (Euler) — avoid inside variable names: use word boundary
-  s = s.replace(/\be\b/g, 'E');
-  return s;
-}
-
-function makeExplicitFunc(expr) {
-  // expr is something like "y = x^2" OR "x^2" or "2*x + 1"
-  expr = expr.trim();
-  if (/^y\s*=/i.test(expr)) expr = expr.replace(/^y\s*=/i,'');
-  expr = preprocessExpr(expr);
-  try {
-    // fn(x) returns y
-    return new Function('x', 'with(Math){ return ' + expr + '}');
-  } catch(e) {
-    return null;
-  }
-}
-
-function makeImplicitFunc(left, right) {
-  left = preprocessExpr(left);
-  right = preprocessExpr(right);
-  try {
-    // f(x,y) returns left-right
-    return new Function('x','y', 'with(Math){ return (' + left + ')-(' + right + ') }');
-  } catch(e) {
-    return null;
-  }
-}
-
-/* parse user input into plots[] */
-function parseInput(text) {
-  plots = [];
-  legendDiv.innerHTML = '';
-  if (!text) return;
-  // split by semicolon ;  (user can enter multiple ; separated). Also allow newline separated.
-  let items = text.split(';').map(s => s.trim()).filter(s => s.length);
-  // If user used only commas but input contains points like (2,3) with commas, semicolon is safer.
-  items.forEach((it, idx) => {
-    // point (x,y)
-    const pMatch = it.match(/^\(\s*([+\-]?\d+(\.\d+)?)\s*\,\s*([+\-]?\d+(\.\d+)?)\s*\)$/);
-    if (pMatch) {
-      const x = parseFloat(pMatch[1]), y = parseFloat(pMatch[3]);
-      plots.push({ type:'point', x, y, color: colors[idx % colors.length], raw: it });
-      addLegend(it, colors[(plots.length-1) % colors.length]);
-      return;
-    }
-
-    // implicit equation with '=' somewhere
-    if (it.includes('=')) {
-      const sides = it.split('=');
-      if (sides.length >= 2) {
-        const left = sides.slice(0, sides.length-1).join('=');
-        const right = sides[sides.length-1];
-        const fn = makeImplicitFunc(left, right);
-        if (fn) {
-          plots.push({ type:'implicit', fn, raw:it, color: colors[idx % colors.length] });
-          addLegend(it, colors[(plots.length-1) % colors.length]);
-          return;
-        }
+      // Check if it's an equation or points
+      if (input.includes("=")) {
+        plotEquation(input);
+      } else {
+        plotPoints(input, connect);
       }
+
+      document.getElementById("input").value = "";
     }
 
-    // otherwise explicit expression / function in x
-    // user can write "sin(x)" or "x^2 + 3" or "y = 2*x + 3"
-    let fn = makeExplicitFunc(it);
-    if (fn) {
-      plots.push({ type:'explicit', fn, raw:it, color: colors[idx % colors.length] });
-      addLegend(it, colors[(plots.length-1) % colors.length]);
-      return;
-    }
+    function plotEquation(equation) {
+      let color = colors[colorIndex % colors.length];
+      colorIndex++;
 
-    // fallback: ignore invalid items
-  });
-}
+      // Parse equation like x+y=3
+      try {
+        let [lhs, rhs] = equation.split("=");
+        rhs = rhs.trim();
+        lhs = lhs.replace(/\s+/g, "");
+        let xValues = [], yValues = [];
 
-/* legend helper */
-function addLegend(text, color) {
-  const it = document.createElement('div');
-  it.className = 'item';
-  it.innerHTML = `<span class="sw" style="background:${color}"></span> <span>${escapeHtml(text)}</span>`;
-  legendDiv.appendChild(it);
-}
-function escapeHtml(s){ return s.replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-/* --- Auto-fit: compute bounds that include all points and sampled function values --- */
-function computeExtents() {
-  // default ranges
-  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-
-  // include explicit samples
-  plots.forEach(p => {
-    if (p.type === 'point') {
-      minX = Math.min(minX, p.x); maxX = Math.max(maxX, p.x);
-      minY = Math.min(minY, p.y); maxY = Math.max(maxY, p.y);
-    }
-  });
-
-  // decide initial sampling domain — if we have points, sample around their span else default [-10,10]
-  let sampleLeft = -10, sampleRight = 10;
-  if (isFinite(minX) && isFinite(maxX)) {
-    const span = Math.max(1, (maxX-minX));
-    sampleLeft = minX - span*0.4;
-    sampleRight = maxX + span*0.4;
-  }
-
-  // widen domain a bit
-  if (sampleLeft === sampleRight) { sampleLeft -= 5; sampleRight += 5; }
-
-  // sample explicit functions
-  plots.forEach(p => {
-    if (p.type === 'explicit') {
-      const fn = p.fn;
-      const steps = 240;
-      for (let i=0;i<=steps;i++){
-        const t = i/steps;
-        const x = sampleLeft*(1-t) + sampleRight*t;
-        try {
-          const y = fn(x);
-          if (isFinite(y)) { minX = Math.min(minX,x); maxX = Math.max(maxX,x); minY = Math.min(minY,y); maxY = Math.max(maxY,y); }
-        } catch(e){ /* ignore */ }
-      }
-    }
-  });
-
-  // implicit: attempt to find roots and include them
-  plots.forEach(p => {
-    if (p.type === 'implicit') {
-      const f = p.fn;
-      // sample coarse grid
-      const steps = 120;
-      const yRange = 10; // sample -10..10 initially
-      for (let i=0;i<=steps;i++){
-        const tx = i/steps;
-        const x = sampleLeft*(1-tx) + sampleRight*tx;
-        // scan y
-        const ySteps = 60;
-        for (let j=0;j<ySteps;j++){
-          const y1 = -yRange + (2*yRange)*(j/ySteps);
-          const y2 = -yRange + (2*yRange)*((j+1)/ySteps);
-          try {
-            const v1 = f(x,y1);
-            const v2 = f(x,y2);
-            if (!isFinite(v1) || !isFinite(v2)) continue;
-            if (v1 === 0 || v2 === 0 || (v1<0 && v2>0) || (v1>0 && v2<0)) {
-              minX=Math.min(minX,x); maxX=Math.max(maxX,x);
-              minY=Math.min(minY,y1,y2); maxY=Math.max(maxY,y1,y2);
-            }
-          } catch(e){}
-        }
-      }
-    }
-  });
-
-  // if nothing found, default
-  if (!isFinite(minX)) { minX = -10; maxX = 10; minY = -6; maxY = 6; }
-  if (!isFinite(minY)) { minY = -6; maxY = 6; }
-
-  // add padding
-  const padX = (maxX - minX) * 0.12 || 2;
-  const padY = (maxY - minY) * 0.12 || 2;
-  return {
-    minX: minX - padX, maxX: maxX + padX,
-    minY: minY - padY, maxY: maxY + padY
-  };
-}
-
-/* choose nice tick step in units for given scale (pixels per unit) */
-function niceTick(scalePx) {
-  // target pixel distance between ticks
-  const target = 60;
-  const raw = target / scalePx; // in units
-  const pow = Math.pow(10, Math.floor(Math.log10(raw)));
-  const candidates = [1,2,5,10];
-  let best = candidates[0]*pow;
-  let bestDiff = Math.abs(raw - best);
-  for (let c of candidates) {
-    const val = c*pow;
-    const d = Math.abs(raw - val);
-    if (d < bestDiff) { bestDiff = d; best = val; }
-  }
-  return best;
-}
-
-/* draw grid/axes/labels */
-function drawGrid() {
-  // clear
-  ctx.clearRect(0,0,canvas.width/DPR, canvas.height/DPR);
-
-  // draw light grid lines with step
-  const stepUnits = niceTick(scale);
-  const pxStep = stepUnits * scale;
-
-  // determine top-left world coordinate
-  // worldX = (px - offsetX)/scale
-  // draw vertical grid lines (find first grid line index)
-  const leftUnit = Math.floor(((0 - offsetX) / scale) / stepUnits) * stepUnits;
-  const rightUnit = Math.ceil(((canvas.width/DPR - offsetX) / scale) / stepUnits) * stepUnits;
-
-  ctx.lineWidth = 1;
-  ctx.strokeStyle = "#e9e9e9";
-  for (let u = leftUnit; u <= rightUnit; u += stepUnits) {
-    const px = offsetX + u * scale;
-    ctx.beginPath();
-    ctx.moveTo(px, 0);
-    ctx.lineTo(px, canvas.height/DPR);
-    ctx.stroke();
-  }
-
-  // horizontal lines
-  const topUnit = Math.floor(((0 - offsetY) / scale) / stepUnits) * stepUnits;
-  const bottomUnit = Math.ceil(((canvas.height/DPR - offsetY) / scale) / stepUnits) * stepUnits;
-  for (let u = topUnit; u <= bottomUnit; u += stepUnits) {
-    const py = offsetY + u * scale * -1;
-    ctx.beginPath();
-    ctx.moveTo(0, py);
-    ctx.lineTo(canvas.width/DPR, py);
-    ctx.stroke();
-  }
-
-  // axes heavier
-  ctx.strokeStyle = "#111";
-  ctx.lineWidth = 1.6;
-  // x axis at y=0:
-  const xAxisPx = offsetY + (-0) * scale; // y=0
-  ctx.beginPath(); ctx.moveTo(0, xAxisPx); ctx.lineTo(canvas.width/DPR, xAxisPx); ctx.stroke();
-  // y axis at x=0:
-  const yAxisPx = offsetX + (0) * scale;
-  ctx.beginPath(); ctx.moveTo(yAxisPx, 0); ctx.lineTo(yAxisPx, canvas.height/DPR); ctx.stroke();
-
-  // axis numbers
-  ctx.fillStyle = "#111"; ctx.font = "12px Arial";
-  // draw x labels
-  for (let u = leftUnit; u <= rightUnit; u += stepUnits) {
-    const px = offsetX + u * scale;
-    // label placed near x axis
-    const labelY = xAxisPx + 14;
-    ctx.fillText(String(u), px+3, labelY);
-  }
-  // draw y labels
-  for (let u = topUnit; u <= bottomUnit; u += stepUnits) {
-    const py = offsetY - u * scale;
-    if (Math.abs(u) < 1e-9) continue; // skip 0 (already labelled on x)
-    ctx.fillText(String(u), yAxisPx + 6, py+4);
-  }
-}
-
-/* draw plots */
-function drawPlots() {
-  const widthPx = canvas.width / DPR;
-  const heightPx = canvas.height / DPR;
-
-  plots.forEach((p, idx) => {
-    ctx.strokeStyle = p.color;
-    ctx.fillStyle = p.color;
-    ctx.lineWidth = 2;
-
-    if (p.type === 'point') {
-      const px = offsetX + p.x * scale;
-      const py = offsetY - p.y * scale;
-      ctx.beginPath();
-      ctx.arc(px, py, 4, 0, Math.PI*2);
-      ctx.fill();
-      // label
-      ctx.font = "12px Arial"; ctx.fillText(`(${p.x},${p.y})`, px+6, py-6);
-    } else if (p.type === 'explicit') {
-      const fn = p.fn;
-      ctx.beginPath();
-      let started = false;
-      const stepPx = Math.max(1, Math.round(1)); // 1 pixel step
-      for (let sx = 0; sx <= widthPx; sx += stepPx) {
-        const x = (sx - offsetX) / scale;
-        let y;
-        try { y = fn(x); } catch(e) { y = NaN; }
-        if (!isFinite(y)) { started=false; continue; }
-        const sy = offsetY - y * scale;
-        if (!started) { ctx.moveTo(sx, sy); started=true; } else ctx.lineTo(sx, sy);
-      }
-      ctx.stroke();
-    } else if (p.type === 'implicit') {
-      // For each screen x compute numeric root(s) for y in a given y-range
-      const fn = p.fn;
-      const widthPx = canvas.width / DPR;
-      const stepPx = 2; // lower resolution for implicit to save CPU
-      // y search range: use view height in units
-      const yTop = (offsetY - 0) / scale;      // world y at canvas top
-      const yBottom = (offsetY - (canvas.height/DPR)) / scale; // world y at canvas bottom
-      const yMin = Math.min(yTop, yBottom) - 1;
-      const yMax = Math.max(yTop, yBottom) + 1;
-      for (let sx = 0; sx <= widthPx; sx += stepPx) {
-        const x = (sx - offsetX) / scale;
-        // sample coarse y grid to find sign changes
-        const samples = 80;
-        let lastVal = null;
-        let lastY = null;
-        for (let si = 0; si <= samples; si++) {
-          const t = si / samples;
-          const y = yMin*(1-t) + yMax*t;
-          let val = NaN;
-          try { val = fn(x,y); } catch(e){ val = NaN; }
-          if (!isFinite(val)) { lastVal = NaN; lastY = y; continue; }
-          if (lastVal === null || !isFinite(lastVal)) { lastVal = val; lastY = y; continue; }
-          if (val === 0 || (val>0 && lastVal<0) || (val<0 && lastVal>0)) {
-            // bracket [lastY, y], find root via bisection
-            let a = lastY, b = y, fa = lastVal, fb = val;
-            // refine
-            for (let it=0; it<25; it++){
-              const m = (a+b)/2;
-              let fm = NaN;
-              try { fm = fn(x,m); } catch(e) { fm = NaN; }
-              if (!isFinite(fm)) break;
-              if (Math.sign(fm) === Math.sign(fa)) { a = m; fa = fm; } else { b = m; fb = fm; }
-            }
-            const root = (a+b)/2;
-            const sy = offsetY - root*scale;
-            // draw a tiny segment to make the implicit curve visible
-            ctx.fillRect(sx-1, sy-1, 3, 3);
+        for (let x = -10; x <= 10; x += 0.2) {
+          let expr = lhs.replace(/x/g, `(${x})`);
+          // solve for y
+          let y = eval(rhs + " - (" + expr.replace(/y/g, "0") + ")");
+          if (!isNaN(y) && isFinite(y)) {
+            xValues.push(x);
+            yValues.push(y);
           }
-          lastVal = val; lastY = y;
         }
+
+        traces.push({
+          x: xValues,
+          y: yValues,
+          mode: "lines",
+          line: {color: color, width: 2},
+          name: equation
+        });
+        Plotly.newPlot("graph", traces, layout);
+      } catch (e) {
+        alert("Invalid equation format. Try like: x+y=3");
       }
     }
-  });
-}
 
-/* overall draw */
-function drawAll(){
-  drawGrid();
-  drawPlots();
-}
+    function plotPoints(input, connect) {
+      const groups = input.split(";").map(pt => pt.trim());
+      let xs = [], ys = [];
 
-/* auto-fit to content then draw */
-function fitAndDraw() {
-  if (plots.length === 0) { drawAll(); return; }
-  const ext = computeExtents();
-  const unitsW = Math.max(0.0001, ext.maxX - ext.minX);
-  const unitsH = Math.max(0.0001, ext.maxY - ext.minY);
-  // choose scale so both fit within canvas with padding
-  const cw = canvas.width / DPR, ch = canvas.height / DPR;
-  const sX = cw / unitsW;
-  const sY = ch / unitsH;
-  // choose smaller to fit
-  scale = 0.9 * Math.min(sX, sY);
-  // center world center to canvas center
-  const centerX = (ext.minX + ext.maxX)/2;
-  const centerY = (ext.minY + ext.maxY)/2;
-  offsetX = cw/2 - centerX * scale;
-  offsetY = ch/2 + centerY * scale;
-  drawAll();
-}
+      groups.forEach(pt => {
+        let [x, y] = pt.split(",").map(Number);
+        if (!isNaN(x) && !isNaN(y)) {
+          xs.push(x);
+          ys.push(y);
+        }
+      });
 
-/* interactive: pan & zoom (wheel + pointer events + pinch) */
-let isPointerDown = false;
-let pointerState = {}; // track pointers for pinch
-let lastPan = null;
+      if (xs.length === 0) return;
 
-canvas.addEventListener('pointerdown', e => {
-  canvas.setPointerCapture(e.pointerId);
-  pointerState[e.pointerId] = { x: e.clientX, y: e.clientY };
-  if (Object.keys(pointerState).length === 1) {
-    isPointerDown = true;
-    lastPan = { x: e.clientX, y: e.clientY };
-  }
-});
+      if (connect) {
+        // Continue same color group
+        if (groupActive && lastTraceIndex !== null) {
+          traces[lastTraceIndex].x.push(...xs);
+          traces[lastTraceIndex].y.push(...ys);
+        } else {
+          let color = colors[colorIndex % colors.length];
+          traces.push({
+            x: xs,
+            y: ys,
+            mode: "markers+lines",
+            marker: {color: color, size: 8},
+            line: {color: color, width: 2},
+            name: "Connected Group " + (colorIndex + 1)
+          });
+          lastTraceIndex = traces.length - 1;
+          colorIndex++;
+          groupActive = true;
+        }
+      } else {
+        // New group with new color
+        let color = colors[colorIndex % colors.length];
+        traces.push({
+          x: xs,
+          y: ys,
+          mode: "markers",
+          marker: {color: color, size: 8},
+          name: "Points " + (colorIndex + 1)
+        });
+        colorIndex++;
+        groupActive = false;
+        lastTraceIndex = null;
+      }
 
-canvas.addEventListener('pointermove', e => {
-  if (!pointerState[e.pointerId]) return;
-  pointerState[e.pointerId] = { x: e.clientX, y: e.clientY };
-  const keys = Object.keys(pointerState);
-  if (keys.length === 1 && isPointerDown && lastPan) {
-    // pan
-    const dx = e.clientX - lastPan.x;
-    const dy = e.clientY - lastPan.y;
-    offsetX += dx;
-    offsetY += dy;
-    lastPan = { x: e.clientX, y: e.clientY };
-    drawAll();
-  } else if (keys.length === 2) {
-    // pinch zoom (two pointers)
-    const p1 = pointerState[keys[0]];
-    const p2 = pointerState[keys[1]];
-    if (!p1 || !p2) return;
-    // current distance and center
-    const cx = (p1.x + p2.x)/2, cy = (p1.y + p2.y)/2;
-    const dx = p2.x - p1.x, dy = p2.y - p1.y;
-    const dist = Math.hypot(dx,dy);
+      Plotly.newPlot("graph", traces, layout);
+    }
 
-    // store last distances if not present
-    if (!pointerState._last) { pointerState._last = { dist, cx, cy }; return; }
-    const last = pointerState._last;
-    const factor = dist / last.dist;
-    // zoom around center (screen coords)
-    // convert screen center to world coords before zoom
-    const rect = canvas.getBoundingClientRect();
-    const screenCx = cx - rect.left;
-    const screenCy = cy - rect.top;
-    const worldX = (screenCx - offsetX) / scale;
-    const worldY = (offsetY - screenCy) / scale;
+    const layout = {
+      plot_bgcolor: "#fff",
+      paper_bgcolor: "#fff",
+      xaxis: {
+        zeroline: true,
+        title: "X Axis",
+        showgrid: true,
+        gridcolor: "#ddd",
+        tickfont: {color: "#333"}
+      },
+      yaxis: {
+        zeroline: true,
+        title: "Y Axis",
+        showgrid: true,
+        gridcolor: "#ddd",
+        tickfont: {color: "#333"}
+      },
+      dragmode: "pan"
+    };
 
-    // update scale
-    scale *= factor;
-    // recompute offset so world center remains under fingers
-    offsetX = screenCx - worldX * scale;
-    offsetY = screenCy + worldY * scale;
-
-    pointerState._last = { dist, cx, cy };
-    drawAll();
-  }
-});
-
-canvas.addEventListener('pointerup', e => {
-  delete pointerState[e.pointerId];
-  if (Object.keys(pointerState).length === 0) { isPointerDown=false; lastPan=null; pointerState._last=null; }
-});
-canvas.addEventListener('pointercancel', e => {
-  delete pointerState[e.pointerId];
-  if (Object.keys(pointerState).length === 0) { isPointerDown=false; lastPan=null; pointerState._last=null; }
-});
-
-// wheel zoom (desktop)
-canvas.addEventListener('wheel', e => {
-  e.preventDefault();
-  const rect = canvas.getBoundingClientRect();
-  const mouseX = e.clientX - rect.left;
-  const mouseY = e.clientY - rect.top;
-  const wheel = e.deltaY < 0 ? 1.13 : 0.88;
-  // world coordinate under mouse
-  const worldX = (mouseX - offsetX) / scale;
-  const worldY = (offsetY - mouseY) / scale;
-  scale *= wheel;
-  // keep world point under mouse stable
-  offsetX = mouseX - worldX * scale;
-  offsetY = mouseY + worldY * scale;
-  drawAll();
-}, { passive:false });
-
-/* prevent page pinch-zoom while interacting */
-['touchstart','touchmove','touchend','gesturestart','gesturechange','gestureend'].forEach(ev=>{
-  window.addEventListener(ev, function(e){ /* no-op but capturing helps */ }, { passive:false });
-});
-
-/* plotting flow */
-plotBtn.addEventListener('click', () => {
-  const text = inputBox.value.trim();
-  if (!text) return;
-  parseInput(text);
-  fitAndDraw();
-});
-
-clearBtn.addEventListener('click', () => {
-  plots = [];
-  legendDiv.innerHTML = '';
-  drawAll();
-  inputBox.value = '';
-});
-
-/* allow pressing Enter to plot */
-inputBox.addEventListener('keydown', (e)=>{ if (e.key === 'Enter') { plotBtn.click(); e.preventDefault(); } });
-
-/* initial draw */
-drawAll();
-
-</script>
+    Plotly.newPlot("graph", traces, layout);
+  </script>
 </body>
 </html>
