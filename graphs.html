@@ -1,181 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Math Learning Hub - Graphs</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            background-color: #f8f9fa;
-            color: #333;
-        }
-        header {
-            background-color: #2c3e50;
-            color: white;
-            padding: 15px 20px;
-        }
-        header h1 {
-            margin: 0;
-            font-size: 24px;
-        }
-        nav {
-            background-color: #34495e;
-            overflow: hidden;
-        }
-        nav a {
-            float: left;
-            display: block;
-            color: #ecf0f1;
-            text-align: center;
-            padding: 12px 18px;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        nav a:hover {
-            background-color: #1abc9c;
-            color: white;
-        }
-        .container {
-            max-width: 900px;
-            margin: 30px auto;
-            text-align: center;
-        }
-        input[type="text"] {
-            width: 70%;
-            padding: 10px;
-            font-size: 16px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            margin-right: 10px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            background-color: #2c3e50;
-            color: white;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #1abc9c;
-        }
-        canvas {
-            background-color: white;
-            border: 1px solid #ccc;
-            margin-top: 20px;
-        }
-        footer {
-            background-color: #2c3e50;
-            color: #ecf0f1;
-            text-align: center;
-            padding: 15px 0;
-            margin-top: 40px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Graphs</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f8f9fa; }
+  header { background: #34495e; color: white; padding: 1rem; text-align: center; }
+  h1 { margin: 0; font-size: 1.8rem; }
+  #inputSection { padding: 1rem; text-align: center; }
+  input[type=text] { width: 80%; padding: 0.5rem; font-size: 1rem; }
+  button { padding: 0.5rem 1rem; font-size: 1rem; margin-left: 0.5rem; cursor: pointer; }
+  #graphContainer { width: 100%; height: 70vh; background: white; margin-top: 1rem; border: 1px solid #ccc; }
+</style>
 </head>
 <body>
-    <header>
-        <h1>Math Learning Hub</h1>
-    </header>
-    <nav>
-        <a href="index.html">Home</a>
-        <a href="solver.html">Maths Solver</a>
-        <a href="graphs.html">Graphs</a>
-        <a href="resources.html">Resources</a>
-        <a href="contact.html">Contact</a>
-    </nav>
+<header>
+  <h1>Graphs</h1>
+</header>
 
-    <div class="container">
-        <h2>Interactive Graphing</h2>
-        <p>Enter an equation in terms of <strong>x</strong> (example: y = 2*x + 3, y = sin(x))</p>
-        <input type="text" id="equation" placeholder="Enter equation, e.g., y = 2*x + 3">
-        <button onclick="drawGraph()">Plot Graph</button>
-        <canvas id="graphCanvas" width="800" height="500"></canvas>
-    </div>
+<div id="inputSection">
+  <input type="text" id="graphInput" placeholder="Enter points (x,y) or equations y=f(x), separated by ;">
+  <button onclick="plotGraph()">Plot</button>
+</div>
 
-    <footer>
-        &copy; 2025 Math Learning Hub | Designed by Vansh
-    </footer>
+<div id="graphContainer">
+  <canvas id="graphCanvas" width="800" height="500"></canvas>
+</div>
 
-    <script>
-        const canvas = document.getElementById('graphCanvas');
-        const ctx = canvas.getContext('2d');
-        const width = canvas.width;
-        const height = canvas.height;
+<script>
+const canvas = document.getElementById("graphCanvas");
+const ctx = canvas.getContext("2d");
 
-        function clearCanvas() {
-            ctx.clearRect(0, 0, width, height);
-            ctx.fillStyle = "#ffffff";
-            ctx.fillRect(0,0,width,height);
-        }
+let scale = 40; // pixels per unit
+let offsetX = canvas.width / 2;
+let offsetY = canvas.height / 2;
+let colors = ["orange", "purple", "green", "blue", "red", "brown", "magenta", "teal", "cyan"];
+let equations = [];
 
-        function drawAxis() {
-            ctx.strokeStyle = "#333";
-            ctx.lineWidth = 1;
+function drawAxes() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.strokeStyle = "#aaa";
+  ctx.lineWidth = 1;
 
-            // X-axis
-            ctx.beginPath();
-            ctx.moveTo(0, height/2);
-            ctx.lineTo(width, height/2);
-            ctx.stroke();
+  // vertical lines
+  for (let x = 0; x <= canvas.width; x += scale) {
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, canvas.height);
+    ctx.stroke();
+  }
+  // horizontal lines
+  for (let y = 0; y <= canvas.height; y += scale) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(canvas.width, y);
+    ctx.stroke();
+  }
 
-            // Y-axis
-            ctx.beginPath();
-            ctx.moveTo(width/2, 0);
-            ctx.lineTo(width/2, height);
-            ctx.stroke();
+  // axes
+  ctx.strokeStyle = "#000";
+  ctx.lineWidth = 2;
+  // x-axis
+  ctx.beginPath();
+  ctx.moveTo(0, offsetY);
+  ctx.lineTo(canvas.width, offsetY);
+  ctx.stroke();
+  // y-axis
+  ctx.beginPath();
+  ctx.moveTo(offsetX, 0);
+  ctx.lineTo(offsetX, canvas.height);
+  ctx.stroke();
 
-            // Optional: draw tick marks
-            for (let i=-width/2; i<=width/2; i+=50){
-                ctx.beginPath();
-                ctx.moveTo(width/2+i, height/2-5);
-                ctx.lineTo(width/2+i, height/2+5);
-                ctx.stroke();
-            }
-            for (let i=-height/2; i<=height/2; i+=50){
-                ctx.beginPath();
-                ctx.moveTo(width/2-5, height/2-i);
-                ctx.lineTo(width/2+5, height/2-i);
-                ctx.stroke();
-            }
-        }
+  // numbers
+  ctx.fillStyle = "#000";
+  ctx.font = "12px Arial";
+  for (let i = -Math.floor(offsetX/scale); i <= Math.floor(offsetX/scale); i++) {
+    if(i!==0) ctx.fillText(i, offsetX + i*scale - 5, offsetY + 12);
+  }
+  for (let i = -Math.floor(offsetY/scale); i <= Math.floor(offsetY/scale); i++) {
+    if(i!==0) ctx.fillText(-i, offsetX + 2, offsetY + i*scale + 4);
+  }
+}
 
-        function drawGraph() {
-            clearCanvas();
-            drawAxis();
-            let eq = document.getElementById('equation').value;
+function plotGraph() {
+  drawAxes();
+  const input = document.getElementById("graphInput").value;
+  if(!input) return;
+  equations = input.split(";").map(s => s.trim());
 
-            // remove y= if present
-            eq = eq.replace("y=","").replace("Y=","").trim();
+  equations.forEach((eq, idx) => {
+    const color = colors[idx % colors.length];
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
 
-            ctx.strokeStyle = "#e74c3c";
-            ctx.lineWidth = 2;
+    if(eq.match(/^\([^)]+\)$/)) { // point (x,y)
+      const coords = eq.replace(/[()]/g,"").split(",");
+      const x = parseFloat(coords[0]);
+      const y = parseFloat(coords[1]);
+      ctx.beginPath();
+      ctx.arc(offsetX + x*scale, offsetY - y*scale, 4, 0, Math.PI*2);
+      ctx.fill();
+    } else { // equation y=f(x)
+      ctx.beginPath();
+      let first = true;
+      for(let px = -offsetX/scale; px < (canvas.width-offsetX)/scale; px += 0.01) {
+        let y = 0;
+        try {
+          y = eval(eq.replace(/x/g, `(${px})`));
+        } catch(e) { continue; }
+        const cx = offsetX + px*scale;
+        const cy = offsetY - y*scale;
+        if(first) { ctx.moveTo(cx, cy); first=false; }
+        else { ctx.lineTo(cx, cy); }
+      }
+      ctx.stroke();
+    }
+  });
+}
 
-            ctx.beginPath();
-            let firstPoint = true;
-            for(let px=-width/2; px<=width/2; px+=1){
-                let x = px / 50; // scale factor
-                let y;
-                try{
-                    y = eval(eq.replace(/x/gi, `(${x})`));
-                } catch(e){
-                    y = NaN;
-                }
-                if(!isNaN(y)){
-                    let py = -y * 50;
-                    if(firstPoint){
-                        ctx.moveTo(width/2+px, height/2+py);
-                        firstPoint = false;
-                    } else {
-                        ctx.lineTo(width/2+px, height/2+py);
-                    }
-                }
-            }
-            ctx.stroke();
-        }
-    </script>
+// basic zoom and drag
+let isDragging = false;
+let startX, startY;
+canvas.addEventListener("mousedown", e => { isDragging=true; startX=e.offsetX; startY=e.offsetY; });
+canvas.addEventListener("mouseup", e => { isDragging=false; });
+canvas.addEventListener("mousemove", e => {
+  if(!isDragging) return;
+  const dx = e.offsetX - startX;
+  const dy = e.offsetY - startY;
+  offsetX += dx;
+  offsetY += dy;
+  startX = e.offsetX;
+  startY = e.offsetY;
+  plotGraph();
+});
+canvas.addEventListener("wheel", e => {
+  e.preventDefault();
+  const zoom = e.deltaY < 0 ? 1.1 : 0.9;
+  scale *= zoom;
+  plotGraph();
+});
+
+drawAxes();
+</script>
 </body>
 </html>
