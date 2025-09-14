@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Learning Hub - Graphs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px 20px;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        nav {
+            background-color: #34495e;
+            overflow: hidden;
+        }
+        nav a {
+            float: left;
+            display: block;
+            color: #ecf0f1;
+            text-align: center;
+            padding: 12px 18px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        nav a:hover {
+            background-color: #1abc9c;
+            color: white;
+        }
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            text-align: center;
+        }
+        input[type="text"] {
+            width: 70%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-right: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #2c3e50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #1abc9c;
+        }
+        canvas {
+            background-color: white;
+            border: 1px solid #ccc;
+            margin-top: 20px;
+        }
+        footer {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            text-align: center;
+            padding: 15px 0;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Math Learning Hub</h1>
+    </header>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="solver.html">Maths Solver</a>
+        <a href="graphs.html">Graphs</a>
+        <a href="resources.html">Resources</a>
+        <a href="contact.html">Contact</a>
+    </nav>
+
+    <div class="container">
+        <h2>Interactive Graphing</h2>
+        <p>Enter an equation in terms of <strong>x</strong> (example: y = 2*x + 3, y = sin(x))</p>
+        <input type="text" id="equation" placeholder="Enter equation, e.g., y = 2*x + 3">
+        <button onclick="drawGraph()">Plot Graph</button>
+        <canvas id="graphCanvas" width="800" height="500"></canvas>
+    </div>
+
+    <footer>
+        &copy; 2025 Math Learning Hub | Designed by Vansh
+    </footer>
+
+    <script>
+        const canvas = document.getElementById('graphCanvas');
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0,0,width,height);
+        }
+
+        function drawAxis() {
+            ctx.strokeStyle = "#333";
+            ctx.lineWidth = 1;
+
+            // X-axis
+            ctx.beginPath();
+            ctx.moveTo(0, height/2);
+            ctx.lineTo(width, height/2);
+            ctx.stroke();
+
+            // Y-axis
+            ctx.beginPath();
+            ctx.moveTo(width/2, 0);
+            ctx.lineTo(width/2, height);
+            ctx.stroke();
+
+            // Optional: draw tick marks
+            for (let i=-width/2; i<=width/2; i+=50){
+                ctx.beginPath();
+                ctx.moveTo(width/2+i, height/2-5);
+                ctx.lineTo(width/2+i, height/2+5);
+                ctx.stroke();
+            }
+            for (let i=-height/2; i<=height/2; i+=50){
+                ctx.beginPath();
+                ctx.moveTo(width/2-5, height/2-i);
+                ctx.lineTo(width/2+5, height/2-i);
+                ctx.stroke();
+            }
+        }
+
+        function drawGraph() {
+            clearCanvas();
+            drawAxis();
+            let eq = document.getElementById('equation').value;
+
+            // remove y= if present
+            eq = eq.replace("y=","").replace("Y=","").trim();
+
+            ctx.strokeStyle = "#e74c3c";
+            ctx.lineWidth = 2;
+
+            ctx.beginPath();
+            let firstPoint = true;
+            for(let px=-width/2; px<=width/2; px+=1){
+                let x = px / 50; // scale factor
+                let y;
+                try{
+                    y = eval(eq.replace(/x/gi, `(${x})`));
+                } catch(e){
+                    y = NaN;
+                }
+                if(!isNaN(y)){
+                    let py = -y * 50;
+                    if(firstPoint){
+                        ctx.moveTo(width/2+px, height/2+py);
+                        firstPoint = false;
+                    } else {
+                        ctx.lineTo(width/2+px, height/2+py);
+                    }
+                }
+            }
+            ctx.stroke();
+        }
+    </script>
+</body>
+</html>
