@@ -1,77 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Maths by Vansh</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <style>
-    /* General Styles */
-    body { font-family: 'Arial', sans-serif; margin:0; padding:0; background:#f9f9f9; color:#333; }
-    a { text-decoration:none; }
-
-    /* Header */
-    header { background:#0077cc; color:white; padding:15px 20px; display:flex; justify-content:center; flex-wrap:wrap; position: sticky; top:0; z-index:1000; }
-    header a { color:white; margin:5px 15px; font-weight:bold; font-size:16px; transition: color 0.3s; display:flex; align-items:center; gap:5px; }
-    header a:hover { color:#ff7f50; }
-
-    /* Hero Section */
-    .hero { background: linear-gradient(to right, #e6f2ff, #cce6ff); padding:80px 20px; text-align:center; }
-    .hero h1 { font-size:42px; color:#0077cc; margin-bottom:20px; line-height:1.2; }
-    .hero p { font-size:20px; max-width:700px; margin:auto; line-height:1.6; }
-
-    /* About Section */
-    .about { padding:60px 20px; text-align:center; background:white; }
-    .about h2 { color:#0077cc; font-size:32px; margin-bottom:20px; }
-    .about p { max-width:800px; margin:auto; font-size:18px; line-height:1.7; }
-
-    /* Footer */
-    footer { background:#0077cc; color:white; text-align:center; padding:20px 10px; margin-top:40px; font-size:16px; }
-
-    /* Responsive */
-    @media(max-width:768px){
-      .hero h1 { font-size:32px; }
-      .hero p { font-size:18px; }
-      .about h2 { font-size:26px; }
-      .about p { font-size:16px; }
-      header a { font-size:14px; margin:5px 10px; }
-    }
-
-    @media(max-width:480px){
-      .hero h1 { font-size:28px; }
-      .hero p { font-size:16px; }
-      .about h2 { font-size:22px; }
-      .about p { font-size:14px; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Learning Hub - Home</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa; /* light background */
+            color: #333;
+        }
+        header {
+            background-color: #2c3e50; /* primary color */
+            color: #ffffff;
+            padding: 15px 20px;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        nav {
+            background-color: #34495e; /* secondary color */
+            overflow: hidden;
+        }
+        nav a {
+            float: left;
+            display: block;
+            color: #ecf0f1;
+            text-align: center;
+            padding: 12px 18px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        nav a:hover {
+            background-color: #1abc9c; /* hover highlight */
+            color: #fff;
+        }
+        .container {
+            padding: 30px 20px;
+        }
+        .welcome {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .welcome h2 {
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+        .welcome p {
+            font-size: 18px;
+            line-height: 1.6;
+        }
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            gap: 20px;
+        }
+        .feature-card {
+            background-color: #ffffff;
+            padding: 20px;
+            width: 300px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        .feature-card h3 {
+            margin-top: 0;
+            font-size: 22px;
+            color: #2c3e50;
+        }
+        .feature-card p {
+            font-size: 16px;
+            line-height: 1.4;
+        }
+        footer {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            text-align: center;
+            padding: 15px 0;
+            margin-top: 40px;
+        }
+        @media screen and (max-width: 768px) {
+            .features {
+                flex-direction: column;
+                align-items: center;
+            }
+            nav a {
+                float: none;
+                width: 100%;
+                text-align: left;
+            }
+        }
+    </style>
 </head>
 <body>
+    <header>
+        <h1>Math Learning Hub</h1>
+    </header>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="solver.html">Maths Solver</a>
+        <a href="graphs.html">Graphs</a>
+        <a href="resources.html">Resources</a>
+        <a href="contact.html">Contact</a>
+    </nav>
 
-  <!-- Header / Navigation -->
-  <header>
-    <a href="index.html"><i class="fas fa-home"></i> Home</a>
-    <a href="solver_keyboard.html"><i class="fas fa-calculator"></i> Maths Solver</a>
-    <a href="graph.html"><i class="fas fa-chart-line"></i> Graph</a>
-    <a href="Resources.html"><i class="fas fa-book"></i> Resources</a>
-    <a href="contact.html"><i class="fas fa-envelope"></i> Contact</a>
-  </header>
+    <div class="container">
+        <div class="welcome">
+            <h2>Welcome to Math Learning Hub</h2>
+            <p>
+                Explore the fun side of Mathematics! From basic arithmetic to advanced calculus and trigonometry, this site is designed to help students of all grades enjoy learning math. Use our interactive Maths Solver, create graphs, access formula sheets, and practice worksheets — all in one place!
+            </p>
+        </div>
 
-  <!-- Hero Section -->
-  <section class="hero">
-    <h1>Welcome to Maths by Vansh</h1>
-    <p>Your AI-powered math assistant. Solve problems, plot graphs, and access resources for students up to Class 12th.</p>
-  </section>
+        <div class="features">
+            <div class="feature-card">
+                <h3>Maths Solver</h3>
+                <p>Solve any type of math problem from basic arithmetic to advanced equations with our custom Maths Solver keyboard.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Graphs</h3>
+                <p>Create interactive graphs easily and visualize equations and functions like never before.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Resources</h3>
+                <p>Access formula sheets, worksheets, and useful learning links up to class 12th. Everything is structured to help you revise and practice.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Contact</h3>
+                <p>Get in touch through our contact page or connect with me via Telegram for any queries and support.</p>
+            </div>
+        </div>
+    </div>
 
-  <!-- About Section -->
-  <section class="about">
-    <h2>About Maths by Vansh</h2>
-    <p>This website is designed to help students learn and solve math problems efficiently. You can solve arithmetic, algebra, trigonometry, and calculus problems, plot graphs, and access study resources—all in one place. Our AI-powered tools provide instant solutions and interactive learning experiences for students of all levels up to Class 12th.</p>
-  </section>
-
-  <!-- Footer -->
-  <footer>
-    &copy; 2025 Maths by Vansh. All Rights Reserved.
-  </footer>
-
+    <footer>
+        &copy; 2025 Math Learning Hub | Designed by Vansh
+    </footer>
 </body>
 </html>
