@@ -1,91 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Resources - Math Website</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resources</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
-      background: #f9f9f9;
+      background: #f4f4f9;
       color: #333;
     }
-
     header {
-      background: #007BFF;
+      background: #004080;
       color: white;
-      padding: 15px 20px;
+      padding: 1rem;
       text-align: center;
     }
-
     nav {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      background: #0056b3;
+      background: #003366;
+      padding: 0.5rem;
+      text-align: center;
     }
-
     nav a {
       color: white;
+      margin: 0 1rem;
       text-decoration: none;
-      padding: 12px 18px;
-      display: block;
+      font-weight: bold;
     }
-
     nav a:hover {
-      background: #004494;
+      text-decoration: underline;
     }
-
-    .container {
-      max-width: 1200px;
-      margin: 20px auto;
-      padding: 0 15px;
+    section {
+      padding: 2rem;
     }
-
     h2 {
-      text-align: center;
-      color: #0056b3;
-      margin-bottom: 20px;
+      margin-top: 0;
+      color: #004080;
     }
-
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
     }
-
     .card {
       background: white;
-      padding: 20px;
       border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      padding: 1rem;
       text-align: center;
     }
-
     .card h3 {
-      margin-bottom: 15px;
-      font-size: 18px;
-      color: #333;
+      margin: 0.5rem 0 1rem;
+      color: #222;
     }
-
     .card button {
-      background: #007BFF;
+      background: #004080;
       color: white;
       border: none;
-      padding: 10px 15px;
+      padding: 0.5rem 1rem;
+      margin: 0.3rem;
       border-radius: 5px;
       cursor: pointer;
+      font-size: 0.9rem;
     }
-
     .card button:hover {
-      background: #0056b3;
+      background: #0066cc;
+    }
+    .pdf-viewer {
+      display: none;
+      margin-top: 1rem;
+    }
+    iframe {
+      width: 100%;
+      height: 500px;
+      border: 1px solid #ccc;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    ul li {
+      margin: 0.5rem 0;
+    }
+    ul a {
+      color: #004080;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    ul a:hover {
+      text-decoration: underline;
+    }
+    .note {
+      background: #fff8c6;
+      padding: 1rem;
+      border-left: 5px solid #ffcc00;
+      margin-bottom: 1rem;
+      border-radius: 6px;
     }
   </style>
+  <script>
+    function viewPDF(id, file) {
+      document.querySelectorAll(".pdf-viewer").forEach(v => v.style.display = "none");
+      const viewer = document.getElementById(id);
+      viewer.style.display = "block";
+      viewer.querySelector("iframe").src = file;
+      viewer.scrollIntoView({ behavior: "smooth" });
+    }
+    function downloadPDF(file) {
+      const a = document.createElement("a");
+      a.href = file;
+      a.download = file.split("/").pop();
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+  </script>
 </head>
 <body>
-
   <header>
     <h1>Math Resources</h1>
   </header>
@@ -93,67 +126,108 @@
   <nav>
     <a href="index.html">Home</a>
     <a href="solver.html">Math Solver</a>
-    <a href="graph.html">Graphs</a>
+    <a href="graph.html">Graph</a>
     <a href="resources.html">Resources</a>
     <a href="contact.html">Contact</a>
   </nav>
 
-  <div class="container">
-    <!-- Formula Sheets -->
-    <section>
-      <h2>Formula Sheets</h2>
-      <div class="grid">
-        <div class="card">
-          <h3>Algebra</h3>
-          <button onclick="downloadPDF('AlgebraFormulaSheet.pdf')">Download PDF</button>
-        </div>
-        <div class="card">
-          <h3>Trigonometry</h3>
-          <button onclick="downloadPDF('TrigonometryFormulaSheet.pdf')">Download PDF</button>
-        </div>
-        <div class="card">
-          <h3>Geometry</h3>
-          <button onclick="downloadPDF('GeometryFormulaSheet.pdf')">Download PDF</button>
-        </div>
-        <div class="card">
-          <h3>Calculus</h3>
-          <button onclick="downloadPDF('CalculusFormulaSheet.pdf')">Download PDF</button>
-        </div>
+  <section>
+    <h2>Formula Sheets</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Algebra</h3>
+        <button onclick="viewPDF('viewer','pdfs/AlgebraFormulaSheet.pdf')">📖 View</button>
+        <button onclick="downloadPDF('pdfs/AlgebraFormulaSheet.pdf')">⬇️ Download</button>
       </div>
-    </section>
+      <div class="card">
+        <h3>Trigonometry</h3>
+        <button onclick="viewPDF('viewer','pdfs/TrigonometryFormulaSheet.pdf')">📖 View</button>
+        <button onclick="downloadPDF('pdfs/TrigonometryFormulaSheet.pdf')">⬇️ Download</button>
+      </div>
+      <div class="card">
+        <h3>Geometry</h3>
+        <button onclick="viewPDF('viewer','pdfs/GeometryFormulaSheet.pdf')">📖 View</button>
+        <button onclick="downloadPDF('pdfs/GeometryFormulaSheet.pdf')">⬇️ Download</button>
+      </div>
+      <div class="card">
+        <h3>Calculus</h3>
+        <button onclick="viewPDF('viewer','pdfs/CalculusFormulaSheet.pdf')">📖 View</button>
+        <button onclick="downloadPDF('pdfs/CalculusFormulaSheet.pdf')">⬇️ Download</button>
+      </div>
+      <div class="card">
+        <h3>Probability</h3>
+        <button onclick="viewPDF('viewer','pdfs/ProbabilityFormulaSheet.pdf')">📖 View</button>
+        <button onclick="downloadPDF('pdfs/ProbabilityFormulaSheet.pdf')">⬇️ Download</button>
+      </div>
+      <div class="card">
+        <h3>Statistics</h3>
+        <button onclick="viewPDF('viewer','pdfs/StatisticsFormulaSheet.pdf')">📖 View</button>
+        <button onclick="downloadPDF('pdfs/StatisticsFormulaSheet.pdf')">⬇️ Download</button>
+      </div>
+      <div class="card">
+        <h3>Miscellaneous</h3>
+        <button onclick="viewPDF('viewer','pdfs/MiscellaneousFormulaSheet.pdf')">📖 View</button>
+        <button onclick="downloadPDF('pdfs/MiscellaneousFormulaSheet.pdf')">⬇️ Download</button>
+      </div>
+    </div>
+  </section>
 
-    <!-- Practice Worksheets -->
-    <section>
-      <h2>Practice Worksheets</h2>
-      <div class="grid">
-        <div class="card">
-          <h3>Algebra</h3>
-          <button onclick="downloadPDF('AlgebraWorksheet.pdf')">Download PDF</button>
-        </div>
-        <div class="card">
-          <h3>Trigonometry</h3>
-          <button onclick="downloadPDF('TrigonometryWorksheet.pdf')">Download PDF</button>
-        </div>
-        <div class="card">
-          <h3>Geometry</h3>
-          <button onclick="downloadPDF('GeometryWorksheet.pdf')">Download PDF</button>
-        </div>
-        <div class="card">
-          <h3>Calculus</h3>
-          <button onclick="downloadPDF('CalculusWorksheet.pdf')">Download PDF</button>
-        </div>
+  <section>
+    <h2>Practice Worksheets</h2>
+    <div class="note">
+      <strong>Note:</strong> Miscellaneous worksheets contain a mix of problems from various topics for revision purposes.
+    </div>
+    <div class="grid">
+      <div class="card">
+        <h3>Algebra</h3>
+        <button onclick="viewPDF('viewer','pdfs/AlgebraWorksheet.pdf')">📖 View</button>
+        <button onclick="downloadPDF('pdfs/AlgebraWorksheet.pdf')">⬇️ Download</button>
       </div>
-    </section>
+      <div class="card">
+        <h3>Trigonometry</h3>
+        <button onclick="viewPDF('viewer','pdfs/TrigonometryWorksheet.pdf')">📖 View</button>
+        <button onclick="downloadPDF('pdfs/TrigonometryWorksheet.pdf')">⬇️ Download</button>
+      </div>
+      <div class="card">
+        <h3>Geometry</h3>
+        <button onclick="viewPDF('viewer','pdfs/GeometryWorksheet.pdf')">📖 View</button>
+        <button onclick="downloadPDF('pdfs/GeometryWorksheet.pdf')">⬇️ Download</button>
+      </div>
+      <div class="card">
+        <h3>Calculus</h3>
+        <button onclick="viewPDF('viewer','pdfs/CalculusWorksheet.pdf')">📖 View</button>
+        <button onclick="downloadPDF('pdfs/CalculusWorksheet.pdf')">⬇️ Download</button>
+      </div>
+      <div class="card">
+        <h3>Probability</h3>
+        <button onclick="viewPDF('viewer','pdfs/ProbabilityWorksheet.pdf')">📖 View</button>
+        <button onclick="downloadPDF('pdfs/ProbabilityWorksheet.pdf')">⬇️ Download</button>
+      </div>
+      <div class="card">
+        <h3>Statistics</h3>
+        <button onclick="viewPDF('viewer','pdfs/StatisticsWorksheet.pdf')">📖 View</button>
+        <button onclick="downloadPDF('pdfs/StatisticsWorksheet.pdf')">⬇️ Download</button>
+      </div>
+      <div class="card">
+        <h3>Miscellaneous</h3>
+        <button onclick="viewPDF('viewer','pdfs/MiscellaneousWorksheet.pdf')">📖 View</button>
+        <button onclick="downloadPDF('pdfs/MiscellaneousWorksheet.pdf')">⬇️ Download</button>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Useful Links</h2>
+    <ul>
+      <li><a href="https://ncert.nic.in/" target="_blank">NCERT Official Website</a></li>
+      <li><a href="https://epathshala.nic.in/" target="_blank">ePathshala (NCERT Digital Learning)</a></li>
+      <li><a href="https://cbse.gov.in/" target="_blank">CBSE Official Website</a></li>
+      <li><a href="https://diksha.gov.in/" target="_blank">DIKSHA Learning Platform</a></li>
+    </ul>
+  </section>
+
+  <div id="viewer" class="pdf-viewer">
+    <iframe src=""></iframe>
   </div>
-
-  <script>
-    function downloadPDF(filename) {
-      const link = document.createElement('a');
-      link.href = filename;
-      link.download = filename;
-      link.click();
-    }
-  </script>
-
 </body>
 </html>
