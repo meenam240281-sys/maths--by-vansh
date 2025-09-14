@@ -1,173 +1,159 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Resources — Math Learning Hub</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resources - Math Website</title>
   <style>
-    :root {
-      --nav-h:54px;
-      --bg: #fbfcfd;
-      --primary: #2c3e50;
-      --accent: #8e44ad; /* purple-ish accent you liked */
-      --card: #ffffff;
-      --muted: #6b7280;
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f9f9f9;
+      color: #333;
     }
-    html,body{height:100%;margin:0;font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);color:#222}
-    nav{
-      position:fixed;top:0;left:0;right:0;height:var(--nav-h);
-      background:var(--primary);display:flex;align-items:center;justify-content:center;gap:18px;
-      z-index:50;padding:8px 12px;box-sizing:border-box;flex-wrap:wrap;
+
+    header {
+      background: #007BFF;
+      color: white;
+      padding: 15px 20px;
+      text-align: center;
     }
-    nav a{color:#fff;text-decoration:none;font-weight:600;padding:8px 10px;border-radius:6px}
-    nav a.active{background:rgba(255,255,255,0.06)}
-    .page{padding-top:calc(var(--nav-h) + 18px);max-width:1100px;margin:0 auto;padding:16px}
-    h1{margin:0 0 6px 0;font-size:22px}
-    .intro{color:var(--muted);margin-bottom:18px}
-    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
-    @media(max-width:900px){ .grid{grid-template-columns:1fr; } }
-    .card{background:var(--card);border-radius:10px;padding:16px;box-shadow:0 6px 18px rgba(12,15,20,0.04); }
-    .section-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-    .section-title h2{margin:0;font-size:18px}
-    .link-list{list-style:none;padding:0;margin:0}
-    .link-list li{padding:8px 0;border-bottom:1px dashed #eee}
-    .link-list a{color:var(--primary);text-decoration:none;font-weight:600}
-    .link-list a:hover{text-decoration:underline}
-    .small{color:var(--muted);font-size:13px}
-    .topic-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-    .topic{padding:10px;border-radius:8px;background:#fafafa;border:1px solid #fafafa}
-    .topic a{color:#2c3e50;text-decoration:none;font-weight:600}
-    .worksheet{display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:8px;background:#fff;border:1px solid #f0f0f0}
-    footer{margin-top:20px;padding:12px;text-align:center;color:var(--muted);font-size:13px}
+
+    nav {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      background: #0056b3;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      padding: 12px 18px;
+      display: block;
+    }
+
+    nav a:hover {
+      background: #004494;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 0 15px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #0056b3;
+      margin-bottom: 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .card h3 {
+      margin-bottom: 15px;
+      font-size: 18px;
+      color: #333;
+    }
+
+    .card button {
+      background: #007BFF;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .card button:hover {
+      background: #0056b3;
+    }
   </style>
 </head>
 <body>
+
+  <header>
+    <h1>Math Resources</h1>
+  </header>
+
   <nav>
     <a href="index.html">Home</a>
-    <a href="solver.html">Maths Solver</a>
-    <a href="graphs.html">Graphs</a>
-    <a href="resources.html" class="active">Resources</a>
+    <a href="solver.html">Math Solver</a>
+    <a href="graph.html">Graphs</a>
+    <a href="resources.html">Resources</a>
     <a href="contact.html">Contact</a>
   </nav>
 
-  <div class="page">
-    <h1>Resources</h1>
-    <p class="intro">All resources collected in one place — official textbooks, clear formula sheets, and practice worksheets. No sponsored / promoted content — just useful, reliable material.</p>
-
-    <div class="grid">
-      <!-- LEFT: Main content -->
-      <div>
-        <!-- Useful Links -->
-        <div class="card" id="useful-links">
-          <div class="section-title">
-            <h2>Useful Official Links</h2>
-            <span class="small">trusted government & board resources</span>
-          </div>
-          <ul class="link-list">
-            <li>
-              <a href="https://ncert.nic.in" target="_blank" rel="noopener">NCERT (National Council of Educational Research & Training)</a>
-              <div class="small">Textbooks and official PDFs — recommended for theory and exercises.</div>
-            </li>
-            <li>
-              <a href="https://www.cbse.gov.in" target="_blank" rel="noopener">CBSE (Central Board of Secondary Education)</a>
-              <div class="small">Official circulars, sample papers and curriculum details.</div>
-            </li>
-            <li>
-              <a href="https://diksha.gov.in" target="_blank" rel="noopener">DIKSHA (Teacher/Student resources)</a>
-              <div class="small">National educational platform with curated lessons and resources.</div>
-            </li>
-            <li>
-              <a href="https://ndl.iitkgp.ac.in" target="_blank" rel="noopener">National Digital Library / Government Repositories</a>
-              <div class="small">Large collection of public-domain books and references.</div>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Formula Sheets -->
-        <div class="card" id="formula-sheets" style="margin-top:14px">
-          <div class="section-title">
-            <h2>Formula Sheets</h2>
-            <span class="small">click a topic to open the full formula sheet</span>
-          </div>
-
-          <div class="topic-grid">
-            <div class="topic"><a href="Algebra.html">Algebra</a><div class="small">Identities, factorisation, sequences & series.</div></div>
-            <div class="topic"><a href="Trigonometry.html">Trigonometry</a><div class="small">Ratios, identities, formulas & graphs.</div></div>
-            <div class="topic"><a href="Calculus.html">Calculus</a><div class="small">Limits, derivatives, integrals, standard results.</div></div>
-            <div class="topic"><a href="Geometry.html">Geometry</a><div class="small">Coordinate & Euclidean geometry formulas & theorems.</div></div>
-            <div class="topic"><a href="Probability.html">Probability</a><div class="small">Probability rules, distributions & common results.</div></div>
-            <div class="topic"><a href="Miscellaneous.html">Miscellaneous</a><div class="small">Logarithm rules, series shortcuts, useful identities.</div></div>
-          </div>
-        </div>
-
-        <!-- Worksheets -->
-        <div class="card" id="worksheets" style="margin-top:14px">
-          <div class="section-title">
-            <h2>Practice Worksheets</h2>
-            <span class="small">topic-wise practice (suitable for revision & tests)</span>
-          </div>
-
-          <div style="display:grid;gap:8px">
-            <div class="worksheet"><a href="algebra.html">algebra.html</a><span class="small">Algebra worksheets — varied difficulty</span></div>
-            <div class="worksheet"><a href="trigonometry.html">trigonometry.html</a><span class="small">Trigonometry practice sets</span></div>
-            <div class="worksheet"><a href="calculus.html">calculus.html</a><span class="small">Derivatives & integrals practice</span></div>
-            <div class="worksheet"><a href="geometry.html">geometry.html</a><span class="small">Coordinate & Euclidean geometry</span></div>
-            <div class="worksheet"><a href="probability.html">probability.html</a><span class="small">Probability & combinatorics questions</span></div>
-            <div class="worksheet"><a href="miscellaneous.html">miscellaneous.html</a><span class="small">Mixed-topic practice</span></div>
-          </div>
-        </div>
-
-        <!-- Notes -->
-        <div class="card" style="margin-top:14px">
-          <div class="section-title">
-            <h2>Notes / How to use</h2>
-            <span class="small">short tips</span>
-          </div>
-          <div class="small">
-            • Formula sheets are topic-focused — use them for quick revision before tests.<br>
-            • Worksheets are organized by topic (not by class). Pick practice sheets by subject (Algebra, Trigonometry, Calculus, ...).<br>
-            • If you need printable PDFs, open the topic page and use browser Print → Save as PDF.<br>
-            • If a link shows <em>404</em>, check that the file name is exactly as listed here (case-sensitive on some hosting). File names must match: <code>Algebra.html</code>, <code>algebra.html</code>, etc.
-          </div>
-        </div>
-      </div>
-
-      <!-- RIGHT: Quick links / extras -->
-      <div>
+  <div class="container">
+    <!-- Formula Sheets -->
+    <section>
+      <h2>Formula Sheets</h2>
+      <div class="grid">
         <div class="card">
-          <div class="section-title">
-            <h2>Quick access</h2>
-            <span class="small">jump to</span>
-          </div>
-          <ul class="link-list">
-            <li><a href="Algebra.html">Algebra formula sheet</a></li>
-            <li><a href="Trigonometry.html">Trigonometry formula sheet</a></li>
-            <li><a href="calculus.html">Calculus worksheets</a></li>
-            <li><a href="algebra.html">Algebra worksheets</a></li>
-          </ul>
+          <h3>Algebra</h3>
+          <button onclick="downloadPDF('AlgebraFormulaSheet.pdf')">Download PDF</button>
         </div>
-
-        <div class="card" style="margin-top:12px">
-          <div class="section-title"><h2>Teacher / Parent resources</h2></div>
-          <div class="small">
-            • Official textbooks (NCERT) are the best base for syllabus-aligned practice.<br>
-            • Use CBSE sample papers for exam-style questions.<br>
-            • If you want extra curated topic videos later, we can add an optional, non-sponsored list.
-          </div>
+        <div class="card">
+          <h3>Trigonometry</h3>
+          <button onclick="downloadPDF('TrigonometryFormulaSheet.pdf')">Download PDF</button>
         </div>
-
-        <div class="card" style="margin-top:12px">
-          <div class="section-title"><h2>Want to contribute?</h2></div>
-          <div class="small">
-            If you have a good worksheet or a neat formula sheet you'd like to add, share it via <a href="contact.html">Contact</a> (paste the text or upload a PDF). We'll review and add it to site resources.
-          </div>
+        <div class="card">
+          <h3>Geometry</h3>
+          <button onclick="downloadPDF('GeometryFormulaSheet.pdf')">Download PDF</button>
+        </div>
+        <div class="card">
+          <h3>Calculus</h3>
+          <button onclick="downloadPDF('CalculusFormulaSheet.pdf')">Download PDF</button>
         </div>
       </div>
-    </div>
+    </section>
 
-    <footer>
-      &copy; 2025 Math Learning Hub | Designed by Vansh
-    </footer>
+    <!-- Practice Worksheets -->
+    <section>
+      <h2>Practice Worksheets</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Algebra</h3>
+          <button onclick="downloadPDF('AlgebraWorksheet.pdf')">Download PDF</button>
+        </div>
+        <div class="card">
+          <h3>Trigonometry</h3>
+          <button onclick="downloadPDF('TrigonometryWorksheet.pdf')">Download PDF</button>
+        </div>
+        <div class="card">
+          <h3>Geometry</h3>
+          <button onclick="downloadPDF('GeometryWorksheet.pdf')">Download PDF</button>
+        </div>
+        <div class="card">
+          <h3>Calculus</h3>
+          <button onclick="downloadPDF('CalculusWorksheet.pdf')">Download PDF</button>
+        </div>
+      </div>
+    </section>
   </div>
+
+  <script>
+    function downloadPDF(filename) {
+      const link = document.createElement('a');
+      link.href = filename;
+      link.download = filename;
+      link.click();
+    }
+  </script>
+
 </body>
 </html>
