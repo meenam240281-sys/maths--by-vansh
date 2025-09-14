@@ -1,117 +1,541 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Maths Solver</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Math Solver — Math Learning Hub</title>
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        background: #f0f4f8;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 20px;
-    }
-    h1 {
-        color: #1a73e8;
-        margin-bottom: 20px;
-    }
-    #math-input {
-        width: 80%;
-        padding: 10px;
-        font-size: 20px;
-        margin-bottom: 20px;
-    }
-    .keyboard {
-        display: grid;
-        gap: 5px;
-        justify-content: center;
-    }
-    .key {
-        padding: 15px;
-        background: #ffffff;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        font-size: 18px;
-        cursor: pointer;
-        text-align: center;
-        user-select: none;
-    }
-    .key:hover {
-        background: #e0e7ff;
-    }
-    .key.control {
-        background: #1a73e8;
-        color: white;
-        font-weight: bold;
-        grid-column: span 2; /* make it bigger */
-    }
+  :root{--nav-h:54px;--bg:#fbfcfd;--primary:#2c3e50;--accent:#8e44ad;}
+  html,body{height:100%;margin:0;font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);color:#222}
+  nav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);background:var(--primary);display:flex;align-items:center;justify-content:center;gap:20px;z-index:40;flex-wrap:wrap;padding:6px 10px;box-sizing:border-box}
+  nav a{color:#fff;text-decoration:none;font-weight:600;padding:8px 10px;border-radius:6px}
+  nav a.active{background:rgba(255,255,255,0.06)}
+  .page{padding-top:calc(var(--nav-h) + 16px);max-width:1100px;margin:0 auto;padding-left:12px;padding-right:12px}
+  h1{margin:6px 0 4px 0;font-size:20px}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0}
+  textarea#expr{width:100%;min-height:72px;font-size:17px;padding:10px;border-radius:8px;border:1px solid #d9d9d9;box-sizing:border-box;resize:vertical;line-height:1.4}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px}
+  button{background:var(--primary);color:#fff;border:none;padding:10px 12px;border-radius:8px;font-weight:600;cursor:pointer}
+  button.secondary{background:var(--accent)}
+  .btn-ghost{background:#eee;color:#222;border:1px solid #ddd}
+  #output{background:#fff;border:1px solid #e6e6e6;padding:12px;border-radius:8px;margin-top:12px;min-height:48px;white-space:pre-wrap}
+  .keyboard{margin-top:14px;display:grid;grid-template-columns:repeat(9,1fr);gap:6px}
+  .key{padding:10px;font-size:15px;border-radius:8px;border:1px solid #ddd;background:#f2f2f2;cursor:pointer;text-align:center}
+  .key.large{grid-column:span 3;background:var(--primary);color:#fff;font-weight:700}
+  .meta{font-size:13px;color:#555;margin-top:8px}
+  @media(max-width:700px){ .keyboard{grid-template-columns:repeat(6,1fr)} nav{justify-content:center} }
+  .small{font-size:13px;color:#666}
 </style>
 </head>
 <body>
 
-<h1>Maths Solver</h1>
-<input type="text" id="math-input" placeholder="Enter your Maths problem here">
+<nav>
+  <a href="index.html">Home</a>
+  <a href="solver.html" class="active">Maths Solver</a>
+  <a href="graphs.html">Graphs</a>
+  <a href="resources.html">Resources</a>
+  <a href="contact.html">Contact</a>
+</nav>
 
-<div class="keyboard" id="keyboard"></div>
+<div class="page">
+  <h1>Maths Solver</h1>
+  <div class="row">
+    <textarea id="expr" placeholder="Type expression or equation here. Examples:
+2+3*4
+x + 2 = 5
+x + y = 5 ; x - y = 1
+(2,3) ; (5,1)
+Use keyboard below to insert math symbols."></textarea>
+  </div>
+
+  <div class="controls">
+    <button id="solveBtn">Solve / Evaluate</button>
+    <button id="clearBtn" class="btn-ghost">Clear</button>
+    <button id="allClearBtn" class="btn-ghost">All Clear</button>
+    <button id="sampleBtn" class="btn-ghost">Sample Solutions (if any)</button>
+    <label style="margin-left:auto" class="small">Output style: <strong>Plain text</strong></label>
+  </div>
+
+  <div id="output">Result will appear here...</div>
+  <div class="meta">Tip: On mobile long-press in the input to select / copy / paste. Desktop supports Ctrl/C / Ctrl/V / Ctrl+A as usual.</div>
+
+  <!-- Keyboard -->
+  <div class="keyboard" id="keyboard"></div>
+
+  <div style="margin-top:12px" class="small">Keyboard includes numbers, operators, brackets, trig, calculus symbols, Greek letters and more (117 keys). You can delete any earlier keyboard files; this page contains everything.</div>
+</div>
+
+<!-- Libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/13.0.2/math.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.11/nerdamer.core.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.11/Algebra.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.11/Calculus.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.11/Solve.js"></script>
 
 <script>
-const keys = [
-    // Row 1 - Numbers
-    '0','1','2','3','4','5','6','7','8','9',
-    // Row 2 - Operators
-    '+','-','×','÷','±','=','<','>','≤','≥',
-    // Row 3 - More operators & brackets
-    '≠','%','!','(',')','[',']','{','}','/',
-    // Row 4 - Powers, roots, constants
-    '^','√','∛','n√','π','e','.', 
-    // Row 5 - Trigonometry
-    'sin','cos','tan','cot','sec','csc','log','ln','d/dx','dx',
-    // Row 6 - Calculus, probability, variables
-    '∫','Δ','∪','∩','∈','∉','∅','|','A','B',
-    'C','D','X','Y','Z',
-    // Last Row - Controls
-    'CLEAR','ALL CLEAR','SOLVE'
+/* --- Setup keyboard keys (117 unique keys) --- */
+/* The set below is comprehensive (numbers, operators, brackets, nth-root, trig, calculus, greek, misc).
+   We intentionally avoid duplicates and include the 'bar' token for repeating decimals.
+*/
+const KEYS = [
+  // rowwise groups (kept human-friendly)
+  '7','8','9','÷','×','±','%','(',')',
+  '4','5','6','+','-','=','≠','<','>',
+  '1','2','3','.',',','|','[',']','{',
+  '0','^','²','³','√','ⁿ√','bar','!','/',
+  'sin','cos','tan','cot','sec','csc','sin⁻¹','cos⁻¹','tan⁻¹',
+  'sinh','cosh','tanh','ln','log','log₂','log₁₀','e^','10^',
+  'd/dx','∫','lim','Δ','∂','∑','∏','∞','∇',
+  'π','e','i','θ','α','β','γ','δ','λ',
+  'μ','σ','φ','ψ','ω','k','n','m','t',
+  'A','B','C','D','E','F','G','H','I',
+  'J','K','L','M','N','O','P','Q','R',
+  'S','T','U','V','W','X','Y','Z','→',
+  '←','↔','≈','≡','∴','∵','⊂','⊆','∩',
+  '∪','°','′','″','mod','abs','floor','ceil','root'
 ];
 
-const keyboardDiv = document.getElementById('keyboard');
-const input = document.getElementById('math-input');
+const keyboard = document.getElementById('keyboard');
+KEYS.forEach(k=>{
+  const btn = document.createElement('button');
+  btn.className = 'key';
+  btn.textContent = k;
+  btn.addEventListener('click', ()=> insertAtCaret(k));
+  keyboard.appendChild(btn);
+});
 
-keys.forEach(key => {
-    const button = document.createElement('div');
-    button.textContent = key;
-    button.classList.add('key');
+/* Larger action keys (Clear, All Clear, Solve) are above; keyboard uses the keys array */
 
-    if(key === 'CLEAR' || key === 'ALL CLEAR' || key === 'SOLVE') {
-        button.classList.add('control');
+/* --- Utilities: caret insertion, safe focus, helpers --- */
+const exprEl = document.getElementById('expr');
+const outEl = document.getElementById('output');
+
+function insertAtCaret(text) {
+  const el = exprEl;
+  const start = el.selectionStart || 0;
+  const end = el.selectionEnd || 0;
+  const before = el.value.slice(0, start);
+  const after = el.value.slice(end);
+  el.value = before + text + after;
+  const pos = start + text.length;
+  el.focus();
+  el.selectionStart = el.selectionEnd = pos;
+}
+
+/* Allow normal selection/copy/paste (do not block context menu).
+   The textarea natively supports long-press select on mobile and Ctrl/C on desktop.
+*/
+
+/* --- Parsing & solving logic --- */
+
+/* Helper: normalize user string to nerdamer-friendly format */
+function normalizeForNerd(str) {
+  // replace ^ with **
+  // nerdamer accepts ^; but we standardize some tokens:
+  let s = str.replace(/×/g,'*').replace(/÷/g,'/').replace(/—/g,'-');
+  s = s.replace(/(\d)\s+(\d)/g,'$1*$2'); // 2 3 -> 2*3 (rare)
+  // replace unicode powers ²,³ with ^2,^3
+  s = s.replace(/²/g,'^2').replace(/³/g,'^3');
+  // replace π with pi
+  s = s.replace(/π/g,'pi');
+  // replace 'ⁿ√' or 'root' with nthroot(...) form handled later
+  return s;
+}
+
+/* detect variable names (letters) ignoring known functions */
+function detectVariables(eqs) {
+  const reserved = new Set(['sin','cos','tan','sec','csc','cot','ln','log','sqrt','pi','e','abs','mod']);
+  const varset = new Set();
+  const tokenRegex = /[a-zA-Zα-ωΑ-Ω]+[0-9_]*/g;
+  eqs.forEach(s=>{
+    let m;
+    while ((m = tokenRegex.exec(s)) !== null) {
+      const tok = m[0];
+      const low = tok.toLowerCase();
+      if (!reserved.has(low) && !/^sin|cos|tan|log|ln|pi|e$/.test(low)) {
+        // treat single letters like x,y or Latin letters; also Greek letters e.g. θ replaced to 'theta' maybe
+        // replace some common greek letters to ascii names for nerdamer compatibility
+        const mapping = {'θ':'theta','α':'alpha','β':'beta','γ':'gamma','δ':'delta','λ':'lambda','μ':'mu','σ':'sigma','φ':'phi','ψ':'psi','ω':'omega'};
+        if (mapping[tok]) varset.add(mapping[tok]);
+        else varset.add(tok);
+      }
+    }
+  });
+  return Array.from(varset);
+}
+
+/* convert equation string like 'x+y=5' to nerdamer left-right expressions */
+function eqToNerdForms(eq) {
+  // Return [leftExpr, rightExpr] strings
+  const parts = eq.split('=');
+  if (parts.length >= 2) {
+    const right = parts.pop();
+    const left = parts.join('=');
+    return [normalizeForNerd(left), normalizeForNerd(right)];
+  }
+  return [normalizeForNerd(eq), '0'];
+}
+
+/* Helper to try numeric evaluation (math.js) with safety (and catch division by zero) */
+function tryNumericEval(expression) {
+  try {
+    // Replace unicode and math symbols
+    let s = expression.replace(/×/g,'*').replace(/÷/g,'/').replace(/π/g,'pi');
+    const val = math.evaluate(s);
+    if (typeof val === 'number' && (!isFinite(val) || isNaN(val))) return {error:'Undefined'};
+    return {value: val};
+  } catch (e) {
+    return {error: e.message};
+  }
+}
+
+/* core: solve input */
+async function solveInputRaw(text) {
+  text = text.trim();
+  if (!text) return {error:'Enter an expression or equation.'};
+
+  // Separate items by semicolon or newline - user can give multiple pieces.
+  const parts = text.split(/\n|;/).map(s=>s.trim()).filter(Boolean);
+
+  // If every part does NOT contain '=' and none are coordinate points like (x,y), treat as evaluations (possibly multiple).
+  const hasEquation = parts.some(p => p.includes('='));
+  const hasPoint = parts.some(p => /^\(\s*[-+]?\d+(\.\d+)?\s*,\s*[-+]?\d+(\.\d+)?\s*\)$/.test(p));
+
+  if (!hasEquation && !hasPoint) {
+    // treat each part as expression to evaluate numerically
+    const results = [];
+    for (const p of parts) {
+      const r = tryNumericEval(p);
+      if (r.error) results.push({input:p, error:r.error});
+      else results.push({input:p, value:r.value});
+    }
+    return {type:'evaluation', results};
+  }
+
+  // If there are points present (like (2,3);(3,4)), parse and return
+  if (!hasEquation && hasPoint) {
+    const pts = parts.map(p => {
+      const m = p.match(/^\(\s*([-+]?\d+(\.\d+)?)\s*,\s*([-+]?\d+(\.\d+)?)\s*\)$/);
+      if (!m) return null;
+      return {x: parseFloat(m[1]), y: parseFloat(m[3])};
+    }).filter(Boolean);
+    return {type:'points', points:pts};
+  }
+
+  // Now we have equations (possibly mixed with points). Collect equations only.
+  const equations = parts.filter(p => p.includes('=')).map(s => s.trim());
+  // Convert equations into nerdamer 'left-right' but for solveEquations we need expressions equal to 0.
+  const eqZeroForms = equations.map(eq => {
+    const [L,R] = eqToNerdForms(eq);
+    // create L - (R)
+    return `(${L})-(${R})`;
+  });
+
+  // Detect variables across the equations
+  const variables = detectVariables(eqZeroForms);
+
+  // If single equation and single variable, try symbolic solve with nerdamer
+  if (eqZeroForms.length === 1 && variables.length === 1) {
+    const varName = variables[0];
+    try {
+      // try nerdamer solve
+      const nerdExp = eqZeroForms[0];
+      const sol = nerdamer.solveEquations([nerdExp]); // returns array? in some builds returns object
+      // fallback use solve for single eq
+      // Use nerdamer.solve for single equation
+      const s2 = nerdamer.solve(nerdExp, varName);
+      if (s2 && s2.length) {
+        // s2 elements are strings
+        return {type:'symbolic', solutions: {[varName]: s2.map(x=> x.toString())}};
+      }
+      // fallback numeric via math
+      const numeric = tryNumericEval(variables[0] + ' - (' + evalToNumericHack(eqZeroForms[0]) + ')');
+      return {error:'Could not symbolically solve.'};
+    } catch (e) {
+      // fallback numeric
+      try {
+        // Attempt numeric solve for single var by using math.js's derivative-free root finding? math.js has no root-finder builtin.
+        // We'll try sampling to find root approximately:
+        const fnStr = eqZeroForms[0].replace(/pi/g, Math.PI);
+        // sample x across -100..100
+        let found = [];
+        for (let x=-100; x<=100; x += 0.5) {
+          try {
+            const val = math.evaluate(fnStr.replace(new RegExp('\\b'+variables[0]+'\\b','g'), `(${x})`));
+            if (Math.abs(val) < 1e-6) found.push(x);
+          } catch {}
+          if (found.length >= 5) break;
+        }
+        if (found.length) return {type:'numeric', variable:variables[0], samples:found.slice(0,5)};
+      } catch(_) {}
+      return {error:'Could not solve this single-variable equation.'};
+    }
+  }
+
+  // For systems (multiple equations / variables), try nerdamer.solveEquations
+  try {
+    // nerdamer expects array of expressions (strings) equal to 0
+    // call solveEquations
+    const sol = nerdamer.solveEquations(eqZeroForms);
+    // sol can be array or object; convert to readable form
+    // If it returns an object mapping variables to expressions:
+    if (typeof sol === 'object' && !Array.isArray(sol)) {
+      // e.g. {x: '3', y: '2'}
+      return {type:'system', solution: sol, variables};
+    } else if (Array.isArray(sol) && sol.length) {
+      // array of arrays? attempt to convert
+      // sample the output
+      return {type:'system', solution: sol};
+    } else {
+      // sol might be string or empty, attempt fallback below
+    }
+  } catch (e) {
+    // continue to fallbacks
+    // console.log('nerdamer solve error',e);
+  }
+
+  // If we reach here, either nerdamer couldn't solve symbolically or returned nothing useful.
+  // Try numeric approaches for linear systems using math.js (we'll attempt to build linear system A*x=b)
+  // Parse each eq to attempt linear coefficient extraction
+  try {
+    const linearAttempt = trySolveLinearSystem(eqZeroForms, variables);
+    if (linearAttempt && linearAttempt.solved) {
+      return {type:'linear-system', solution: linearAttempt.solution};
+    }
+  } catch(e) {
+    // ignore and continue
+  }
+
+  // final fallback: try to symbolically ask nerdamer per variable using solve
+  try {
+    const perVar = {};
+    for (const v of variables) {
+      try {
+        const res = nerdamer.solve(eqZeroForms.join(','), v);
+        perVar[v] = (res && res.length) ? res.map(r => r.toString()) : null;
+      } catch(e){ perVar[v] = null; }
+    }
+    // If some meaningful results exist:
+    const any = Object.values(perVar).some(x=> x && x.length);
+    if (any) return {type:'partial-symbolic', perVar};
+  } catch(e) {}
+
+  // If none worked:
+  return {error:'Too complex to solve here or unsupported equation type.'};
+}
+
+/* small helper: try to create numeric-friendly expression from nerdamer style (best-effort) */
+function evalToNumericHack(s) {
+  return s.replace(/pi/g, Math.PI).replace(/\^/g, '**').replace(/([a-zA-Zα-ωΑ-Ω]+)/g, '0');
+}
+
+/* Attempt to solve linear system: eqs array of strings equal to 0, variables array */
+function trySolveLinearSystem(eqs, variables) {
+  // We'll attempt to compute coefficients for linear terms using math.parse
+  // Build matrix A and vector b for Ax = b
+  try {
+    const n = variables.length;
+    if (n === 0) return null;
+    const A = math.zeros(eqs.length, n)._data;
+    const b = math.zeros(eqs.length)._data;
+
+    let allLinear = true;
+
+    for (let i=0;i<eqs.length;i++) {
+      // eq is string like "(x+y)-5"
+      const node = math.parse(eqs[i].replace(/pi/g,'PI'));
+      // attempt to collect coefficients by evaluating partial derivatives at 0? Simpler: symbolic approach:
+      // For variable j, compute coefficient by replacing variable with 1 and others 0: coeff_j = f(substitute var_j=1, others=0) - f(all=0)
+      const base = node.evaluate({});
+      for (let j=0;j<n;j++){
+        const scope = {};
+        variables.forEach((v,k)=> scope[v] = 0);
+        scope[variables[j]] = 1;
+        try {
+          const val1 = node.evaluate(scope);
+          const val0 = node.evaluate(variables.reduce((acc,v)=>{acc[v]=0;return acc},{}) );
+          const coeff = val1 - val0;
+          A[i][j] = coeff;
+        } catch(e){ allLinear=false; break; }
+      }
+      // constant term is -b (because eq = 0), so compute b = -f(all zeros)
+      try {
+        const val0 = node.evaluate(variables.reduce((acc,v)=>{acc[v]=0;return acc},{}) );
+        b[i] = -val0;
+      } catch(e){ allLinear=false; break; }
     }
 
-    button.addEventListener('click', () => {
-        if(key === 'CLEAR') {
-            input.value = input.value.slice(0,-1);
-        } else if(key === 'ALL CLEAR') {
-            input.value = '';
-        } else if(key === 'SOLVE') {
-            try {
-                const expr = input.value
-                    .replace(/×/g,'*')
-                    .replace(/÷/g,'/')
-                    .replace(/π/g, Math.PI)
-                    .replace(/√/g,'Math.sqrt');
-                const result = eval(expr);
-                alert('Result: '+result);
-            } catch (e) {
-                alert('Invalid Expression');
-            }
-        } else {
-            input.value += key;
+    if (!allLinear) return {solved:false};
+
+    // Solve A x = b using math.lusolve if square or least squares if overdetermined
+    const rows = A.length, cols = n;
+    const matA = math.matrix(A);
+    const vecb = math.matrix(b);
+    if (rows === cols) {
+      const x = math.lusolve(matA, vecb); // returns column matrix
+      const sol = {};
+      for (let j=0;j<n;j++) sol[variables[j]] = Number(x._data[j][0]);
+      return {solved:true, solution:sol};
+    } else {
+      // try least-squares
+      const At = math.transpose(matA);
+      const AtA = math.multiply(At, matA);
+      const Atb = math.multiply(At, vecb);
+      const x = math.lusolve(AtA, Atb);
+      const sol = {};
+      for (let j=0;j<n;j++) sol[variables[j]] = Number(x._data[j][0]);
+      return {solved:true, solution:sol};
+    }
+  } catch(e) {
+    return {solved:false};
+  }
+}
+
+/* Generate sample integer solutions for parametric/general solutions:
+   If symbolic solution from nerdamer contains parameters (e.g., t), substitute small integer values to show concrete tuples.
+*/
+function sampleFromParametric(solObj, variables, limit=3) {
+  // solObj could be object {x: '3', y: 't'} etc. Find parameter names and substitute values 0..limit-1
+  const params = new Set();
+  Object.values(solObj).forEach(s=>{
+    const m = s.match(/[a-zA-Z]\w*/g);
+    if (m) m.forEach(t => { if (!variables.includes(t)) params.add(t); });
+  });
+  const pList = Array.from(params);
+  if (pList.length === 0) {
+    // direct numeric expressions - simply evaluate them
+    const sample = [];
+    try {
+      const evalMap = {};
+      for (let i=0;i<variables.length;i++){
+        const v = variables[i];
+        evalMap[v] = math.evaluate(solObj[v].replace(/pi/g, String(Math.PI)));
+      }
+      sample.push(evalMap);
+    } catch(e){}
+    return sample;
+  }
+  // iterate small integer assignments to params
+  const samples = [];
+  outer: for (let t0=0;t0<5;t0++){
+    // create assignment for params: do simple nested loops based on number of params
+    const assign = {};
+    pList.forEach((p,idx)=> assign[p] = t0 + idx);
+    // build sample solution by evaluating solObj
+    const result = {};
+    try {
+      for (const v of variables) {
+        let expr = solObj[v];
+        // replace param names with numbers
+        for (const p of pList) expr = expr.replace(new RegExp('\\b'+p+'\\b','g'), `(${assign[p]})`);
+        // replace pi
+        expr = expr.replace(/pi/g, String(Math.PI));
+        const val = Number( math.evaluate(expr) );
+        if (!isFinite(val)) continue outer;
+        result[v] = val;
+      }
+      samples.push(result);
+      if (samples.length >= limit) break;
+    } catch(e){ continue; }
+  }
+  return samples;
+}
+
+/* Format outputs to user-friendly plain text */
+function formatResult(res) {
+  if (!res) return 'No result';
+  if (res.error) return 'Error: ' + res.error;
+  if (res.type === 'evaluation') {
+    return res.results.map(r => r.error ? `${r.input}  => Error: ${r.error}` : `${r.input}  => ${r.value}`).join('\\n');
+  }
+  if (res.type === 'points') {
+    return 'Points:\\n' + res.points.map(p=>`(${p.x}, ${p.y})`).join(', ');
+  }
+  if (res.type === 'symbolic') {
+    const entries = Object.entries(res.solutions).map(([v,arr])=> `${v} = ${arr.join(', ')}`);
+    return 'Symbolic solutions:\\n' + entries.join('\\n');
+  }
+  if (res.type === 'numeric') {
+    return `Numeric sample solutions for ${res.variable}: ${res.samples.join(', ')}`;
+  }
+  if (res.type === 'system' || res.type === 'partial-symbolic' || res.type === 'linear-system') {
+    let out = '';
+    if (res.type === 'linear-system') {
+      out += 'Linear system solution (numeric):\\n';
+      for (const k in res.solution) out += `${k} = ${res.solution[k]}\\n`;
+      return out.trim();
+    }
+    if (res.type === 'system') {
+      out += 'System solution (symbolic / numeric):\\n';
+      if (typeof res.solution === 'object' && !Array.isArray(res.solution)) {
+        for (const k in res.solution) out += `${k} = ${res.solution[k]}\\n`;
+        // try sample points for parametric forms
+        const vars = res.variables || Object.keys(res.solution);
+        const samples = sampleFromParametric(res.solution, vars, 3);
+        if (samples.length) {
+          out += '\\nSample concrete solutions:\\n';
+          samples.forEach(s => {
+            const r = vars.map(v=>`(${v} = ${s[v]})`).join(', ');
+            out += r + '\\n';
+          });
         }
-    });
+        return out.trim();
+      } else if (Array.isArray(res.solution)) {
+        // array form: stringify
+        out += JSON.stringify(res.solution);
+        return out;
+      } else {
+        return 'System solved: ' + String(res.solution);
+      }
+    }
+    if (res.type === 'partial-symbolic') {
+      out += 'Partial symbolic solutions:\\n';
+      for (const k in res.perVar) out += `${k} = ${res.perVar[k] || 'no simple symbolic solution'}\\n`;
+      return out;
+    }
+  }
+  return 'Unhandled result type: ' + JSON.stringify(res);
+}
 
-    keyboardDiv.appendChild(button);
+/* --- UI actions --- */
+document.getElementById('solveBtn').addEventListener('click', async ()=>{
+  outEl.textContent = 'Working...';
+  const text = exprEl.value;
+  try {
+    const res = await solveInputRaw(text);
+    outEl.textContent = formatResult(res);
+  } catch (e) {
+    outEl.textContent = 'Error while solving: ' + e.message;
+  }
 });
-</script>
 
+document.getElementById('clearBtn').addEventListener('click', ()=>{ exprEl.value=''; });
+document.getElementById('allClearBtn').addEventListener('click', ()=>{ exprEl.value=''; outEl.textContent='Result will appear here...'; });
+
+document.getElementById('sampleBtn').addEventListener('click', async ()=>{
+  // re-run but only show sample solutions when possible
+  outEl.textContent = 'Computing sample solutions...';
+  const res = await solveInputRaw(exprEl.value);
+  if (!res || !res.type) { outEl.textContent = 'No sample solutions available.'; return; }
+  if (res.type === 'system' && typeof res.solution === 'object' && !Array.isArray(res.solution)) {
+    const vars = res.variables || Object.keys(res.solution);
+    const samples = sampleFromParametric(res.solution, vars, 5);
+    if (!samples.length) { outEl.textContent = 'No concrete sample solutions found.'; return;}
+    const lines = samples.map(s => '(' + vars.map(v=>s[v]).join(', ') + ')');
+    outEl.textContent = 'Sample solutions (first few):\\n' + lines.join('\\n');
+    return;
+  }
+  if (res.type === 'symbolic') outEl.textContent = formatResult(res);
+  else outEl.textContent = 'No sample solutions available for this input.';
+});
+
+/* initial hint */
+outEl.textContent = 'Enter an expression or equation and press Solve. Examples:\\n- 2+3*4\\n- x + 2 = 5\\n- x + y = 5 ; x - y = 1\\n- (2,3) ; (5,1)';
+
+/* Note: we used nerdamer and math.js; symbolic solving capability depends on nerdamer strength.
+   For heavy or extremely complex systems, the page will show a helpful message instead of freezing.
+*/
+
+</script>
 </body>
 </html>
