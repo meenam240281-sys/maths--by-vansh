@@ -1,36 +1,155 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Contact - Maths by Vansh</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <style>
-    body { font-family: Arial; margin: 0; padding: 20px; background: #f9f9f9; text-align: center; }
-    h1 { color: #0077cc; margin-bottom: 30px; }
-    h1 i { margin-right: 10px; color: #ff7f50; }
-
-    form { display: flex; flex-direction: column; align-items: center; gap: 15px; }
-    input, textarea { width: 80%; max-width: 500px; padding: 12px; font-size: 16px; border-radius: 6px; border: 2px solid #0077cc; }
-    button { background: #0077cc; color: white; padding: 12px 25px; font-size: 16px; border: none; border-radius: 6px; cursor: pointer; transition: background 0.3s; }
-    button:hover { background: #005fa3; }
-
-    @media (max-width: 600px) {
-      input, textarea { width: 95%; }
-      button { width: 95%; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Learning Hub - Contact</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        header {
+            background-color: #2c3e50;
+            color: #ffffff;
+            padding: 15px 20px;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        nav {
+            background-color: #34495e;
+            overflow: hidden;
+        }
+        nav a {
+            float: left;
+            display: block;
+            color: #ecf0f1;
+            text-align: center;
+            padding: 12px 18px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        nav a:hover {
+            background-color: #1abc9c;
+            color: #fff;
+        }
+        .container {
+            padding: 30px 20px;
+            max-width: 600px;
+            margin: auto;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        form {
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        form input, form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+        form button {
+            background-color: #2c3e50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        form button:hover {
+            background-color: #1abc9c;
+        }
+        .confirmation {
+            display: none;
+            margin-top: 15px;
+            color: green;
+            font-weight: bold;
+            text-align: center;
+        }
+        .telegram {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 16px;
+        }
+        .telegram a {
+            color: #1abc9c;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        footer {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            text-align: center;
+            padding: 15px 0;
+            margin-top: 40px;
+        }
+    </style>
 </head>
 <body>
+    <header>
+        <h1>Math Learning Hub</h1>
+    </header>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="solver.html">Maths Solver</a>
+        <a href="graphs.html">Graphs</a>
+        <a href="resources.html">Resources</a>
+        <a href="contact.html">Contact</a>
+    </nav>
 
-  <h1><i class="fas fa-envelope"></i> Contact Maths by Vansh</h1>
-  <p>Have questions or feedback? You can fill this form:</p>
+    <div class="container">
+        <h2>Contact Me</h2>
+        <form id="contactForm">
+            <label for="name">Your Name:</label>
+            <input type="text" id="name" name="name" placeholder="Enter your name" required>
 
-  <form onsubmit="alert('Thank you! We received your message.'); return false;">
-    <input type="text" placeholder="Your Name" required>
-    <input type="email" placeholder="Your Email" required>
-    <textarea placeholder="Your Message" rows="5" required></textarea>
-    <button type="submit">Send</button>
-  </form>
+            <label for="email">Your Email:</label>
+            <input type="email" id="email" name="email" placeholder="Enter your email" required>
 
+            <label for="message">Message:</label>
+            <textarea id="message" name="message" rows="6" placeholder="Type your message here" required></textarea>
+
+            <button type="submit">Send Message</button>
+            <div class="confirmation" id="confirmation">Your message has been sent successfully!</div>
+        </form>
+
+        <div class="telegram">
+            Or contact me on Telegram: <a href="https://t.me/VanshMit" target="_blank">t.me/VanshMit</a>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2025 Math Learning Hub | Designed by Vansh
+    </footer>
+
+    <script>
+        const form = document.getElementById('contactForm');
+        const confirmation = document.getElementById('confirmation');
+
+        form.addEventListener('submit', function(e){
+            e.preventDefault(); // prevent actual submission
+            confirmation.style.display = 'block';
+            form.reset(); // clear the form
+        });
+    </script>
 </body>
 </html>
