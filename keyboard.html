@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>math keyboard</title>
+  <style>
+    :root{
+      --bg: #ffffff;
+      --key-bg: #111111;
+      --key-hover: #2a2a2a;
+      --special-bg: #0d5a9a;
+      --action-bg: #1f7a1f;
+      --danger-bg: #b23a3a;
+      --text: #ffffff;
+      --pad: 8px;
+    }
+    html,body{height:100%;margin:0;background:var(--bg);font-family:Inter,Arial,sans-serif}
+    .wrap{max-width:1100px;margin:18px auto;padding:12px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:10px}
+    button.key{background:var(--key-bg);color:var(--text);border:0;padding:10px;border-radius:10px;font-weight:700;cursor:pointer}
+    button.key:hover{background:var(--key-hover)}
+    button.special{background:var(--special-bg)}
+    button.solve{background:var(--action-bg);grid-column:span 2}
+    button.clear, button.clearall{background:var(--danger-bg)}
+    .row-actions{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:10px}
+    .note{font-size:13px;color:#333;margin-bottom:10px}
+    @media (max-width:520px){ .grid{grid-template-columns:repeat(auto-fill,minmax(56px,1fr))} }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="note">Keyboard (click to insert). This keyboard inserts parser-friendly tokens (e.g. <code>pi</code> for π, <code>/</code> for ÷). If you embed this as an <code>iframe</code>, it will insert into a textarea with id <code>expression</code> on the parent page (or into a textarea with id <code>expression</code> on the same page).</div>
+
+    <div class="grid" id="keyboard-grid">
+      <!-- Numbers & basic -->
+      <button id="btn-0" class="key" data-val="0">0</button>
+      <button id="btn-1" class="key" data-val="1">1</button>
+      <button id="btn-2" class="key" data-val="2">2</button>
+      <button id="btn-3" class="key" data-val="3">3</button>
+      <button id="btn-4" class="key" data-val="4">4</button>
+      <button id="btn-5" class="key" data-val="5">5</button>
+      <button id="btn-6" class="key" data-val="6">6</button>
+      <button id="btn-7" class="key" data-val="7">7</button>
+      <button id="btn-8" class="key" data-val="8">8</button>
+      <button id="btn-9" class="key" data-val="9">9</button>
+
+      <button id="btn-plus" class="key" data-val="+">+</button>
+      <button id="btn-minus" class="key" data-val="-">-</button>
+      <button id="btn-mul" class="key" data-val="*">×</button>
+      <button id="btn-div" class="key" data-val="/">÷</button>
+      <button id="btn-eq" class="key" data-val="=">=</button>
+      <button id="btn-plusminus" class="key" data-val="+-">±</button>
+      <button id="btn-percent" class="key" data-val="%">%</button>
+      <button id="btn-dot" class="key" data-val=".">.</button>
+
+      <!-- Brackets / separators -->
+      <button id="btn-lparen" class="key" data-val="("> ( </button>
+      <button id="btn-rparen" class="key" data-val=")"> ) </button>
+      <button id="btn-lbrack" class="key" data-val="[">[</button>
+      <button id="btn-rbrack" class="key" data-val="]">]</button>
+      <button id="btn-lbrace" class="key" data-val="{">{</button>
+      <button id="btn-rbrace" class="key" data-val="}">}</button>
+      <button id="btn-bar" class="key" data-val="bar">bar</button>
+      <button id="btn-pipe" class="key" data-val="|">|</button>
+
+      <!-- Powers & roots -->
+      <button id="btn-power" class="key" data-val="^">^</button>
+      <button id="btn-2" class="key" data-val="^2">²</button>
+      <button id="btn-3" class="key" data-val="^3">³</button>
+      <button id="btn-sqrt" class="key" data-val="sqrt">√</button>
+      <button id="btn-cbrt" class="key" data-val="cbrt">∛</button>
+      <button id="btn-nthroot" class="key" data-val="nthroot">ⁿ√</button>
+
+      <!-- Variables (lowercase a-z except e,i reserved as constants) -->
+      <button id="btn-a" class="key" data-val="a">a</button>
+      <button id="btn-b" class="key" data-val="b">b</button>
+      <button id="btn-c" class="key" data-val="c">c</button>
+      <button id="btn-d" class="key" data-val="d">d</button>
+      <button id="btn-f" class="key" data-val="f">f</button>
+      <button id="btn-g" class="key" data-val="g">g</button>
+      <button id="btn-h" class="key" data-val="h">h</button>
+      <button id="btn-j" class="key" data-val="j">j</button>
+      <button id="btn-k" class="key" data-val="k">k</button>
+      <button id="btn-l" class="key" data-val="l">l</button>
+      <button id="btn-m" class="key" data-val="m">m</button>
+      <button id="btn-n" class="key" data-val="n">n</button>
+      <button id="btn-o" class="key" data-val="o">o</button>
+      <button id="btn-p" class="key" data-val="p">p</button>
+      <button id="btn-q" class="key" data-val="q">q</button>
+      <button id="btn-r" class="key" data-val="r">r</button>
+      <button id="btn-s" class="key" data-val="s">s</button>
+      <button id="btn-t" class="key" data-val="t">t</button>
+      <button id="btn-u" class="key" data-val="u">u</button>
+      <button id="btn-v" class="key" data-val="v">v</button>
+      <button id="btn-w" class="key" data-val="w">w</button>
+      <button id="btn-x" class="key" data-val="x">x</button>
+      <button id="btn-y" class="key" data-val="y">y</button>
+      <button id="btn-z" class="key" data-val="z">z</button>
+
+      <!-- Trigonometry -->
+      <button id="btn-sin" class="key" data-val="sin(">sin</button>
+      <button id="btn-cos" class="key" data-val="cos(">cos</button>
+      <button id="btn-tan" class="key" data-val="tan(">tan</button>
+      <button id="btn-cot" class="key" data-val="cot(">cot</button>
+      <button id="btn-sec" class="key" data-val="sec(">sec</button>
+      <button id="btn-csc" class="key" data-val="csc(">csc</button>
+
+      <!-- Inverse trig -->
+      <button id="btn-asin" class="key" data-val="asin(">asin</button>
+      <button id="btn-acos" class="key" data-val="acos(">acos</button>
+      <button id="btn-atan" class="key" data-val="atan(">atan</button>
+
+      <!-- Hyperbolic -->
+      <button id="btn-sinh" class="key" data-val="sinh(">sinh</button>
+      <button id="btn-cosh" class="key" data-val="cosh(">cosh</button>
+      <button id="btn-tanh" class="key" data-val="tanh(">tanh</button>
+
+      <!-- Log & exp -->
+      <button id="btn-ln" class="key" data-val="ln(">ln</button>
+      <button id="btn-log" class="key" data-val="log(">log</button>
+      <button id="btn-log10" class="key" data-val="log10(">log10</button>
+      <button id="btn-log2" class="key" data-val="log2(">log2</button>
+      <button id="btn-exp" class="key" data-val="exp(">exp</button>
+      <button id="btn-ePow" class="key" data-val="e^">e^</button>
+      <button id="btn-10Pow" class="key" data-val="10^">10^</button>
+
+      <!-- Calculus & advanced -->
+      <button id="btn-ddx" class="key" data-val="d/dx">d/dx</button>
+      <button id="btn-ddv" class="key" data-val="d/dy">d/dy</button>
+      <button id="btn-partial" class="key" data-val="∂">∂</button>
+      <button id="btn-int" class="key" data-val="int(">∫</button>
+      <button id="btn-lim" class="key" data-val="lim(">lim</button>
+      <button id="btn-delta" class="key" data-val="Δ">Δ</button>
+      <button id="btn-sum" class="key" data-val="sum(">∑</button>
+      <button id="btn-prod" class="key" data-val="product(">∏</button>
+      <button id="btn-nabla" class="key" data-val="nabla">∇</button>
+
+      <!-- Constants -->
+      <button id="btn-pi" class="key" data-val="pi">π</button>
+      <button id="btn-e" class="key" data-val="e">e</button>
+      <button id="btn-i" class="key" data-val="i">i</button>
+
+      <!-- Comparisons -->
+      <button id="btn-lt" class="key" data-val="<">&lt;</button>
+      <button id="btn-gt" class="key" data-val=">">&gt;</button>
+      <button id="btn-le" class="key" data-val="<=">≤</button>
+      <button id="btn-ge" class="key" data-val=">=">≥</button>
+      <button id="btn-ne" class="key" data-val="!=">≠</button>
+      <button id="btn-approx" class="key" data-val="approx">≈</button>
+      <button id="btn-equiv" class="key" data-val="equiv">≡</button>
+
+      <!-- Sets & membership -->
+      <button id="btn-in" class="key" data-val="in">∈</button>
+      <button id="btn-notin" class="key" data-val="notin">∉</button>
+      <button id="btn-sub" class="key" data-val="subset">⊂</button>
+      <button id="btn-subeq" class="key" data-val="subseteq">⊆</button>
+      <button id="btn-notsub" class="key" data-val="notsub">⊄</button>
+      <button id="btn-sup" class="key" data-val="sup">⊃</button>
+      <button id="btn-supeq" class="key" data-val="supe">⊇</button>
+      <button id="btn-inter" class="key" data-val="and">∩</button>
+      <button id="btn-union" class="key" data-val="or">∪</button>
+
+      <!-- Arrows, units & small -->
+      <button id="btn-right" class="key" data-val="->">→</button>
+      <button id="btn-left" class="key" data-val="<-">←</button>
+      <button id="btn-bidir" class="key" data-val="<->">↔</button>
+      <button id="btn-degree" class="key" data-val="deg">°</button>
+      <button id="btn-arcmin" class="key" data-val="prime">′</button>
+      <button id="btn-arcsec" class="key" data-val="doubleprime">″</button>
+      <button id="btn-factorial" class="key" data-val="!">!</button>
+      <button id="btn-mod" class="key" data-val="mod">mod</button>
+      <button id="btn-abs" class="key" data-val="abs(">abs</button>
+      <button id="btn-floor" class="key" data-val="floor(">floor</button>
+      <button id="btn-ceil" class="key" data-val="ceil(">ceil</button>
+
+      <!-- Combinatorics -->
+      <button id="btn-nCr" class="key" data-val="nCr">nCr</button>
+      <button id="btn-nPr" class="key" data-val="nPr">nPr</button>
+
+      <!-- Complex / extra -->
+      <button id="btn-Re" class="key" data-val="re(">Re</button>
+
+      <!-- END of 117 keys -->
+    </div>
+
+    <!-- Actions row -->
+    <div class="row-actions" style="margin-top:14px">
+      <button id="btn-clear" class="clear">clear</button>
+      <button id="btn-clearall" class="clearall">clearall</button>
+      <button id="btn-solve" class="solve">solve</button>
+    </div>
+
+    <div style="margin-top:12px;font-size:13px;color:#444">
+      <strong>Notes:</strong>
+      <ul>
+        <li>Button <code>sqrt</code> inserts <code>sqrt</code> (no bracket). The solver must preprocess <code>sqrt4</code> → <code>sqrt(4)</code> before evaluating — we will add that logic in the solver.</li>
+        <li>Many visual symbols (π, √, ∑) insert parser-friendly text (e.g. <code>pi</code>, <code>sqrt</code>, <code>sum(</code>), so the solver can evaluate directly after small preprocessing.</li>
+        <li>IDs are lowercase and have no spaces (for easy script hookup).</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    // Helper to insert into a target textarea/input (tries parent if embedded as iframe)
+    function getTarget() {
+      // try parent (iframe embedding)
+      try {
+        if (window !== window.parent) {
+          const pd = window.parent.document;
+          const t = pd.getElementById('expression') || pd.getElementById('input') || pd.querySelector('textarea');
+          if (t) return {el: t, isParent: true, doc: pd};
+        }
+      } catch(e) { /* cross-origin blocked? ignore */ }
+
+      // fallback to same window
+      const t = document.getElementById('expression') || document.getElementById('input') || document.querySelector('textarea');
+      if (t) return {el: t, isParent: false, doc: document};
+      return null;
+    }
+
+    function insertAtCaret(targetEl, text) {
+      // basic insertion into textarea/input
+      const el = targetEl;
+      const start = el.selectionStart || 0;
+      const end = el.selectionEnd || 0;
+      el.value = el.value.slice(0, start) + text + el.value.slice(end);
+      const pos = start + text.length;
+      el.focus();
+      el.selectionStart = el.selectionEnd = pos;
+    }
+
+    // attach click handlers
+    document.querySelectorAll('#keyboard-grid button.key').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const v = btn.getAttribute('data-val') || btn.textContent;
+        const targetInfo = getTarget();
+        if (!targetInfo) {
+          alert('No input found. Make sure a textarea with id=\"expression\" exists on the solver page.');
+          return;
+        }
+        insertAtCaret(targetInfo.el, v);
+      });
+    });
+
+    // Clear (delete last char)
+    document.getElementById('btn-clear').addEventListener('click', ()=>{
+      const t = getTarget();
+      if (!t) { alert('No input found'); return; }
+      const el = t.el;
+      const pos = el.selectionStart || el.value.length;
+      if (pos === 0) return;
+      // delete one char before cursor
+      const before = el.value.slice(0, pos-1);
+      const after = el.value.slice(el.selectionEnd || pos);
+      el.value = before + after;
+      const newpos = pos-1;
+      el.focus();
+      el.selectionStart = el.selectionEnd = newpos;
+    });
+
+    // Clear all
+    document.getElementById('btn-clearall').addEventListener('click', ()=>{
+      const t = getTarget();
+      if (!t) { alert('No input found'); return; }
+      t.el.value = '';
+      t.el.focus();
+    });
+
+    // Solve: try calling parent solveExpression() or local function
+    document.getElementById('btn-solve').addEventListener('click', ()=>{
+      // prefer parent function if embedded
+      try {
+        if (window !== window.parent && typeof window.parent.solveExpression === 'function') {
+          window.parent.solveExpression();
+          return;
+        }
+      } catch(e) {}
+      // try local
+      if (typeof solveExpression === 'function') { solveExpression(); return; }
+      alert('Solve function not found. Make sure your solver page defines a global solveExpression() function and has a textarea with id=\"expression\".');
+    });
+
+  </script>
+</body>
+</html>
