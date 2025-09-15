@@ -1,210 +1,119 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Math Solver</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: white;
-      margin: 0;
-      padding: 0;
+    .key-btn {
+      background-color: #111;
+      color: white;
+      font-size: 1rem;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
       text-align: center;
-    }
-
-    header {
-      background: #333;
-      color: white;
-      padding: 10px 0;
-    }
-
-    nav {
-      margin: 10px 0;
-    }
-
-    nav a {
-      color: white;
-      text-decoration: none;
-      margin: 0 15px;
-      font-weight: bold;
-    }
-
-    #solver-container {
-      max-width: 600px;
-      margin: 20px auto;
-      padding: 20px;
-      border: 2px solid #ddd;
-      border-radius: 10px;
-      background: #f9f9f9;
-    }
-
-    textarea {
-      width: 90%;
-      height: 60px;
-      font-size: 18px;
-      padding: 10px;
-      margin-bottom: 15px;
-      resize: vertical;
-    }
-
-    #output {
-      margin-top: 15px;
-      padding: 10px;
-      border: 1px solid #ddd;
-      background: #fff;
-      min-height: 50px;
-      white-space: pre-wrap;
-      text-align: left;
-    }
-
-    .keyboard {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 8px;
-      margin-top: 15px;
-    }
-
-    .key {
-      padding: 12px;
-      font-size: 16px;
-      font-weight: bold;
-      border: none;
-      border-radius: 6px;
       cursor: pointer;
-      background: #000;
-      color: #fff;
-      transition: background 0.2s;
+      user-select: none;
     }
-
-    .key:hover {
-      background: #444;
+    .key-btn:hover {
+      background-color: #333;
     }
-
-    .special {
-      background: #0a4d8c; /* deep blue */
-      color: white;
-    }
-
-    .special:hover {
-      background: #136fbd;
+    .grid-keys {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+      gap: 0.5rem;
     }
   </style>
 </head>
-<body>
-  <header>
-    <h1>Math Solver</h1>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="resources.html">Resources</a>
-      <a href="graph.html">Graph</a>
-      <a href="solver.html">Math Solver</a>
-      <a href="contact.html">Contact</a>
-    </nav>
-  </header>
-
-  <div id="solver-container">
-    <textarea id="input" placeholder="Enter expression or equation (e.g. 2x+3=7, sin(pi/2), (x+y=5,x-y=3))"></textarea>
-    <div class="keyboard">
-      <button class="key">(</button>
-      <button class="key">)</button>
-      <button class="key">+</button>
-      <button class="key">-</button>
-      <button class="key">*</button>
-      <button class="key">/</button>
-
-      <button class="key">^</button>
-      <button class="key">x</button>
-      <button class="key">y</button>
-      <button class="key">z</button>
-      <button class="key">a</button>
-      <button class="key">b</button>
-
-      <button class="key">sin()</button>
-      <button class="key">cos()</button>
-      <button class="key">tan()</button>
-      <button class="key">log()</button>
-      <button class="key">sqrt()</button>
-      <button class="key">pi</button>
-
-      <button class="special">Solve</button>
-      <button class="special" onclick="clearInput()">Clear</button>
-      <button class="special" onclick="backspace()">⌫</button>
+<body class="bg-white text-gray-900">
+  <!-- Navbar -->
+  <nav class="bg-blue-600 p-4 text-white flex justify-between">
+    <div class="font-bold">Math Website</div>
+    <div class="space-x-4">
+      <a href="index.html" class="hover:underline">Home</a>
+      <a href="solver.html" class="hover:underline">Math Solver</a>
+      <a href="graphs.html" class="hover:underline">Graphs</a>
+      <a href="resources.html" class="hover:underline">Resources</a>
+      <a href="contact.html" class="hover:underline">Contact</a>
     </div>
-    <div id="output">Result will appear here...</div>
-  </div>
+  </nav>  <!-- Solver Section -->  <section class="max-w-4xl mx-auto p-6">
+    <h1 class="text-3xl font-bold mb-4">Math Solver</h1><textarea id="expression" class="w-full border rounded p-2 mb-4" rows="2" placeholder="Enter your equation..."></textarea>
+<div class="flex space-x-2 mb-4">
+  <button onclick="solveExpression()" class="bg-green-600 text-white px-4 py-2 rounded">= Solve</button>
+  <button onclick="clearInput()" class="bg-red-600 text-white px-4 py-2 rounded">Clear</button>
+</div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/algebra.js/0.2.6/algebra.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/sympy/0.1.0/sympy.min.js"></script>
+<div id="result" class="p-4 border rounded bg-gray-50"></div>
 
-  <script>
-    const input = document.getElementById("input");
-    const output = document.getElementById("output");
-    const keys = document.querySelectorAll(".key");
-    const solveButton = document.querySelector(".special");
+<!-- Keypad -->
+<div class="mt-6 grid-keys">
+  <!-- Numbers -->
+  <div class="key-btn" onclick="addKey('7')">7</div>
+  <div class="key-btn" onclick="addKey('8')">8</div>
+  <div class="key-btn" onclick="addKey('9')">9</div>
+  <div class="key-btn" onclick="addKey('/')">÷</div>
 
-    keys.forEach(key => {
-      key.addEventListener("click", () => {
-        let val = key.textContent;
-        if (val.includes("()")) {
-          input.value += val.slice(0, -1);
-        } else {
-          input.value += val;
-        }
-      });
-    });
+  <div class="key-btn" onclick="addKey('4')">4</div>
+  <div class="key-btn" onclick="addKey('5')">5</div>
+  <div class="key-btn" onclick="addKey('6')">6</div>
+  <div class="key-btn" onclick="addKey('*')">×</div>
+
+  <div class="key-btn" onclick="addKey('1')">1</div>
+  <div class="key-btn" onclick="addKey('2')">2</div>
+  <div class="key-btn" onclick="addKey('3')">3</div>
+  <div class="key-btn" onclick="addKey('-')">−</div>
+
+  <div class="key-btn" onclick="addKey('0')">0</div>
+  <div class="key-btn" onclick="addKey('.')">.</div>
+  <div class="key-btn" onclick="addKey('+')">+</div>
+  <div class="key-btn" onclick="addKey('^')">^</div>
+
+  <!-- Brackets -->
+  <div class="key-btn" onclick="addKey('(')">(</div>
+  <div class="key-btn" onclick="addKey(')')">)</div>
+
+  <!-- Trig -->
+  <div class="key-btn" onclick="addKey('sin(')">sin</div>
+  <div class="key-btn" onclick="addKey('cos(')">cos</div>
+  <div class="key-btn" onclick="addKey('tan(')">tan</div>
+  <div class="key-btn" onclick="addKey('asin(')">asin</div>
+  <div class="key-btn" onclick="addKey('acos(')">acos</div>
+  <div class="key-btn" onclick="addKey('atan(')">atan</div>
+
+  <!-- Logs & Roots -->
+  <div class="key-btn" onclick="addKey('log(')">log</div>
+  <div class="key-btn" onclick="addKey('ln(')">ln</div>
+  <div class="key-btn" onclick="addKey('sqrt(')">√</div>
+  <div class="key-btn" onclick="addKey('cbrt(')">∛</div>
+
+  <!-- Constants -->
+  <div class="key-btn" onclick="addKey('pi')">π</div>
+  <div class="key-btn" onclick="addKey('e')">e</div>
+</div>
+
+  </section>  <script>
+    function addKey(val) {
+      document.getElementById('expression').value += val;
+    }
 
     function clearInput() {
-      input.value = "";
-      output.textContent = "Result will appear here...";
+      document.getElementById('expression').value = '';
+      document.getElementById('result').innerHTML = '';
     }
 
-    function backspace() {
-      input.value = input.value.slice(0, -1);
-    }
-
-    solveButton.addEventListener("click", () => {
+    function solveExpression() {
+      let expr = document.getElementById('expression').value;
+      let resultDiv = document.getElementById('result');
       try {
-        const expr = input.value.trim();
-
-        if (!expr) {
-          output.textContent = "Please enter a problem.";
-          return;
-        }
-
-        // Check if equation (contains =)
-        if (expr.includes("=")) {
-          try {
-            let equations = expr.split(",").map(e => e.trim());
-            let parsed = equations.map(eq => eq.replace("=", "-(") + ")");
-            let result = math.solve(equations);
-
-            if (!result || result.length === 0) {
-              output.textContent = "Undefined";
-            } else {
-              output.textContent = JSON.stringify(result, null, 2);
-            }
-          } catch (e) {
-            output.textContent = "Undefined";
-          }
-        } else {
-          // Expression evaluation
-          let result = math.evaluate(expr);
-          if (typeof result === "number" && !isFinite(result)) {
-            output.textContent = "Undefined";
-          } else {
-            output.textContent = result.toString();
-          }
-        }
+        let res = math.evaluate(expr);
+        resultDiv.innerHTML = '';
+        katex.render("= " + res.toString(), resultDiv);
       } catch (err) {
-        if (err.toString().includes("division by zero")) {
-          output.textContent = "Undefined";
-        } else {
-          output.textContent = "Problem too complex, please simplify.";
-        }
+        resultDiv.innerHTML = '<span class="text-red-600 font-bold">Undefined</span>';
       }
-    });
-  </script>
-</body>
+    }
+  </script></body>
 </html>
