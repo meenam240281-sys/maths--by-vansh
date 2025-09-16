@@ -4,194 +4,164 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Maths Solver</title>
-  <link rel="stylesheet" href="styles.css">
-
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
-      background: #fdfdfd;
-    }
-
-    nav {
-      background: #222;
-      padding: 10px 20px;
-    }
-
-    nav ul {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-    }
-
-    nav ul li {
-      margin: 0 15px;
-    }
-
-    nav ul li a {
-      text-decoration: none;
-      color: white;
-      font-weight: bold;
-    }
-
-    nav ul li a:hover {
-      text-decoration: underline;
-    }
-
-    header {
-      text-align: center;
-      padding: 20px;
-    }
-
-    header h1 {
-      font-size: 2rem;
-      margin: 0;
+      background: #f8f8f8;
       color: #333;
     }
-
-    .solver {
-      max-width: 800px;
+    header {
+      background: #222;
+      color: #fff;
+      padding: 15px;
+      text-align: center;
+      font-size: 1.5em;
+    }
+    .solver-container {
+      max-width: 900px;
       margin: 20px auto;
       padding: 20px;
       background: #fff;
       border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
-
-    .solver textarea {
+    .input-box {
       width: 100%;
-      height: 70px;
-      font-size: 1.2rem;
-      padding: 10px;
+      padding: 12px;
+      font-size: 1.2em;
+      border: 2px solid #333;
       border-radius: 6px;
-      border: 1px solid #ccc;
-      resize: none;
+      margin-bottom: 15px;
     }
-
-    .solver-buttons {
+    .button-row {
       margin: 10px 0;
-      text-align: center;
     }
-
-    .solver-buttons button {
-      margin: 5px;
-      padding: 10px 20px;
-      font-size: 1rem;
+    .button-row button {
+      padding: 10px 18px;
+      font-size: 1em;
       border: none;
       border-radius: 6px;
       cursor: pointer;
-      background: #222;
+      margin-right: 10px;
+    }
+    .solve-btn {
+      background: #28a745;
       color: white;
     }
-
-    .solver-buttons button:hover {
-      background: #444;
+    .clear-btn {
+      background: #dc3545;
+      color: white;
     }
-
-    .result {
+    .clearall-btn {
+      background: #6c757d;
+      color: white;
+    }
+    .result-box {
       margin-top: 15px;
-      font-size: 1.2rem;
-      padding: 10px;
-      background: #f4f4f4;
-      border-left: 5px solid #222;
+      padding: 12px;
+      border: 1px solid #ccc;
       border-radius: 6px;
-      min-height: 40px;
+      background: #f1f1f1;
+      font-size: 1.2em;
+      min-height: 30px;
     }
-
-    /* Keyboard container */
-    #keyboard-container {
+    iframe {
+      width: 100%;
+      border: none;
+      height: 350px;
       margin-top: 20px;
     }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.js"></script>
 </head>
 <body>
-  <!-- Navbar -->
-  <nav>
-    <ul>
-      <li><a href="index.html">Home</a></li>
-      <li><a href="solver.html">Maths Solver</a></li>
-      <li><a href="graphs.html">Graphs</a></li>
-      <li><a href="resources.html">Resources</a></li>
-      <li><a href="contact.html">Contact</a></li>
-    </ul>
-  </nav>
+  <header>Maths Solver</header>
 
-  <!-- Header -->
-  <header>
-    <h1>Maths Solver</h1>
-  </header>
-
-  <!-- Solver Section -->
-  <section class="solver">
-    <textarea id="problem" placeholder="Type your equation or expression..."></textarea>
-
-    <div class="solver-buttons">
-      <button onclick="solveProblem()">Solve</button>
-      <button onclick="clearLast()">Clear</button>
-      <button onclick="clearAll()">Clear All</button>
+  <div class="solver-container">
+    <input type="text" id="expression" class="input-box" placeholder="Type or use the keyboard below...">
+    
+    <div class="button-row">
+      <button class="solve-btn" onclick="solveExpression()">Solve</button>
+      <button class="clear-btn" onclick="clearOne()">Clear</button>
+      <button class="clearall-btn" onclick="clearAll()">Clear All</button>
     </div>
 
-    <div class="result" id="result">Result will appear here...</div>
-  </section>
+    <div id="result" class="result-box"></div>
 
-  <!-- Keyboard Section -->
-  <section id="keyboard-container"></section>
+    <!-- Embed the keyboard -->
+    <iframe src="keyboard.html"></iframe>
+  </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.js"></script>
   <script>
-    // Dynamically load the keyboard.html file into solver page
-    fetch("keyboard.html")
-      .then(response => response.text())
-      .then(data => {
-        document.getElementById("keyboard-container").innerHTML = data;
-        initKeyboard();
-      });
+    const exprInput = document.getElementById("expression");
+    const resultBox = document.getElementById("result");
 
-    function solveProblem() {
-      const input = document.getElementById("problem").value.trim();
-      const resultDiv = document.getElementById("result");
+    // Fix trig to default to degrees
+    const degTrig = {
+      sin: x => math.sin(math.unit(x, 'deg')),
+      cos: x => math.cos(math.unit(x, 'deg')),
+      tan: x => math.tan(math.unit(x, 'deg')),
+      cot: x => 1 / math.tan(math.unit(x, 'deg')),
+      sec: x => 1 / math.cos(math.unit(x, 'deg')),
+      csc: x => 1 / math.sin(math.unit(x, 'deg')),
+      asin: x => math.asin(x) * (180 / Math.PI),
+      acos: x => math.acos(x) * (180 / Math.PI),
+      atan: x => math.atan(x) * (180 / Math.PI)
+    };
 
+    function preprocess(expr) {
+      return expr
+        .replace(/√(\d+)/g, 'sqrt($1)')
+        .replace(/nthroot\(([^,]+),([^)]+)\)/gi, 'nthRoot($1,$2)');
+    }
+
+    function solveExpression() {
+      let input = exprInput.value.trim();
       if (!input) {
-        resultDiv.innerText = "Invalid input: empty";
+        resultBox.textContent = "Invalid Input";
         return;
       }
 
       try {
-        const simplified = math.simplify(input).toString();
-        const evaluated = math.evaluate(input);
+        input = preprocess(input);
 
-        if (evaluated === undefined || evaluated === null || isNaN(evaluated)) {
-          resultDiv.innerText = "Undefined";
-        } else {
-          resultDiv.innerText = simplified + " = " + evaluated;
+        if (input.includes("=")) {
+          const [lhs, rhs] = input.split("=");
+          const variableMatch = lhs.match(/[a-zA-Z]/) || rhs.match(/[a-zA-Z]/);
+          if (variableMatch) {
+            const variable = variableMatch[0];
+            const solution = math.solve(lhs + "-" + rhs, variable);
+            resultBox.textContent = variable + " = " + solution;
+            return;
+          }
         }
-      } catch (e) {
-        resultDiv.innerText = "Invalid input";
+
+        const scope = { ...degTrig, nthRoot: (a,n) => Math.pow(a, 1/n) };
+        const result = math.evaluate(input, scope);
+        resultBox.textContent = result;
+      } catch {
+        resultBox.textContent = "Invalid Input";
       }
     }
 
-    function clearLast() {
-      const input = document.getElementById("problem");
-      input.value = input.value.slice(0, -1);
+    function clearOne() {
+      exprInput.value = exprInput.value.slice(0, -1);
     }
 
     function clearAll() {
-      document.getElementById("problem").value = "";
-      document.getElementById("result").innerText = "Result will appear here...";
+      exprInput.value = "";
+      resultBox.textContent = "";
     }
 
-    // Called after keyboard loads
-    function initKeyboard() {
-      document.querySelectorAll(".key").forEach(key => {
-        key.addEventListener("click", () => {
-          const val = key.getAttribute("data-value");
-          document.getElementById("problem").value += val;
-        });
-      });
-    }
+    // Get key presses from keyboard.html
+    window.addEventListener("message", (event) => {
+      if (event.data.type === "keyPress") {
+        exprInput.setRangeText(event.data.value, exprInput.selectionStart, exprInput.selectionEnd, "end");
+        exprInput.focus();
+      }
+    });
   </script>
 </body>
 </html>
