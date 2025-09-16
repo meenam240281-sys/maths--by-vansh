@@ -9,157 +9,202 @@
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
-      background: #f8f8f8;
+      background: #f8f9fa;
       color: #333;
     }
+
     header {
       background: #222;
       color: #fff;
       padding: 15px;
       text-align: center;
-      font-size: 1.5em;
     }
-    .solver-container {
-      max-width: 900px;
-      margin: 20px auto;
+
+    nav {
+      background: #444;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 10px 0;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 30px auto;
       padding: 20px;
       background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
-    .input-box {
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    #expression {
       width: 100%;
-      padding: 12px;
-      font-size: 1.2em;
-      border: 2px solid #333;
+      font-size: 1.3em;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    #result {
+      width: 100%;
+      font-size: 1.3em;
+      padding: 10px;
+      background: #f0f0f0;
+      border: 1px solid #ccc;
       border-radius: 6px;
       margin-bottom: 15px;
+      min-height: 40px;
     }
-    .button-row {
-      margin: 10px 0;
-    }
-    .button-row button {
-      padding: 10px 18px;
+
+    button {
+      padding: 10px 15px;
+      margin: 5px;
       font-size: 1em;
       border: none;
       border-radius: 6px;
       cursor: pointer;
-      margin-right: 10px;
     }
-    .solve-btn {
-      background: #28a745;
-      color: white;
-    }
-    .clear-btn {
-      background: #dc3545;
-      color: white;
-    }
-    .clearall-btn {
-      background: #6c757d;
-      color: white;
-    }
-    .result-box {
-      margin-top: 15px;
-      padding: 12px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      background: #f1f1f1;
-      font-size: 1.2em;
-      min-height: 30px;
-    }
+
+    .btn-solve { background: #28a745; color: white; }
+    .btn-clear { background: #ffc107; color: black; }
+    .btn-clearall { background: #dc3545; color: white; }
+
     iframe {
       width: 100%;
-      border: none;
-      height: 350px;
+      height: 400px;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      margin-top: 15px;
+    }
+
+    .note {
       margin-top: 20px;
+      font-size: 0.9em;
+      color: #555;
     }
   </style>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.js"></script>
 </head>
 <body>
-  <header>Maths Solver</header>
+  <header>
+    <h2>Maths Solver</h2>
+  </header>
 
-  <div class="solver-container">
-    <input type="text" id="expression" class="input-box" placeholder="Type or use the keyboard below...">
-    
-    <div class="button-row">
-      <button class="solve-btn" onclick="solveExpression()">Solve</button>
-      <button class="clear-btn" onclick="clearOne()">Clear</button>
-      <button class="clearall-btn" onclick="clearAll()">Clear All</button>
+  <!-- Permanent navigation bar -->
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="solver.html">Maths Solver</a>
+    <a href="graphs.html">Graphs</a>
+    <a href="resources.html">Resources</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+
+  <div class="container">
+    <h1>Maths Solver</h1>
+    <input type="text" id="expression" placeholder="Enter your expression here">
+    <div id="result"></div>
+    <div>
+      <button class="btn-solve" onclick="solveExpression()">Solve</button>
+      <button class="btn-clear" onclick="clearLast()">⌫ Clear</button>
+      <button class="btn-clearall" onclick="clearAll()">C Clear All</button>
     </div>
 
-    <div id="result" class="result-box"></div>
-
-    <!-- Embed the keyboard -->
+    <!-- Keyboard comes from external file -->
     <iframe src="keyboard.html"></iframe>
+
+    <p class="note">
+      Note: Use standard maths format. Variables like <b>x</b>, <b>y</b> are supported.  
+      For nth root, type <b>nthroot(a,n)</b> (e.g., nthroot(8,3) → 2).  
+      Trigonometry, logarithms, and exponents work without brackets (e.g., sin30, log100).
+      If the input is invalid, the solver will return <b>Invalid Input</b>.
+    </p>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.js"></script>
   <script>
-    const exprInput = document.getElementById("expression");
-    const resultBox = document.getElementById("result");
-
-    // Fix trig to default to degrees
-    const degTrig = {
-      sin: x => math.sin(math.unit(x, 'deg')),
-      cos: x => math.cos(math.unit(x, 'deg')),
-      tan: x => math.tan(math.unit(x, 'deg')),
-      cot: x => 1 / math.tan(math.unit(x, 'deg')),
-      sec: x => 1 / math.cos(math.unit(x, 'deg')),
-      csc: x => 1 / math.sin(math.unit(x, 'deg')),
-      asin: x => math.asin(x) * (180 / Math.PI),
-      acos: x => math.acos(x) * (180 / Math.PI),
-      atan: x => math.atan(x) * (180 / Math.PI)
-    };
+    // auto-insert * for implicit multiplication
+    function fixExpression(expr) {
+      return expr
+        .replace(/(\d)([a-zA-Z])/g, "$1*$2")     // 2x → 2*x
+        .replace(/(\d)\(/g, "$1*(")              // 3(4+5) → 3*(4+5)
+        .replace(/\)(\d)/g, ")*$1");             // (2)3 → (2)*3
+    }
 
     function preprocess(expr) {
-      return expr
-        .replace(/√(\d+)/g, 'sqrt($1)')
-        .replace(/nthroot\(([^,]+),([^)]+)\)/gi, 'nthRoot($1,$2)');
+      let e = expr.toLowerCase();
+
+      // trig/log shorthand
+      e = e.replace(/sin(\d+)/g, "sin($1)");
+      e = e.replace(/cos(\d+)/g, "cos($1)");
+      e = e.replace(/tan(\d+)/g, "tan($1)");
+      e = e.replace(/log(\d+)/g, "log($1,10)");
+      e = e.replace(/ln(\d+)/g, "log($1)");
+
+      // roots without brackets
+      e = e.replace(/sqrt(\d+)/g, "sqrt($1)");
+      e = e.replace(/cbrt(\d+)/g, "cbrt($1)");
+      e = e.replace(/nthroot(\d+),(\d+)/g, "nthRoot($1,$2)");
+
+      return fixExpression(e);
     }
 
     function solveExpression() {
-      let input = exprInput.value.trim();
+      const input = document.getElementById("expression").value.trim();
       if (!input) {
-        resultBox.textContent = "Invalid Input";
+        document.getElementById("result").innerText = "Invalid Input";
         return;
       }
 
       try {
-        input = preprocess(input);
+        let expr = preprocess(input);
+        let result;
 
-        if (input.includes("=")) {
-          const [lhs, rhs] = input.split("=");
-          const variableMatch = lhs.match(/[a-zA-Z]/) || rhs.match(/[a-zA-Z]/);
-          if (variableMatch) {
-            const variable = variableMatch[0];
-            const solution = math.solve(lhs + "-" + rhs, variable);
-            resultBox.textContent = variable + " = " + solution;
-            return;
-          }
+        if (expr.includes("=")) {
+          // equation solving
+          let sides = expr.split("=");
+          if (sides.length !== 2) throw "Invalid Equation";
+
+          const lhs = math.parse(sides[0]);
+          const rhs = math.parse(sides[1]);
+
+          const x = math.symbols(expr)[0] || "x"; // default var
+          result = math.solve(lhs, rhs, x);
+        } else {
+          // normal evaluation
+          result = math.evaluate(expr);
         }
 
-        const scope = { ...degTrig, nthRoot: (a,n) => Math.pow(a, 1/n) };
-        const result = math.evaluate(input, scope);
-        resultBox.textContent = result;
-      } catch {
-        resultBox.textContent = "Invalid Input";
+        document.getElementById("result").innerText = result;
+      } catch (err) {
+        document.getElementById("result").innerText = "Invalid Input";
       }
     }
 
-    function clearOne() {
-      exprInput.value = exprInput.value.slice(0, -1);
+    function clearLast() {
+      let expr = document.getElementById("expression").value;
+      document.getElementById("expression").value = expr.slice(0, -1);
     }
 
     function clearAll() {
-      exprInput.value = "";
-      resultBox.textContent = "";
+      document.getElementById("expression").value = "";
+      document.getElementById("result").innerText = "";
     }
 
-    // Get key presses from keyboard.html
-    window.addEventListener("message", (event) => {
-      if (event.data.type === "keyPress") {
-        exprInput.setRangeText(event.data.value, exprInput.selectionStart, exprInput.selectionEnd, "end");
-        exprInput.focus();
+    // get input from keyboard.html
+    window.addEventListener("message", function(event) {
+      if (event.data && event.data.type === "keyPress") {
+        document.getElementById("expression").value += event.data.value;
       }
     });
   </script>
