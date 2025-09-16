@@ -182,19 +182,6 @@
       <!-- Complex / extra -->
       <button id="btn-Re" class="key" data-value="re(">Re</button>
 
-      <!-- END of 117 keys -->
-    </div>
-
-    <div style="margin-top:12px;font-size:13px;color:#444">
-      <strong>Notes:</strong>
-      <ul>
-        <li>Button <code>sqrt</code> inserts <code>sqrt</code> (no bracket). The solver must preprocess <code>sqrt4</code> → <code>sqrt(4)</code> before evaluating — we will add that logic in the solver.</li>
-        <li>Many visual symbols (π, √, ∑) insert parser-friendly text (e.g. <code>pi</code>, <code>sqrt</code>, <code>sum(</code>), so the solver can evaluate directly after small preprocessing.</li>
-        <li>IDs are lowercase and have no spaces (for easy script hookup).</li>
-      </ul>
-    </div>
-  </div>
-
   <script>
     // Helper to insert into a target textarea/input (tries parent if embedded as iframe)
     function getTarget() {
