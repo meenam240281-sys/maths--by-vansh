@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,204 +8,168 @@
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
-      background: #f8f9fa;
+      background: #f4f4f9;
       color: #333;
     }
-
     header {
-      background: #222;
+      background: #2d3e50;
       color: #fff;
-      padding: 15px;
+      padding: 1rem;
       text-align: center;
     }
-
-    nav {
-      background: #444;
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      padding: 10px 0;
-    }
-
-    nav a {
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    .container {
-      max-width: 800px;
-      margin: 30px auto;
-      padding: 20px;
+    .solver-container {
+      max-width: 900px;
+      margin: 2rem auto;
       background: #fff;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      border-radius: 10px;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
-
-    h1 {
+    .solver-container h2 {
+      margin-top: 0;
       text-align: center;
-      margin-bottom: 20px;
     }
-
     #expression {
       width: 100%;
-      font-size: 1.3em;
-      padding: 10px;
-      margin-bottom: 15px;
-      border-radius: 6px;
+      font-size: 1.2rem;
+      padding: 0.5rem;
+      margin: 1rem 0;
       border: 1px solid #ccc;
+      border-radius: 8px;
     }
-
-    #result {
-      width: 100%;
-      font-size: 1.3em;
-      padding: 10px;
-      background: #f0f0f0;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      margin-bottom: 15px;
-      min-height: 40px;
+    .buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-bottom: 1.5rem;
     }
-
     button {
-      padding: 10px 15px;
-      margin: 5px;
-      font-size: 1em;
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
     }
-
-    .btn-solve { background: #28a745; color: white; }
-    .btn-clear { background: #ffc107; color: black; }
-    .btn-clearall { background: #dc3545; color: white; }
-
+    .solve-btn { background: #4caf50; color: white; }
+    .clear-btn { background: #f44336; color: white; }
+    .clearall-btn { background: #9c27b0; color: white; }
+    #result {
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+      padding: 1rem;
+      border-radius: 8px;
+      min-height: 50px;
+      white-space: pre-wrap;
+    }
     iframe {
       width: 100%;
       height: 400px;
-      border: 2px solid #ccc;
-      border-radius: 8px;
-      margin-top: 15px;
+      border: none;
+      margin-top: 1rem;
     }
-
     .note {
-      margin-top: 20px;
-      font-size: 0.9em;
-      color: #555;
+      margin-top: 2rem;
+      background: #fff3cd;
+      color: #856404;
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid #ffeeba;
+      font-size: 0.95rem;
     }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
 </head>
 <body>
   <header>
-    <h2>Maths Solver</h2>
-  </header>
-
-  <!-- Permanent navigation bar -->
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="solver.html">Maths Solver</a>
-    <a href="graphs.html">Graphs</a>
-    <a href="resources.html">Resources</a>
-    <a href="contact.html">Contact</a>
-  </nav>
-
-  <div class="container">
     <h1>Maths Solver</h1>
-    <input type="text" id="expression" placeholder="Enter your expression here">
-    <div id="result"></div>
-    <div>
-      <button class="btn-solve" onclick="solveExpression()">Solve</button>
-      <button class="btn-clear" onclick="clearLast()">⌫ Clear</button>
-      <button class="btn-clearall" onclick="clearAll()">C Clear All</button>
-    </div>
+  </header>  <div class="solver-container">
+    <h2>Solve your expression</h2>
+    <input type="text" id="expression" placeholder="Enter equation or expression"><div class="buttons">
+  <button class="solve-btn" onclick="solveExpression()">Solve</button>
+  <button class="clear-btn" onclick="clearLast()">Clear</button>
+  <button class="clearall-btn" onclick="clearAll()">Clear All</button>
+</div>
 
-    <!-- Keyboard comes from external file -->
-    <iframe src="keyboard.html"></iframe>
+<div id="result">Result will appear here...</div>
 
-    <p class="note">
-      Note: Use standard maths format. Variables like <b>x</b>, <b>y</b> are supported.  
-      For nth root, type <b>nthroot(a,n)</b> (e.g., nthroot(8,3) → 2).  
-      Trigonometry, logarithms, and exponents work without brackets (e.g., sin30, log100).
-      If the input is invalid, the solver will return <b>Invalid Input</b>.
-    </p>
-  </div>
+<!-- Embed the keyboard -->
+<iframe src="keyboard.html"></iframe>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.js"></script>
-  <script>
-    // auto-insert * for implicit multiplication
-    function fixExpression(expr) {
-      return expr
-        .replace(/(\d)([a-zA-Z])/g, "$1*$2")     // 2x → 2*x
-        .replace(/(\d)\(/g, "$1*(")              // 3(4+5) → 3*(4+5)
-        .replace(/\)(\d)/g, ")*$1");             // (2)3 → (2)*3
-    }
+<!-- Notes / Cautions -->
+<div class="note">
+  <strong>Notes:</strong>
+  <ul>
+    <li>Please use brackets where needed (e.g. (2/3)x vs 2/(3x)).</li>
+    <li>Roots like √4 or ∛8 don’t need brackets.</li>
+    <li>Default: log = base 10, ln = natural log.</li>
+    <li>Equations in multiple variables are supported (e.g. x+y=5).</li>
+    <li>Results may be shown in fraction and decimal both.</li>
+    <li>Complex numbers may appear as <em>a+bi</em> or in polar form.</li>
+  </ul>
+</div>
+
+  </div>  <script>
+    // Append keyboard clicks
+    window.addEventListener("message", function(event) {
+      if (event.data.type === "keyPress") {
+        const exprInput = document.getElementById("expression");
+        const cursorPos = exprInput.selectionStart;
+        const text = exprInput.value;
+        const before = text.substring(0, cursorPos);
+        const after = text.substring(cursorPos);
+        exprInput.value = before + event.data.value + after;
+        exprInput.focus();
+        exprInput.selectionStart = exprInput.selectionEnd = cursorPos + event.data.value.length;
+      }
+    });
 
     function preprocess(expr) {
-      let e = expr.toLowerCase();
-
-      // trig/log shorthand
-      e = e.replace(/sin(\d+)/g, "sin($1)");
-      e = e.replace(/cos(\d+)/g, "cos($1)");
-      e = e.replace(/tan(\d+)/g, "tan($1)");
-      e = e.replace(/log(\d+)/g, "log($1,10)");
-      e = e.replace(/ln(\d+)/g, "log($1)");
-
-      // roots without brackets
-      e = e.replace(/sqrt(\d+)/g, "sqrt($1)");
-      e = e.replace(/cbrt(\d+)/g, "cbrt($1)");
-      e = e.replace(/nthroot(\d+),(\d+)/g, "nthRoot($1,$2)");
-
-      return fixExpression(e);
+      // Handle roots without brackets
+      expr = expr.replace(/√(\d+(?:\.\d+)?)/g, 'sqrt($1)');
+      expr = expr.replace(/∛(\d+(?:\.\d+)?)/g, 'cbrt($1)');
+      // Implicit multiplication: 2x -> 2*x
+      expr = expr.replace(/(\d)([a-zA-Z])/g, '$1*$2');
+      expr = expr.replace(/([a-zA-Z])(\d)/g, '$1*$2');
+      return expr;
     }
 
     function solveExpression() {
-      const input = document.getElementById("expression").value.trim();
-      if (!input) {
-        document.getElementById("result").innerText = "Invalid Input";
+      const exprInput = document.getElementById("expression");
+      const resultDiv = document.getElementById("result");
+      let expr = exprInput.value.trim();
+      if (!expr) {
+        resultDiv.textContent = "Please enter an input.";
         return;
       }
 
       try {
-        let expr = preprocess(input);
-        let result;
+        expr = preprocess(expr);
 
-        if (expr.includes("=")) {
-          // equation solving
-          let sides = expr.split("=");
-          if (sides.length !== 2) throw "Invalid Equation";
-
-          const lhs = math.parse(sides[0]);
-          const rhs = math.parse(sides[1]);
-
-          const x = math.symbols(expr)[0] || "x"; // default var
-          result = math.solve(lhs, rhs, x);
+        if (expr.includes('=')) {
+          // Solve equations
+          let [lhs, rhs] = expr.split('=').map(side => math.simplify(side));
+          const equation = math.subtract(lhs, rhs);
+          const solutions = math.solve(equation, Object.keys(lhs.filter ? lhs.filter(() => true) : {x:1}));
+          resultDiv.textContent = "Solutions: " + JSON.stringify(solutions, null, 2);
         } else {
-          // normal evaluation
-          result = math.evaluate(expr);
+          // Evaluate
+          let simplified = math.simplify(expr);
+          let evaluated = math.evaluate(expr);
+          resultDiv.textContent = simplified.toString() + " = " + evaluated;
         }
-
-        document.getElementById("result").innerText = result;
       } catch (err) {
-        document.getElementById("result").innerText = "Invalid Input";
+        resultDiv.textContent = "Invalid input. Please check your expression.";
       }
     }
 
     function clearLast() {
-      let expr = document.getElementById("expression").value;
-      document.getElementById("expression").value = expr.slice(0, -1);
+      const exprInput = document.getElementById("expression");
+      exprInput.value = exprInput.value.slice(0, -1);
     }
 
     function clearAll() {
       document.getElementById("expression").value = "";
-      document.getElementById("result").innerText = "";
+      document.getElementById("result").textContent = "Result will appear here...";
     }
-
-    // get input from keyboard.html
-    window.addEventListener("message", function(event) {
-      if (event.data && event.data.type === "keyPress") {
-        document.getElementById("expression").value += event.data.value;
-      }
-    });
-  </script>
-</body>
+  </script></body>
 </html>
