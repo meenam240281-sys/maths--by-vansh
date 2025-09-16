@@ -1,175 +1,192 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Maths Solver</title>
+  <title>Math Solver</title>
+
   <style>
+    /* Dark theme basic styling */
     body {
       font-family: Arial, sans-serif;
+      background-color: #121212;
+      color: #f0f0f0;
       margin: 0;
       padding: 0;
-      background: #f4f4f9;
-      color: #333;
-    }
-    header {
-      background: #2d3e50;
-      color: #fff;
-      padding: 1rem;
-      text-align: center;
-    }
-    .solver-container {
-      max-width: 900px;
-      margin: 2rem auto;
-      background: #fff;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-    .solver-container h2 {
-      margin-top: 0;
-      text-align: center;
-    }
-    #expression {
-      width: 100%;
-      font-size: 1.2rem;
-      padding: 0.5rem;
-      margin: 1rem 0;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-    }
-    .buttons {
       display: flex;
-      gap: 1rem;
-      justify-content: center;
-      margin-bottom: 1.5rem;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+      h1 {
+      margin: 20px 0;
+      color: #00e6e6;
+      text-shadow: 1px 1px 3px #000;
+    }
+
+    .solver-container {
+      background: #1e1e1e;
+      border-radius: 12px;
+      padding: 20px;
+      width: 90%;
+      max-width: 600px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 1.1em;
+      color: #ffcc66;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      font-size: 1.1em;
+      background: #2a2a2a;
+      color: #f0f0f0;
     }
     button {
-      padding: 0.6rem 1.2rem;
-      font-size: 1rem;
+      background: #00e6e6;
+      color: #121212;
+      padding: 10px 16px;
+      font-size: 1em;
+      font-weight: bold;
       border: none;
       border-radius: 8px;
       cursor: pointer;
+      transition: 0.3s;
+      margin-right: 10px;
     }
-    .solve-btn { background: #4caf50; color: white; }
-    .clear-btn { background: #f44336; color: white; }
-    .clearall-btn { background: #9c27b0; color: white; }
-    #result {
-      background: #f9f9f9;
-      border: 1px solid #ddd;
-      padding: 1rem;
+
+    button:hover {
+      background: #00cccc;
+    }
+
+    .output {
+      margin-top: 20px;
+      background: #2a2a2a;
+      padding: 15px;
       border-radius: 8px;
-      min-height: 50px;
+      font-size: 1.1em;
+      min-height: 60px;
       white-space: pre-wrap;
     }
-    iframe {
-      width: 100%;
-      height: 400px;
-      border: none;
-      margin-top: 1rem;
-    }
+
     .note {
-      margin-top: 2rem;
-      background: #fff3cd;
-      color: #856404;
-      padding: 1rem;
-      border-radius: 8px;
-      border: 1px solid #ffeeba;
-      font-size: 0.95rem;
+      margin-top: 15px;
+      font-size: 0.9em;
+      color: #999;
     }
   </style>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
 </head>
 <body>
-  <header>
-    <h1>Maths Solver</h1>
-  </header>  <div class="solver-container">
-    <h2>Solve your expression</h2>
-    <input type="text" id="expression" placeholder="Enter equation or expression"><div class="buttons">
-  <button class="solve-btn" onclick="solveExpression()">Solve</button>
-  <button class="clear-btn" onclick="clearLast()">Clear</button>
-  <button class="clearall-btn" onclick="clearAll()">Clear All</button>
-</div>
+  <h1>Maths Solver</h1>
 
-<div id="result">Result will appear here...</div>
+  <div class="solver-container">
+    <label for="expression">Enter your expression or equation:</label>
+    <input type="text" id="expression" placeholder="Example: 2x+5=11 or sin(30)">
+    <div>
+      <button onclick="solveMath()">Solve</button>
+      <button onclick="clearOutput()">Clear</button>
+    </div>
+    <div id="output" class="output">Your result will appear here...</div>
+    <div class="note">
+      ⚠️ Note: Please use brackets () when needed for clarity.  
+      Example: Write (2/3)x instead of 2/3x.
+    </div>
+  </div><script>
+    // Preprocess user input before evaluation
+    function preprocessInput(input) {
+      let expr = input.trim();
 
-<!-- Embed the keyboard -->
-<iframe src="keyboard.html"></iframe>
+      // Replace common notations with math.js functions
+      expr = expr.replace(/√/g, "sqrt");
+      expr = expr.replace(/\^/g, "**"); // Allow a^b notation
+      expr = expr.replace(/÷/g, "/");
+      expr = expr.replace(/×/g, "*");
 
-<!-- Notes / Cautions -->
-<div class="note">
-  <strong>Notes:</strong>
-  <ul>
-    <li>Please use brackets where needed (e.g. (2/3)x vs 2/(3x)).</li>
-    <li>Roots like √4 or ∛8 don’t need brackets.</li>
-    <li>Default: log = base 10, ln = natural log.</li>
-    <li>Equations in multiple variables are supported (e.g. x+y=5).</li>
-    <li>Results may be shown in fraction and decimal both.</li>
-    <li>Complex numbers may appear as <em>a+bi</em> or in polar form.</li>
-  </ul>
-</div>
+      // Auto-handle implicit multiplication like 2x → 2*x
+      expr = expr.replace(/(\d)([a-zA-Z])/g, "$1*$2");
 
-  </div>  <script>
-    // Append keyboard clicks
-    window.addEventListener("message", function(event) {
-      if (event.data.type === "keyPress") {
-        const exprInput = document.getElementById("expression");
-        const cursorPos = exprInput.selectionStart;
-        const text = exprInput.value;
-        const before = text.substring(0, cursorPos);
-        const after = text.substring(cursorPos);
-        exprInput.value = before + event.data.value + after;
-        exprInput.focus();
-        exprInput.selectionStart = exprInput.selectionEnd = cursorPos + event.data.value.length;
-      }
-    });
-
-    function preprocess(expr) {
-      // Handle roots without brackets
-      expr = expr.replace(/√(\d+(?:\.\d+)?)/g, 'sqrt($1)');
-      expr = expr.replace(/∛(\d+(?:\.\d+)?)/g, 'cbrt($1)');
-      // Implicit multiplication: 2x -> 2*x
-      expr = expr.replace(/(\d)([a-zA-Z])/g, '$1*$2');
-      expr = expr.replace(/([a-zA-Z])(\d)/g, '$1*$2');
       return expr;
     }
 
-    function solveExpression() {
-      const exprInput = document.getElementById("expression");
-      const resultDiv = document.getElementById("result");
-      let expr = exprInput.value.trim();
-      if (!expr) {
-        resultDiv.textContent = "Please enter an input.";
+    // Main solver function
+    function solveMath() {
+      const input = document.getElementById("expression").value;
+      const outputDiv = document.getElementById("output");
+
+      if (!input) {
+        outputDiv.innerText = "⚠️ Please enter something to solve.";
         return;
       }
 
       try {
-        expr = preprocess(expr);
+        const expr = preprocessInput(input);
 
-        if (expr.includes('=')) {
-          // Solve equations
-          let [lhs, rhs] = expr.split('=').map(side => math.simplify(side));
-          const equation = math.subtract(lhs, rhs);
-          const solutions = math.solve(equation, Object.keys(lhs.filter ? lhs.filter(() => true) : {x:1}));
-          resultDiv.textContent = "Solutions: " + JSON.stringify(solutions, null, 2);
+        // Check if equation (contains '=')
+        if (expr.includes("=")) {
+          const sides = expr.split("=");
+          if (sides.length === 2) {
+            const lhs = math.parse(sides[0]);
+            const rhs = math.parse(sides[1]);
+            const equation = new math.EqualNode(lhs, rhs);
+
+            const solutions = math.solve(equation, "x"); // Default solve for x
+            outputDiv.innerText = "Solution: " + JSON.stringify(solutions, null, 2);
+          } else {
+            outputDiv.innerText = "⚠️ Invalid equation format.";
+          }
         } else {
-          // Evaluate
-          let simplified = math.simplify(expr);
-          let evaluated = math.evaluate(expr);
-          resultDiv.textContent = simplified.toString() + " = " + evaluated;
+          // Expression evaluation
+          const result = math.evaluate(expr);
+          outputDiv.innerText = "Result: " + result;
         }
       } catch (err) {
-        resultDiv.textContent = "Invalid input. Please check your expression.";
+        outputDiv.innerText = "⚠️ Invalid input. Please check your expression.";
       }
-    }
-
-    function clearLast() {
-      const exprInput = document.getElementById("expression");
-      exprInput.value = exprInput.value.slice(0, -1);
-    }
-
-    function clearAll() {
+    }// Clear the input and output
+    function clearMathSolver() {
       document.getElementById("expression").value = "";
-      document.getElementById("result").textContent = "Result will appear here...";
+      document.getElementById("output").innerText = "";
     }
-  </script></body>
+
+    // Handle keyboard input from custom keypad
+    function insertValue(val) {
+      const inputField = document.getElementById("expression");
+      const start = inputField.selectionStart;
+      const end = inputField.selectionEnd;
+
+      // Insert value at cursor position
+      inputField.value =
+        inputField.value.substring(0, start) +
+        val +
+        inputField.value.substring(end);
+
+      // Move cursor after inserted text
+      inputField.selectionStart = inputField.selectionEnd = start + val.length;
+      inputField.focus();
+    }
+
+    // Handle backspace on custom keypad
+    function backspaceMathSolver() {
+      const inputField = document.getElementById("expression");
+      const start = inputField.selectionStart;
+      const end = inputField.selectionEnd;
+
+      if (start > 0) {
+        inputField.value =
+          inputField.value.substring(0, start - 1) +
+          inputField.value.substring(end);
+        inputField.selectionStart = inputField.selectionEnd = start - 1;
+      }
+      inputField.focus();
+    }
+  </script>
+</body>
 </html>
