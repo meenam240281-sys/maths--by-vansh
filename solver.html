@@ -185,3 +185,94 @@
 
       const processed = preprocessInput(input);
       let resultText = "";
+<script>
+    // Extra helper: auto nth-root expansion
+    function nthRoot(base, n) {
+      return math.pow(base, 1/n);
+    }
+
+    // Handle advanced solve
+    function advancedSolve(input) {
+      let resultText = "";
+
+      try {
+        // Quadratic equations
+        if (/x\^2/.test(input)) {
+          let coeffs = math.quadraticSolver(input, "x");
+          resultText += "🔢 Quadratic Equation Solutions:\n";
+          resultText += coeffs.join(", ") + "\n";
+        }
+
+        // Cubic equations
+        else if (/x\^3/.test(input)) {
+          try {
+            let roots = math.solve(input, "x");
+            resultText += "🔢 Cubic Equation Solutions:\n";
+            resultText += roots.join(", ") + "\n";
+          } catch(err) {
+            resultText += "⚠️ Could not solve cubic automatically.\n";
+          }
+        }
+
+        // Inequalities
+        else if (/[<>≤≥]/.test(input)) {
+          resultText += "⚖️ Inequality Detected.\n";
+          resultText += "Currently evaluates numeric check or needs graphing.\n";
+        }
+
+        // Nth roots
+        else if (/√/.test(input) || /nthroot/.test(input)) {
+          resultText += "🟢 Nth Root Function.\n";
+          resultText += "Tip: 'nthroot(a, n)' means n-th root of a.\n";
+        }
+
+        // Complex numbers
+        else if (/i/.test(input)) {
+          let comp = math.evaluate(input);
+          resultText += "🌀 Complex Number:\n";
+          resultText += "- Rectangular: " + comp.toString() + "\n";
+          resultText += "- Polar: " + math.complex(comp).toPolar().r.toFixed(3)
+                        + " ∠ " + math.complex(comp).toPolar().phi.toFixed(3) + "\n";
+        }
+
+        // Calculus basics
+        else if (/d\//.test(input) || /derivative/.test(input)) {
+          let expr = input.replace("derivative", "");
+          let deriv = math.derivative(expr, "x").toString();
+          resultText += "📈 Derivative: " + deriv + "\n";
+        }
+        else if (/integrate/.test(input)) {
+          let expr = input.replace("integrate", "");
+          resultText += "📉 Integration currently symbolic support limited.\n";
+          try {
+            let integ = math.integral(expr, "x").toString();
+            resultText += "Integration: " + integ + "\n";
+          } catch {
+            resultText += "⚠️ Integration needs external CAS.\n";
+          }
+        }
+
+        // Default → fallback
+        else {
+          let val = math.evaluate(input);
+          resultText = "Result: " + val;
+        }
+      } catch(err) {
+        resultText = "❌ Error in advanced solver: " + err.message;
+      }
+
+      document.getElementById("output").innerText = resultText;
+    }
+  </script>
+
+  <footer>
+    <p>📝 Notes:</p>
+    <ul>
+      <li>Use brackets when possible for clarity.</li>
+      <li>All trig functions are in radians.</li>
+      <li>Supports: algebra, trig, logs, factorials, roots, calculus (basic), complex numbers.</li>
+      <li>For graphs of equations → Visit <a href="graphs.html">Graphs Page</a>.</li>
+    </ul>
+  </footer>
+</body>
+</html>
