@@ -448,4 +448,137 @@
 
       if (!finished) out.innerHTML = '⚠️ Computation did not finish.';
     }
-                                         </script>
+    <script>
+    // ---------- Extra parsing for roots, decimals, trig, factorials ----------
+
+    // handle √, nthRoot, fractional exponents
+    function handleRoots(expr) {
+      let s = expr;
+      // √x -> sqrt(x)
+      s = s.replace(/√\s*([A-Za-z0-9\(\)]+)/g, 'sqrt($1)');
+      // nthRoot(n,x) stays as is
+      // convert ^(1/n) to nthRoot(n,...)
+      s = s.replace(/\(([^)]+)\)\s*\^\s*\(1\/(\d+)\)/g, 'nthRoot($2,$1)');
+      return s;
+    }
+
+    // handle repeating decimals with overline notation, e.g. 0.\overline{3}
+    function handleRepeatingDecimals(expr) {
+      let s = expr;
+      // convert LaTeX-like: 0.\overline{3}
+      s = s.replace(/(\d*)\.\s*\\overline\{(\d+)\}/g, function(_, intPart, rep){
+        const intVal = intPart === '' ? 0 : parseInt(intPart,10);
+        const repLen = rep.length;
+        const numerator = intVal * (Math.pow(10, repLen) - 1) + parseInt(rep,10);
+        const denominator = Math.pow(10, repLen) - 1;
+        return '('+numerator+'/'+denominator+')';
+      });
+      return s;
+    }
+
+    // handle trig with degrees: sin30°, cos(45°), tan(π/6)
+    function handleTrigDegrees(expr) {
+      let s = expr;
+      // detect number followed by ° inside sin(), cos(), tan()
+      s = s.replace(/(sin|cos|tan|cot|sec|csc)\s*\(\s*([0-9\.]+)\s*°\s*\)/g, function(_, fn, deg){
+        const rad = (parseFloat(deg) * Math.PI / 180).toFixed(12);
+        return fn+'('+rad+')';
+      });
+      // plain 30° outside functions -> (30*pi/180)
+      s = s.replace(/([0-9\.]+)\s*°/g, function(_, deg){
+        const rad = (parseFloat(deg) * Math.PI / 180).toFixed(12);
+        return '('+rad+')';
+      });
+      return s;
+    }
+
+    // handle factorial: n! -> factorial(n), with safe bound
+    function handleFactorial(expr) {
+      let s = expr;
+      s = s.replace(/(\d+|\([^\)]+\))!/g, function(_, n){
+        return 'factorial('+n+')';
+      });
+      return s;
+    }
+
+    // override factorial to prevent huge blowups
+    function factorial(n) {
+      n = Math.floor(Number(n));
+      if (isNaN(n) || n < 0) throw new Error("Invalid factorial input");
+      if (n > 170) throw new Error("Factorial too large (n>170)");
+      let res = 1;
+      for (let i=2; i<=n; i++) res *= i;
+      return res;
+    }
+
+    // ---------- Calculus features ----------
+    function derivativeOf(expr, variable) {
+      try {
+        const d = nerdamer('diff(' + expr + ',' + variable + ')');
+        return d.toString();
+      } catch (e) {
+        return '❌ Derivative failed: ' + e.message;
+      }
+    }
+
+    function integralOf(expr, variable) {
+      try {
+        const i = nerdamer('integrate(' + expr + ',' + variable + ')');
+        return i.toString();
+      } catch (e) {
+        return '❌ Integral failed: ' + e.message;
+      }
+    }
+
+    // ---------- Pretty-printing output ----------
+    function prettyPrintResult(label, value) {
+      return '<div class="result-block"><b>'+label+':</b><br>'+value+'</div>';
+    }
+
+    // extend solveExpression to use new preprocess steps
+    const oldSolve = solveExpression;
+    solveExpression = function() {
+      const raw = document.getElementById('expression').value || '';
+      const out = document.getElementById('output');
+      out.innerHTML = '...computing...';
+
+      let s = normalizeNaturalLanguage(raw);
+      s = preprocessInput(s);
+      s = applyImplicitMultiplication(s);
+      s = handleRoots(s);
+      s = handleRepeatingDecimals(s);
+      s = handleTrigDegrees(s);
+      s = handleFactorial(s);
+
+      try {
+        // detect derivative command: d/dx(...)
+        if (/^d\/d([a-zA-Z])\(/.test(s)) {
+          const m = s.match(/^d\/d([a-zA-Z])\((.+)\)$/);
+          if (m) {
+            const variable = m[1];
+            const expr = m[2];
+            const result = derivativeOf(expr, variable);
+            out.innerHTML = prettyPrintResult('Derivative wrt '+variable, result);
+            return;
+          }
+        }
+        // detect integral command: ∫(...,dx)
+        if (/^∫\((.+),d([a-zA-Z])\)$/.test(s)) {
+          const m = s.match(/^∫\((.+),d([a-zA-Z])\)$/);
+          if (m) {
+            const expr = m[1];
+            const variable = m[2];
+            const result = integralOf(expr, variable);
+            out.innerHTML = prettyPrintResult('Integral wrt '+variable, result);
+            return;
+          }
+        }
+      } catch (e) {
+        out.innerHTML = '❌ Parsing error: '+e.message;
+        return;
+      }
+
+      // fallback to old solver pipeline
+      oldSolve.call(this);
+    };
+  </script>                                     </script>
