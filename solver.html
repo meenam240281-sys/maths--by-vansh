@@ -582,3 +582,67 @@
       oldSolve.call(this);
     };
   </script>                                     </script>
+<!-- ================= CONTINUATION FROM LINE ~401 ================= -->
+
+<script>
+// --- Fix for bar notation (repeating decimals like 31.69̅ or 31̅69) ---
+
+// Helper: Convert repeating decimal string to fraction
+function repeatingDecimalToFraction(nonRepeating, repeating) {
+    // Example: 31.69 with bar over "69"
+    const base = nonRepeating || "0";
+    const repeat = repeating || "";
+
+    if (repeat.length === 0) {
+        return math.fraction(parseFloat(base)); // nothing repeating
+    }
+
+    const fullNumber = base + repeat;
+    const lenNonRep = base.length;
+    const lenRep = repeat.length;
+
+    // numerator = fullNumber - nonRepeatingPart
+    const num1 = BigInt(fullNumber.replace(".", ""));
+    const num2 = BigInt(base.replace(".", "") || "0");
+
+    const numerator = num1 - num2;
+    const denominator = BigInt("9".repeat(lenRep) + "0".repeat(lenNonRep - (base.includes(".") ? base.split(".")[1].length : 0)));
+
+    return math.fraction(Number(numerator), Number(denominator));
+}
+
+// Parser upgrade: detect bar notation like 31.69bar or 31bar69
+function handleBarNotation(expr) {
+    // Match patterns like: 31.69bar  or  31bar69
+    return expr.replace(/(\d*\.\d+|\d+)bar(\d+)/g, (_, nonRep, rep) => {
+        try {
+            const frac = repeatingDecimalToFraction(nonRep, rep);
+            return `(${math.format(frac, {fraction: "ratio"})})`;
+        } catch (e) {
+            console.error("Bar parse failed:", e);
+            return "NaN";
+        }
+    });
+}
+
+// --- Override preprocessInput to include bar handling ---
+const oldPreprocessInput = preprocessInput;
+preprocessInput = function(input) {
+    let expr = input;
+
+    // Handle bar notation first
+    expr = handleBarNotation(expr);
+
+    // Fall back to old logic
+    expr = oldPreprocessInput(expr);
+    return expr;
+};
+
+// --- Testing hook ---
+window.testBarCases = function() {
+    console.log("31.69bar =>", preprocessInput("31.69bar"));
+    console.log("31bar69 =>", preprocessInput("31bar69"));
+};
+</script>
+
+<!-- ================= END OF 401–500 ================= -->
