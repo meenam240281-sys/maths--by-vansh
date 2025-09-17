@@ -646,3 +646,52 @@ window.testBarCases = function() {
 </script>
 
 <!-- ================= END OF 401–500 ================= -->
+<!-- ================= CONTINUATION FROM LINE ~501 ================= -->
+
+<script>
+// --- Extend bar handling to show fraction + decimal output ---
+
+function formatResultWithBar(expr, result) {
+    // Detect if input had 'bar'
+    if (!/bar/.test(expr)) return result;
+
+    try {
+        // Convert original expression again for fraction form
+        const match = expr.match(/(\d*\.\d+|\d+)bar(\d+)/);
+        if (match) {
+            const nonRep = match[1];
+            const rep = match[2];
+            const frac = repeatingDecimalToFraction(nonRep, rep);
+
+            const decimalVal = math.number(frac);
+            const fractionStr = math.format(frac, {fraction: "ratio"});
+            const decimalStr = decimalVal.toString();
+
+            return `${fractionStr} ≈ ${decimalStr}`;
+        }
+    } catch (e) {
+        console.warn("Bar display error:", e);
+    }
+    return result;
+}
+
+// --- Override displayResult so bar notation outputs both ---
+const oldDisplayResult = displayResult;
+displayResult = function(input, result) {
+    let output = result;
+
+    // Special formatting for bar cases
+    output = formatResultWithBar(input, output);
+
+    // Call the original display function
+    oldDisplayResult(input, output);
+};
+
+// --- Testing hook ---
+window.testBarDisplay = function() {
+    displayResult("31.69bar", preprocessInput("31.69bar"));
+    displayResult("31bar69", preprocessInput("31bar69"));
+};
+</script>
+
+<!-- ================= END OF 501–600 ================= -->
