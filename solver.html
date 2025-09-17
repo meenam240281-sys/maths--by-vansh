@@ -2,191 +2,186 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <title>MathsSolver</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Math Solver</title>
-
   <style>
-    /* Dark theme basic styling */
     body {
       font-family: Arial, sans-serif;
-      background-color: #121212;
-      color: #f0f0f0;
       margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-    }
-      h1 {
-      margin: 20px 0;
-      color: #00e6e6;
-      text-shadow: 1px 1px 3px #000;
-    }
-
-    .solver-container {
-      background: #1e1e1e;
-      border-radius: 12px;
       padding: 20px;
-      width: 90%;
-      max-width: 600px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+      background: #f4f6f9;
     }
-
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-size: 1.1em;
-      color: #ffcc66;
+    h1 {
+      text-align: center;
+      color: #2c3e50;
     }
-
-    input[type="text"] {
-      width: 100%;
+    #solver-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    input, button, textarea {
+      font-size: 16px;
       padding: 10px;
-      border: none;
-      border-radius: 8px;
-      margin-bottom: 15px;
-      font-size: 1.1em;
-      background: #2a2a2a;
-      color: #f0f0f0;
+      margin: 8px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      width: 100%;
     }
     button {
-      background: #00e6e6;
-      color: #121212;
-      padding: 10px 16px;
-      font-size: 1em;
-      font-weight: bold;
-      border: none;
-      border-radius: 8px;
+      background: #2ecc71;
+      color: white;
       cursor: pointer;
-      transition: 0.3s;
-      margin-right: 10px;
+      border: none;
     }
-
     button:hover {
-      background: #00cccc;
+      background: #27ae60;
     }
-
-    .output {
+    #output {
       margin-top: 20px;
-      background: #2a2a2a;
       padding: 15px;
-      border-radius: 8px;
-      font-size: 1.1em;
-      min-height: 60px;
+      background: #ecf0f1;
+      border-radius: 6px;
+      min-height: 50px;
       white-space: pre-wrap;
     }
-
     .note {
-      margin-top: 15px;
-      font-size: 0.9em;
-      color: #999;
+      font-size: 14px;
+      color: #555;
+      margin-top: 10px;
+      background: #fdf6e3;
+      padding: 10px;
+      border-left: 4px solid #f39c12;
+      border-radius: 4px;
     }
   </style>
+  <!-- Load Math.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.js"></script>
 </head>
 <body>
-  <h1>Maths Solver</h1>
-
-  <div class="solver-container">
-    <label for="expression">Enter your expression or equation:</label>
-    <input type="text" id="expression" placeholder="Example: 2x+5=11 or sin(30)">
-    <div>
-      <button onclick="solveMath()">Solve</button>
-      <button onclick="clearOutput()">Clear</button>
-    </div>
-    <div id="output" class="output">Your result will appear here...</div>
+  <div id="solver-container">
+    <h1>📘 MathsSolver</h1>
+    <p>Enter your equation, expression, or problem:</p>
+    <textarea id="user-input" rows="3" placeholder="Example: 2x + 5 = 11"></textarea>
+    <button onclick="solveMath()">Solve</button>
+    <div id="output"></div>
     <div class="note">
-      ⚠️ Note: Please use brackets () when needed for clarity.  
-      Example: Write (2/3)x instead of 2/3x.
+      ⚠️ Notes & Cautions:<br>
+      - Use brackets () when possible to avoid ambiguity.<br>
+      - Example: type (2/3)*x instead of 2/3x.<br>
+      - Supports algebra, equations, calculus, trigonometry, factorials, matrices, and more.<br>
+      - Works best for school-level maths (Class 6–12).<br>
+      - For graphs, visit the Graph section (coming soon).<br>
     </div>
-  </div><script>
-    // Preprocess user input before evaluation
+  </div>
+
+  <script>
+    // Preprocess user input to fix common mistakes
     function preprocessInput(input) {
-      let expr = input.trim();
+      let expr = input;
 
-      // Replace common notations with math.js functions
-      expr = expr.replace(/√/g, "sqrt");
-      expr = expr.replace(/\^/g, "**"); // Allow a^b notation
-      expr = expr.replace(/÷/g, "/");
-      expr = expr.replace(/×/g, "*");
+      // Replace ^ with ** for power
+      expr = expr.replace(/\^/g, "**");
 
-      // Auto-handle implicit multiplication like 2x → 2*x
+      // Insert * between number and variable (e.g., 2x -> 2*x)
       expr = expr.replace(/(\d)([a-zA-Z])/g, "$1*$2");
 
-      return expr;
+      // Insert * between variable and variable (e.g., xy -> x*y)
+      expr = expr.replace(/([a-zA-Z])([a-zA-Z])/g, "$1*$2");
+
+      // Fix cases like 2/3x -> (2/3)*x
+      expr = expr.replace(/(\d+)\/(\d+)([a-zA-Z])/g, "($1/$2)*$3");
+
+      return expr.trim();
+    }try {
+        // If input contains '=' => treat as equation
+        if (processed.includes("=")) {
+          let sides = processed.split("=");
+          if (sides.length !== 2) throw new Error("Equation not valid.");
+
+          let lhs = math.parse(sides[0]);
+          let rhs = math.parse(sides[1]);
+
+          // Variables auto-detection
+          let variables = Object.keys(lhs.filter(node => node.isSymbolNode)
+            .reduce((acc, node) => (acc[node.name] = true, acc), {}));
+          rhs.filter(node => node.isSymbolNode)
+            .forEach(node => variables.push(node.name));
+          variables = [...new Set(variables)].filter(v => !["e","i"].includes(v));
+
+          if (variables.length === 0) {
+            // Solve numeric equality
+            const evalLHS = math.evaluate(sides[0]);
+            const evalRHS = math.evaluate(sides[1]);
+            resultText = (evalLHS === evalRHS) ? "✅ True equation" : "❌ False equation";
+          } 
+          else if (variables.length === 1) {
+            // Solve single variable equation
+            let variable = variables[0];
+            try {
+              let sol = math.solve(processed, variable);
+              if (Array.isArray(sol)) {
+                resultText = "🔎 Solutions for " + variable + ": " + sol.join(", ");
+              } else {
+                resultText = "🔎 Solution for " + variable + ": " + sol;
+              }
+            } catch(err) {
+              resultText = "⚠️ Could not solve equation automatically. Try rearranging.";
+            }
+          }
+          else {
+            // Multiple variables → system of equations not yet complete
+            resultText = "⚠️ Multiple variables detected (" + variables.join(", ") + ").\n";
+            resultText += "Currently solves linear/quadratic single-variable equations directly.\n";
+            resultText += "For multiple variables, system solver will be expanded.";
+          }
+        }
+        else {
+          // Expression (not an equation)
+          let value = math.evaluate(processed);
+
+          // Try fraction and decimal
+          let frac = math.fraction(value);
+          let approx = math.format(value, {precision: 14});
+          
+          resultText = "📊 Simplified Result:\n";
+          if (frac) {
+            resultText += "- Fraction: " + frac.n + "/" + frac.d + "\n";
+          }
+          resultText += "- Decimal: " + approx + "\n";
+
+          // Factorial check
+          if (/!/.test(processed)) {
+            resultText += "⚡ Factorial detected and computed.\n";
+          }
+
+          // Trigonometric auto-conversion
+          if (/sin|cos|tan|cot|sec|csc/.test(processed)) {
+            resultText += "🌀 Trigonometric evaluation done (in radians).\n";
+          }
+
+          // Logarithm
+          if (/log|ln/.test(processed)) {
+            resultText += "📖 Logarithm detected and evaluated.\n";
+          }
+        }
+      } catch (err) {
+        resultText = "❌ Invalid input or unsupported feature.\n" + err.message;
+      }
+
+      document.getElementById("output").innerText = resultText;
     }
+  </script>
 
-    // Main solver function
     function solveMath() {
-      const input = document.getElementById("expression").value;
-      const outputDiv = document.getElementById("output");
-
+      const input = document.getElementById("user-input").value.trim();
       if (!input) {
-        outputDiv.innerText = "⚠️ Please enter something to solve.";
+        document.getElementById("output").innerText = "❌ Please enter something to solve.";
         return;
       }
 
-      try {
-        const expr = preprocessInput(input);
-
-        // Check if equation (contains '=')
-        if (expr.includes("=")) {
-          const sides = expr.split("=");
-          if (sides.length === 2) {
-            const lhs = math.parse(sides[0]);
-            const rhs = math.parse(sides[1]);
-            const equation = new math.EqualNode(lhs, rhs);
-
-            const solutions = math.solve(equation, "x"); // Default solve for x
-            outputDiv.innerText = "Solution: " + JSON.stringify(solutions, null, 2);
-          } else {
-            outputDiv.innerText = "⚠️ Invalid equation format.";
-          }
-        } else {
-          // Expression evaluation
-          const result = math.evaluate(expr);
-          outputDiv.innerText = "Result: " + result;
-        }
-      } catch (err) {
-        outputDiv.innerText = "⚠️ Invalid input. Please check your expression.";
-      }
-    }// Clear the input and output
-    function clearMathSolver() {
-      document.getElementById("expression").value = "";
-      document.getElementById("output").innerText = "";
-    }
-
-    // Handle keyboard input from custom keypad
-    function insertValue(val) {
-      const inputField = document.getElementById("expression");
-      const start = inputField.selectionStart;
-      const end = inputField.selectionEnd;
-
-      // Insert value at cursor position
-      inputField.value =
-        inputField.value.substring(0, start) +
-        val +
-        inputField.value.substring(end);
-
-      // Move cursor after inserted text
-      inputField.selectionStart = inputField.selectionEnd = start + val.length;
-      inputField.focus();
-    }
-
-    // Handle backspace on custom keypad
-    function backspaceMathSolver() {
-      const inputField = document.getElementById("expression");
-      const start = inputField.selectionStart;
-      const end = inputField.selectionEnd;
-
-      if (start > 0) {
-        inputField.value =
-          inputField.value.substring(0, start - 1) +
-          inputField.value.substring(end);
-        inputField.selectionStart = inputField.selectionEnd = start - 1;
-      }
-      inputField.focus();
-    }
-  </script>
-</body>
-</html>
+      const processed = preprocessInput(input);
+      let resultText = "";
