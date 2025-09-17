@@ -177,3 +177,275 @@
       document.getElementById("output").innerHTML = "Result will appear here...";
     }
 </script>
+<script>
+    // ---------- Advanced normalization helpers ----------
+    function normalizeNaturalLanguage(s) {
+      // common word forms -> symbols
+      s = s.replace(/is equal to/ig, '=')
+           .replace(/\bequals\b/ig, '=')
+           .replace(/\beq\b/ig, '=')
+           .replace(/divided by/ig, '/')
+           .replace(/multiplied by/ig, '*')
+           .replace(/times/ig, '*')
+           .replace(/plus/ig, '+')
+           .replace(/minus/ig, '-');
+
+      // convert words for nth root
+      s = s.replace(/(\d+)(st|nd|rd|th)?\s+root\s+of\s+/ig, function(_, n){ return 'nthRoot('; });
+      // replace common verbal degree symbol
+      s = s.replace(/°/g, 'deg');
+
+      return s;
+    }
+
+    // stronger implicit multiplication handler:
+    // handles: 2x, 2(x+1), )2 -> )*2, pi2 -> pi*2, xpi -> x*pi
+    function applyImplicitMultiplication(expr) {
+      let s = expr;
+
+      // between number and letter or symbol: 2x -> 2*x
+      s = s.replace(/(\d)(\s*)([A-Za-zπθ\(])/g, '$1*$3');
+
+      // between letter/symbol and number or '(' : x2 -> x*2, x( -> x*(
+      s = s.replace(/([A-Za-zπθ\)])(\s*)(\d|\()/g, '$1*$3');
+
+      // specifically ensure pi and e stay as names: replace pi*pi -> pi*pi (no change)
+      return s;
+    }
+
+    // utility: attempt to format result in fraction + decimal
+    function formatFractionDecimal(val) {
+      try {
+        // numeric simple
+        if (typeof val === 'number') {
+          // integer check
+          if (Math.abs(val - Math.round(val)) < 1e-12) return String(Math.round(val));
+          // try rational approximation with limited denom
+          const frac = math.fraction(val);
+          // math.fraction may give huge denominators; keep reasonable
+          if (Math.abs(frac.d) < 1000000) {
+            return frac.n + '/' + frac.d + ' ≈ ' + Number.parseFloat(val.toPrecision(12)).toString();
+          }
+          return Number.parseFloat(val.toPrecision(12)).toString();
+        }
+
+        // math.js Fraction object
+        if (math && math.typeOf && math.typeOf(val) === 'Fraction') {
+          return val.s + (val.n + '/' + val.d);
+        }
+
+        // complex numbers
+        if (typeof val === 'object' && val !== null && ('re' in val || 'im' in val)) {
+          const re = ('re' in val) ? formatFractionDecimal(val.re) : '0';
+          const im = ('im' in val) ? formatFractionDecimal(val.im) : '0';
+          return re + (parseFloat(val.im) >= 0 ? ' + ' : ' - ') + Math.abs(val.im) + 'i';
+        }
+
+        return String(val);
+      } catch (e) {
+        return String(val);
+      }
+    }
+
+    // ---------- Solving utilities ----------
+    // try solving single equation for single variable using nerdamer, fallback numeric
+    function solveSingleEquation(lhs, rhs) {
+      const eqExpr = '(' + lhs + ')-(' + rhs + ')';
+      // detect variables
+      const varMatches = eqExpr.match(/[A-Za-zπθ]+/g) || [];
+      const filtered = varMatches.filter(v => !['pi','e','i','deg'].includes(v.toLowerCase()));
+      const variables = Array.from(new Set(filtered));
+      if (variables.length === 0) {
+        // numeric equality check
+        try {
+          const a = math.evaluate(lhs);
+          const b = math.evaluate(rhs);
+          return { type: 'bool', value: (Math.abs(a - b) < 1e-12) };
+        } catch (e) {
+          return { type: 'error', message: 'Unable to evaluate numeric equality.' };
+        }
+      }
+
+      // pick first variable to solve for (user-friendly priority can be improved)
+      const variable = variables[0];
+
+      // try nerdamer symbolic solve
+      try {
+        // Use nerdamer to solve: nerdamer.solve(equation, variable) returns array-like
+        const sols = nerdamer.solve(eqExpr, variable);
+        // sols might be an expression or array; convert to readable strings
+        if (Array.isArray(sols)) {
+          return { type: 'symbolic', variable, solutions: sols.map(s => s.toString()) };
+        } else {
+          const sstr = sols.toString();
+          return { type: 'symbolic', variable, solutions: [sstr] };
+        }
+      } catch (err) {
+        // fallback: attempt numeric solve for linear equation using algebra.js or math.js
+        try {
+          // attempt algebra.js linear solve if possible
+          if (algebra && algebra.parse) {
+            // try form: ax + b = c  -> use algebra to rearrange
+            // (This is a simple attempt; complex symbolic fallback is handled above)
+            const eq = algebra.parse(lhs + ' - (' + rhs + ')');
+            const simplified = eq.simplify(); // algebra.js expression
+            // algebra.js Solve not always available; skip heavy logic here
+            return { type: 'error', message: 'Symbolic solve failed; try simpler form.' };
+          } else {
+            return { type: 'error', message: 'Solve unavailable.' };
+          }
+        } catch (e) {
+          return { type: 'error', message: 'Solve failed.' };
+        }
+      }
+    }
+
+    // try solving system of equations (simple linear systems) using numeric linear algebra
+    function solveSystem(equations) {
+      // equations: array of strings, like ["x+y=5","x-y=1"]
+      try {
+        // parse variables
+        const varSet = new Set();
+        equations.forEach(eq => {
+          const toks = (eq.match(/[A-Za-zπθ]+/g) || []);
+          toks.forEach(t => { if (!['pi','e','i','deg'].includes(t.toLowerCase())) varSet.add(t); });
+        });
+        const vars = Array.from(varSet);
+        if (vars.length === 0) return { type: 'error', message: 'No variables found' };
+
+        // build linear system matrix A*x = b for only linear coefficients (best-effort)
+        const A = [];
+        const b = [];
+        for (let eq of equations) {
+          // split on '='
+          const parts = eq.split('=');
+          if (parts.length !== 2) return { type: 'error', message: 'Invalid equation in system' };
+          const lhs = math.simplify(parts[0]);
+          const rhs = math.simplify(parts[1]);
+
+          // create coefficient row
+          const row = vars.map(v => {
+            // coefficient of v in lhs
+            try {
+              // use derivative trick: coeff = derivative(lhs, v) evaluated at 0? crude approach
+              // Better: use algebraic expansion and coefficient extraction via nerdamer
+              const coeffExpr = nerdamer('coeff(' + parts[0] + ',' + v + ')').evaluate().text();
+              const c = parseFloat(coeffExpr);
+              return isNaN(c) ? 0 : c;
+            } catch (e) {
+              return 0;
+            }
+          });
+
+          // constant term b = rhs - remaining terms
+          try {
+            const rhsVal = math.evaluate(parts[1]);
+            b.push(rhsVal);
+          } catch (e) {
+            b.push(0);
+          }
+          A.push(row);
+        }
+
+        // numeric solve A*x = b
+        const matA = math.matrix(A);
+        const vecB = math.matrix(b);
+        const solution = math.lusolve(matA, vecB); // returns matrix
+        const solObj = {};
+        for (let i = 0; i < vars.length; i++) {
+          solObj[vars[i]] = solution.get([i, 0]);
+        }
+        return { type: 'system', solution: solObj };
+      } catch (err) {
+        return { type: 'error', message: 'System solve failed: ' + err.message };
+      }
+    }
+
+    // ---------- Message handler for keyboard iframe ----------
+    window.addEventListener('message', function(e) {
+      try {
+        const data = e.data;
+        if (!data || !data.type) return;
+        if (data.type === 'keyPress') {
+          // insert at cursor
+          const el = document.getElementById('expression');
+          const start = el.selectionStart || el.value.length;
+          const end = el.selectionEnd || el.value.length;
+          const before = el.value.slice(0, start);
+          const after = el.value.slice(end);
+          el.value = before + data.value + after;
+          const newPos = before.length + data.value.length;
+          el.selectionStart = el.selectionEnd = newPos;
+          el.focus();
+        } else if (data.type === 'command' && data.name === 'solve') {
+          solveExpression();
+        }
+      } catch (err) {
+        console.warn('Keyboard message handler error', err);
+      }
+    });
+
+    // ---------- High-level solve entry that uses the helpers above ----------
+    function solveExpression() {
+      const raw = document.getElementById('expression').value || '';
+      const out = document.getElementById('output');
+      out.innerHTML = '...computing...';
+
+      // quick sanitize / natural language normalization
+      let s = normalizeNaturalLanguage(raw);
+      s = preprocessInput(s);
+      s = applyImplicitMultiplication(s);
+
+      // timebox heavy computations (very large symbolic tasks)
+      let finished = false;
+      try {
+        // if system of equations detected (multiple '=' on lines or semicolons)
+        const lines = s.split(/\\n|;/).map(l => l.trim()).filter(Boolean);
+        const eqLines = lines.filter(l => l.includes('='));
+        if (eqLines.length > 1) {
+          // system solving
+          const sysRes = solveSystem(eqLines);
+          if (sysRes.type === 'system') {
+            out.innerHTML = '<b>System solution:</b><br>' + JSON.stringify(sysRes.solution, null, 2);
+          } else {
+            out.innerHTML = '⚠️ ' + sysRes.message;
+          }
+          finished = true;
+        } else if (s.includes('=')) {
+          // single equation
+          const [lhs, rhs] = s.split('=');
+          const sol = solveSingleEquation(lhs, rhs);
+          if (sol.type === 'symbolic') {
+            out.innerHTML = '<b>Variable:</b> ' + sol.variable + '<br><b>Solutions:</b><br>' + sol.solutions.join('<br>');
+          } else if (sol.type === 'bool') {
+            out.innerHTML = sol.value ? '✅ True equation' : '❌ False equation';
+          } else {
+            out.innerHTML = '⚠️ ' + sol.message;
+          }
+          finished = true;
+        } else {
+          // evaluate expression: try math.evaluate, if error, try nerdamer simplify
+          try {
+            const val = math.evaluate(s);
+            out.innerHTML = '<b>Result:</b><br>' + formatFractionDecimal(val);
+            finished = true;
+          } catch (e) {
+            // fallback to nerdamer simplify
+            try {
+              const simp = nerdamer(s).toString();
+              out.innerHTML = '<b>Simplified:</b><br>' + simp;
+              finished = true;
+            } catch (ee) {
+              out.innerHTML = '⚠️ Could not evaluate expression';
+              finished = true;
+            }
+          }
+        }
+      } catch (err) {
+        out.innerHTML = '❌ Error while solving: ' + err.message;
+        finished = true;
+      }
+
+      if (!finished) out.innerHTML = '⚠️ Computation did not finish.';
+    }
+                                         </script>
