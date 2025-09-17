@@ -2,277 +2,178 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>MathsSolver</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Universal MathSolver</title>
+
+  <!-- External Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/algebra.js/0.2.6/algebra.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/nerdamer/1.1.13/nerdamer.core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/nerdamer/1.1.13/Algebra.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/nerdamer/1.1.13/Calculus.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/nerdamer/1.1.13/Solve.js"></script>
+
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 0;
-      padding: 20px;
-      background: #f4f6f9;
+      padding: 0;
+      background: #f7f9fc;
     }
-    h1 {
-      text-align: center;
-      color: #2c3e50;
-    }
-    #solver-container {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 20px;
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    input, button, textarea {
-      font-size: 16px;
-      padding: 10px;
-      margin: 8px 0;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      width: 100%;
-    }
-    button {
-      background: #2ecc71;
+
+    header {
+      background: #2b2d42;
       color: white;
+      text-align: center;
+      padding: 1rem;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 60px;
+      font-size: 18px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+      resize: vertical;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-right: 10px;
+      margin-top: 10px;
       cursor: pointer;
       border: none;
-    }
-    button:hover {
-      background: #27ae60;
-    }
-    #output {
-      margin-top: 20px;
-      padding: 15px;
-      background: #ecf0f1;
       border-radius: 6px;
-      min-height: 50px;
-      white-space: pre-wrap;
+      background: #2b2d42;
+      color: white;
+      transition: 0.3s;
     }
+
+    button:hover {
+      background: #4a4e69;
+    }
+
+    .output {
+      background: white;
+      border: 1px solid #ddd;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 20px;
+      font-size: 18px;
+      min-height: 50px;
+    }
+
     .note {
+      margin-top: 20px;
       font-size: 14px;
-      color: #555;
-      margin-top: 10px;
-      background: #fdf6e3;
+      color: #444;
+      background: #e9ecef;
       padding: 10px;
-      border-left: 4px solid #f39c12;
-      border-radius: 4px;
+      border-radius: 8px;
     }
   </style>
-  <!-- Load Math.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.js"></script>
 </head>
 <body>
-  <div id="solver-container">
-    <h1>📘 MathsSolver</h1>
-    <p>Enter your equation, expression, or problem:</p>
-    <textarea id="user-input" rows="3" placeholder="Example: 2x + 5 = 11"></textarea>
-    <button onclick="solveMath()">Solve</button>
-    <div id="output"></div>
+  <header>
+    <h1>Universal MathSolver</h1>
+    <p>Solve equations, algebra, calculus, complex numbers, and more</p>
+  </header>
+
+  <div class="container">
+    <!-- Input field linked with keyboard.html -->
+    <textarea id="expression" placeholder="Type your math expression here..."></textarea>
+    <br>
+    <button onclick="solveExpression()">Solve</button>
+    <button onclick="clearOutput()">Clear</button>
+
+    <div class="output" id="output">Result will appear here...</div>
+
     <div class="note">
-      ⚠️ Notes & Cautions:<br>
-      - Use brackets () when possible to avoid ambiguity.<br>
-      - Example: type (2/3)*x instead of 2/3x.<br>
-      - Supports algebra, equations, calculus, trigonometry, factorials, matrices, and more.<br>
-      - Works best for school-level maths (Class 6–12).<br>
-      - For graphs, visit the Graph section (coming soon).<br>
+      <b>Note:</b> Use brackets for clarity if possible.  
+      Example: (2/3)x instead of 2/3x.  
+      Solver will try to auto-correct missing brackets and formats.  
     </div>
   </div>
-
   <script>
-    // Preprocess user input to fix common mistakes
-    function preprocessInput(input) {
-      let expr = input;
+    // Preprocess input before solving
+    function preprocessInput(expr) {
+      let cleaned = expr
+        .replace(/\s+/g, "")         // remove spaces
+        .replace(/÷/g, "/")          // division sign
+        .replace(/×/g, "*")          // multiplication sign
+        .replace(/√/g, "sqrt")       // square root
+        .replace(/∛/g, "cbrt")       // cube root
+        .replace(/π/g, "pi")         // pi constant
+        .replace(/θ/g, "theta");     // theta variable
 
-      // Replace ^ with ** for power
-      expr = expr.replace(/\^/g, "**");
+      // Handle implicit multiplication: 2x → 2*x
+      cleaned = cleaned.replace(/(\d)([a-zA-Z])/g, "$1*$2");
+      cleaned = cleaned.replace(/([a-zA-Z])(\d)/g, "$1*$2");
 
-      // Insert * between number and variable (e.g., 2x -> 2*x)
-      expr = expr.replace(/(\d)([a-zA-Z])/g, "$1*$2");
+      // Replace power symbols
+      cleaned = cleaned.replace(/\^/g, "**");
 
-      // Insert * between variable and variable (e.g., xy -> x*y)
-      expr = expr.replace(/([a-zA-Z])([a-zA-Z])/g, "$1*$2");
+      // Ensure equality symbol is consistent
+      cleaned = cleaned.replace(/==/g, "=");
 
-      // Fix cases like 2/3x -> (2/3)*x
-      expr = expr.replace(/(\d+)\/(\d+)([a-zA-Z])/g, "($1/$2)*$3");
-
-      return expr.trim();
-    }try {
-        // If input contains '=' => treat as equation
-        if (processed.includes("=")) {
-          let sides = processed.split("=");
-          if (sides.length !== 2) throw new Error("Equation not valid.");
-
-          let lhs = math.parse(sides[0]);
-          let rhs = math.parse(sides[1]);
-
-          // Variables auto-detection
-          let variables = Object.keys(lhs.filter(node => node.isSymbolNode)
-            .reduce((acc, node) => (acc[node.name] = true, acc), {}));
-          rhs.filter(node => node.isSymbolNode)
-            .forEach(node => variables.push(node.name));
-          variables = [...new Set(variables)].filter(v => !["e","i"].includes(v));
-
-          if (variables.length === 0) {
-            // Solve numeric equality
-            const evalLHS = math.evaluate(sides[0]);
-            const evalRHS = math.evaluate(sides[1]);
-            resultText = (evalLHS === evalRHS) ? "✅ True equation" : "❌ False equation";
-          } 
-          else if (variables.length === 1) {
-            // Solve single variable equation
-            let variable = variables[0];
-            try {
-              let sol = math.solve(processed, variable);
-              if (Array.isArray(sol)) {
-                resultText = "🔎 Solutions for " + variable + ": " + sol.join(", ");
-              } else {
-                resultText = "🔎 Solution for " + variable + ": " + sol;
-              }
-            } catch(err) {
-              resultText = "⚠️ Could not solve equation automatically. Try rearranging.";
-            }
-          }
-          else {
-            // Multiple variables → system of equations not yet complete
-            resultText = "⚠️ Multiple variables detected (" + variables.join(", ") + ").\n";
-            resultText += "Currently solves linear/quadratic single-variable equations directly.\n";
-            resultText += "For multiple variables, system solver will be expanded.";
-          }
-        }
-        else {
-          // Expression (not an equation)
-          let value = math.evaluate(processed);
-
-          // Try fraction and decimal
-          let frac = math.fraction(value);
-          let approx = math.format(value, {precision: 14});
-          
-          resultText = "📊 Simplified Result:\n";
-          if (frac) {
-            resultText += "- Fraction: " + frac.n + "/" + frac.d + "\n";
-          }
-          resultText += "- Decimal: " + approx + "\n";
-
-          // Factorial check
-          if (/!/.test(processed)) {
-            resultText += "⚡ Factorial detected and computed.\n";
-          }
-
-          // Trigonometric auto-conversion
-          if (/sin|cos|tan|cot|sec|csc/.test(processed)) {
-            resultText += "🌀 Trigonometric evaluation done (in radians).\n";
-          }
-
-          // Logarithm
-          if (/log|ln/.test(processed)) {
-            resultText += "📖 Logarithm detected and evaluated.\n";
-          }
-        }
-      } catch (err) {
-        resultText = "❌ Invalid input or unsupported feature.\n" + err.message;
-      }
-
-      document.getElementById("output").innerText = resultText;
+      return cleaned;
     }
-  </script>
 
-    function solveMath() {
-      const input = document.getElementById("user-input").value.trim();
-      if (!input) {
-        document.getElementById("output").innerText = "❌ Please enter something to solve.";
+    function solveExpression() {
+      const expr = document.getElementById("expression").value;
+      const outputDiv = document.getElementById("output");
+
+      if (!expr.trim()) {
+        outputDiv.innerHTML = "⚠️ Please enter an expression.";
         return;
       }
 
-      const processed = preprocessInput(input);
-      let resultText = "";
-<script>
-    // Extra helper: auto nth-root expansion
-    function nthRoot(base, n) {
-      return math.pow(base, 1/n);
-    }
-
-    // Handle advanced solve
-    function advancedSolve(input) {
-      let resultText = "";
+      let processed = preprocessInput(expr);
+      let result = "";
 
       try {
-        // Quadratic equations
-        if (/x\^2/.test(input)) {
-          let coeffs = math.quadraticSolver(input, "x");
-          resultText += "🔢 Quadratic Equation Solutions:\n";
-          resultText += coeffs.join(", ") + "\n";
+        // Case 1: Equation (with '=' sign)
+        if (processed.includes("=")) {
+          let [lhs, rhs] = processed.split("=");
+          let eqn = lhs + "-(" + rhs + ")";
+          let sol = nerdamer.solveEquations(eqn);
+          result = "<b>Equation:</b> " + expr + "<br>" +
+                   "<b>Solution:</b> " + JSON.stringify(sol);
         }
 
-        // Cubic equations
-        else if (/x\^3/.test(input)) {
-          try {
-            let roots = math.solve(input, "x");
-            resultText += "🔢 Cubic Equation Solutions:\n";
-            resultText += roots.join(", ") + "\n";
-          } catch(err) {
-            resultText += "⚠️ Could not solve cubic automatically.\n";
-          }
-        }
-
-        // Inequalities
-        else if (/[<>≤≥]/.test(input)) {
-          resultText += "⚖️ Inequality Detected.\n";
-          resultText += "Currently evaluates numeric check or needs graphing.\n";
-        }
-
-        // Nth roots
-        else if (/√/.test(input) || /nthroot/.test(input)) {
-          resultText += "🟢 Nth Root Function.\n";
-          resultText += "Tip: 'nthroot(a, n)' means n-th root of a.\n";
-        }
-
-        // Complex numbers
-        else if (/i/.test(input)) {
-          let comp = math.evaluate(input);
-          resultText += "🌀 Complex Number:\n";
-          resultText += "- Rectangular: " + comp.toString() + "\n";
-          resultText += "- Polar: " + math.complex(comp).toPolar().r.toFixed(3)
-                        + " ∠ " + math.complex(comp).toPolar().phi.toFixed(3) + "\n";
-        }
-
-        // Calculus basics
-        else if (/d\//.test(input) || /derivative/.test(input)) {
-          let expr = input.replace("derivative", "");
-          let deriv = math.derivative(expr, "x").toString();
-          resultText += "📈 Derivative: " + deriv + "\n";
-        }
-        else if (/integrate/.test(input)) {
-          let expr = input.replace("integrate", "");
-          resultText += "📉 Integration currently symbolic support limited.\n";
-          try {
-            let integ = math.integral(expr, "x").toString();
-            resultText += "Integration: " + integ + "\n";
-          } catch {
-            resultText += "⚠️ Integration needs external CAS.\n";
-          }
-        }
-
-        // Default → fallback
+        // Case 2: General expression
         else {
-          let val = math.evaluate(input);
-          resultText = "Result: " + val;
+          let evalResult = math.evaluate(processed);
+
+          // Try algebra.js simplification
+          try {
+            let algebraExpr = algebra.parse(processed);
+            evalResult = algebraExpr.toString();
+          } catch (err) {
+            // fallback to math.js result
+          }
+
+          result = "<b>Expression:</b> " + expr + "<br>" +
+                   "<b>Result:</b> " + evalResult;
         }
-      } catch(err) {
-        resultText = "❌ Error in advanced solver: " + err.message;
+      } catch (error) {
+        result = "❌ Invalid input. Please check your expression.";
       }
 
-      document.getElementById("output").innerText = resultText;
+      outputDiv.innerHTML = result;
     }
-  </script>
 
-  <footer>
-    <p>📝 Notes:</p>
-    <ul>
-      <li>Use brackets when possible for clarity.</li>
-      <li>All trig functions are in radians.</li>
-      <li>Supports: algebra, trig, logs, factorials, roots, calculus (basic), complex numbers.</li>
-      <li>For graphs of equations → Visit <a href="graphs.html">Graphs Page</a>.</li>
-    </ul>
-  </footer>
-</body>
-</html>
+    function clearOutput() {
+      document.getElementById("expression").value = "";
+      document.getElementById("output").innerHTML = "Result will appear here...";
+    }
+</script>
