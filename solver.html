@@ -982,7 +982,7 @@ function displayResult(expr, fraction, decimal) {
       /***********************
        * MAIN SOLVER DISPATCH
        ***********************/
-      function universalSolver(input) {
+      function MathSolver(input) {
         let expr = input.trim();
 
         // Try inequalities
@@ -1026,7 +1026,7 @@ function displayResult(expr, fraction, decimal) {
         btn.addEventListener("click", () => {
           out.innerHTML = `<i>Processing...</i>`;
           setTimeout(() => {
-            let result = universalSolver(inp.value);
+            let result = MathSolver(inp.value);
             out.innerHTML = `<b>Result:</b> ${result}`;
           }, 200);
         });
@@ -1081,13 +1081,13 @@ function displayResult(expr, fraction, decimal) {
         inputEl.selectionStart = inputEl.selectionEnd = pos;
         inputEl.focus();
       } else if (data.type === 'command' && data.name === 'solve') {
-        // prefer universalSolver if available, fallback to solveExpression / solveMath
+        // prefer MathSolver if available, fallback to solveExpression / solveMath
         const cur = inputEl.value;
-        if (typeof universalSolver === 'function') {
+        if (typeof MathSolver === 'function') {
           const out = getOutputEl();
           out && (out.innerHTML = '<i>Processing...</i>');
           setTimeout(() => {
-            const res = universalSolver(cur);
+            const res = MathSolver(cur);
             out && (out.innerHTML = `<b>Result:</b> ${res}`);
           }, 80);
         } else if (typeof solveExpression === 'function') {
@@ -1136,7 +1136,7 @@ function displayResult(expr, fraction, decimal) {
       try {
         i.value = t.in;
         let res;
-        if (typeof universalSolver === 'function') res = universalSolver(t.in);
+        if (typeof MathSolver === 'function') res = MathSolver(t.in);
         else if (typeof solveExpression === 'function') { solveExpression(); res = (out && out.innerText) || ''; }
         else if (typeof solveMath === 'function') { solveMath(); res = (out && out.innerText) || ''; }
         results.push({ test: t.in, got: String(res).slice(0,30) });
@@ -1161,11 +1161,11 @@ function displayResult(expr, fraction, decimal) {
         const btn = getSolveBtn();
         if (btn) btn.click();
         else {
-          if (typeof universalSolver === 'function') {
+          if (typeof MathSolver === 'function') {
             const out = getOutputEl();
             out && (out.innerHTML = '<i>Processing...</i>');
             setTimeout(() => {
-              const res = universalSolver(input.value);
+              const res = MathSolver(input.value);
               out && (out.innerHTML = `<b>Result:</b> ${res}`);
             }, 80);
           } else if (typeof solveExpression === 'function') solveExpression();
@@ -1177,7 +1177,7 @@ function displayResult(expr, fraction, decimal) {
   /***********************
    * Final small helper: ensure no accidental HTML close
    ***********************/
-  console.log('UniversalSolver lines up to ~1000 loaded. Keep pasting further chunks without closing HTML.');
+  console.log('MathSolver lines up to ~1000 loaded. Keep pasting further chunks without closing HTML.');
 </script>
 <!-- ===============================
      Lines 1001–1100 of solver.html
@@ -1258,16 +1258,16 @@ function displayResult(expr, fraction, decimal) {
   }
 
   /***********************
-   * Example: attach step-by-step to universalSolver
+   * Example: attach step-by-step to MathSolver
    ***********************/
-  const _origUniversalSolver = window.universalSolver;
-  if (typeof _origUniversalSolver === 'function') {
-    window.universalSolver = function(input) {
+  const _origMathSolver = window.MathSolver;
+  if (typeof _origMathSolver === 'function') {
+    window.MathSolver = function(input) {
       let result;
       let steps = [];
       try {
         // Call original solver
-        result = _origUniversalSolver(input);
+        result = _origMathSolver(input);
 
         // Build toy steps (expand later with actual algebra lib)
         if (/=/.test(input)) {
@@ -1306,5 +1306,5 @@ function displayResult(expr, fraction, decimal) {
     };
   }
 
-  console.log("UniversalSolver extended with MathJax + step-by-step (lines 1001–1100).");
+  console.log("MathSolver extended with MathJax + step-by-step (lines 1001–1100).");
 </script>
