@@ -695,3 +695,86 @@ window.testBarDisplay = function() {
 </script>
 
 <!-- ================= END OF 501–600 ================= -->
+<!-- ================= Lines 601–700 ================= -->
+
+<script>
+// --- BAR NOTATION HANDLER (repeating decimals) ---
+function parseRepeatingDecimal(input) {
+    // Matches forms like 12.(34) or 0.(9)
+    const regex = /^(\d*)\.?(\d*)\((\d+)\)$/;
+    const match = input.match(regex);
+
+    if (!match) return null;
+
+    let intPart = match[1] || "0";
+    let nonRepeat = match[2] || "";
+    let repeat = match[3];
+
+    // Construct fraction formula
+    let fullNumber = intPart + (nonRepeat ? "." + nonRepeat : "");
+    let nonRepeatLen = nonRepeat.length;
+    let repeatLen = repeat.length;
+
+    let base = BigInt(intPart + (nonRepeat || "0"));
+    let nonRepVal = nonRepeat ? BigInt(nonRepeat) : 0n;
+    let repVal = BigInt(repeat);
+
+    let numerator = BigInt(intPart + nonRepeat) * (BigInt(10) ** BigInt(repeatLen)) + repVal
+                    - BigInt(intPart + (nonRepeat || "0"));
+    let denominator = (BigInt(10) ** BigInt(nonRepeatLen + repeatLen)) 
+                    - (BigInt(10) ** BigInt(nonRepeatLen));
+
+    // Simplify fraction
+    function gcd(a, b) { return b === 0n ? a : gcd(b, a % b); }
+    let g = gcd(numerator, denominator);
+    numerator /= g;
+    denominator /= g;
+
+    return {
+        fraction: numerator.toString() + "/" + denominator.toString(),
+        decimal: (Number(numerator) / Number(denominator)).toString()
+    };
+}
+
+// --- INTERCEPT INPUT ---
+function handleBarInput(expr) {
+    const result = parseRepeatingDecimal(expr.trim());
+    if (result) {
+        displayResult(expr, result.fraction, result.decimal);
+        return true;
+    }
+    return false;
+}
+
+// --- DISPLAY BOTH FRACTION + DECIMAL ---
+function displayResult(expr, fraction, decimal) {
+    const output = document.getElementById("solver-output");
+    output.innerHTML = `
+        <div class="result-block">
+            <strong>Input:</strong> ${expr} <br>
+            <strong>Fraction:</strong> ${fraction} <br>
+            <strong>Decimal:</strong> ${decimal}
+        </div>
+    `;
+}
+</script>
+
+<!-- --- USER NOTES SECTION --- -->
+<div id="notes-section" style="margin-top:20px; padding:15px; background:#f5f5f5; border-radius:10px;">
+    <h3>📘 How to Use the Solver</h3>
+    <ul>
+        <li>You can type normal math expressions: <code>2+3*5</code></li>
+        <li>Use brackets () to keep order of operations.</li>
+        <li>For roots: <code>sqrt(25)</code> or <code>nthRoot(27,3)</code></li>
+        <li>For trigonometry: <code>sin(30 deg)</code> or <code>cos(pi/3)</code></li>
+        <li>For factorial: <code>5!</code></li>
+        <li>For derivatives: <code>derivative(x^2, x)</code></li>
+        <li>For integrals: <code>integrate(x^2, x)</code></li>
+        <li><strong>Using the Bar Key (Repeating Decimals):</strong><br>
+            - Type number normally, then put repeating part in brackets.<br>
+            - Example: <code>31.(69)</code> means 31.696969...<br>
+            - Example: <code>31.6(9)</code> means 31.699999...<br>
+            - Solver will show both <em>fraction</em> and <em>decimal</em> forms.<br>
+        </li>
+    </ul>
+</div>
