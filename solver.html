@@ -1032,3 +1032,150 @@ function displayResult(expr, fraction, decimal) {
         });
       });
     </script>
+<!-- ===============================
+     Lines 901–1000 of solver.html
+     (polish, keyboard glue, tests, responsiveness)
+     =============================== -->
+
+<script>
+  /***********************
+   * Helper: find input & output elements robustly
+   ***********************/
+  function getInputEl() {
+    return document.getElementById('expression') 
+        || document.getElementById('user-input')
+        || document.getElementById('mathInput')
+        || document.querySelector('textarea') 
+        || null;
+  }
+  function getOutputEl() {
+    return document.getElementById('output') 
+        || document.getElementById('solver-output') 
+        || document.getElementById('result') 
+        || document.querySelector('.output')
+        || null;
+  }
+  function getSolveBtn() {
+    return document.getElementById('solveBtn') 
+        || document.querySelector('button[onclick="solveExpression()"]') 
+        || document.querySelector('button[onclick="solveMath()"]') 
+        || document.querySelector('button');
+  }
+
+  /***********************
+   * Keyboard iframe listener (robust)
+   * Accepts message { type: 'keyPress', value: 'sin(' } or { type: 'command', name:'solve' }
+   ***********************/
+  window.addEventListener('message', (event) => {
+    try {
+      const data = event.data;
+      if (!data || typeof data !== 'object') return;
+      const inputEl = getInputEl();
+      if (!inputEl) return;
+
+      if (data.type === 'keyPress' && typeof data.value === 'string') {
+        const start = inputEl.selectionStart || inputEl.value.length;
+        const end = inputEl.selectionEnd || start;
+        inputEl.value = inputEl.value.slice(0, start) + data.value + inputEl.value.slice(end);
+        const pos = start + data.value.length;
+        inputEl.selectionStart = inputEl.selectionEnd = pos;
+        inputEl.focus();
+      } else if (data.type === 'command' && data.name === 'solve') {
+        // prefer universalSolver if available, fallback to solveExpression / solveMath
+        const cur = inputEl.value;
+        if (typeof universalSolver === 'function') {
+          const out = getOutputEl();
+          out && (out.innerHTML = '<i>Processing...</i>');
+          setTimeout(() => {
+            const res = universalSolver(cur);
+            out && (out.innerHTML = `<b>Result:</b> ${res}`);
+          }, 80);
+        } else if (typeof solveExpression === 'function') {
+          solveExpression();
+        } else if (typeof solveMath === 'function') {
+          solveMath();
+        }
+      }
+    } catch (err) {
+      console.warn('Keyboard message error', err);
+    }
+  });
+
+  /***********************
+   * Mobile / responsive tweaks
+   ***********************/
+  (function makeResponsive() {
+    const style = document.createElement('style');
+    style.innerHTML = `
+      @media (max-width: 600px) {
+        textarea { font-size: 16px; height: 120px; }
+        button { width: 48%; margin-bottom: 8px; }
+        .container { padding: 12px; }
+      }
+      .result-block { margin: 8px 0; padding:8px; background:#fff; border-radius:6px; border:1px solid #eee; }
+    `;
+    document.head.appendChild(style);
+  })();
+
+  /***********************
+   * Self-test suite (quick checks)
+   ***********************/
+  window.runSolverSelfTests = function() {
+    const out = getOutputEl();
+    const i = getInputEl();
+    const tests = [
+      { in: 'a+26=56', want: 'a' },
+      { in: 'x+5=8', want: '3' },
+      { in: 'x^2-5x+6=0', want: '2' }, // expect roots 2 and 3
+      { in: 'sqrt9', want: '3' },
+      { in: '31.(69)', want: '31.6969' },
+      { in: '0.bar3', want: '1/3' }
+    ];
+    let results = [];
+    for (let t of tests) {
+      try {
+        i.value = t.in;
+        let res;
+        if (typeof universalSolver === 'function') res = universalSolver(t.in);
+        else if (typeof solveExpression === 'function') { solveExpression(); res = (out && out.innerText) || ''; }
+        else if (typeof solveMath === 'function') { solveMath(); res = (out && out.innerText) || ''; }
+        results.push({ test: t.in, got: String(res).slice(0,30) });
+      } catch (e) {
+        results.push({ test: t.in, error: e.message });
+      }
+    }
+    console.table(results);
+    alert('Self-tests completed — open console for details.');
+  };
+
+  /***********************
+   * Accessibility: keyboard shortcut (Ctrl+Enter) to solve
+   ***********************/
+  (function bindShortcuts() {
+    const input = getInputEl();
+    if (!input) return;
+    input.addEventListener('keydown', (ev) => {
+      if ((ev.ctrlKey || ev.metaKey) && ev.key === 'Enter') {
+        ev.preventDefault();
+        // trigger solve
+        const btn = getSolveBtn();
+        if (btn) btn.click();
+        else {
+          if (typeof universalSolver === 'function') {
+            const out = getOutputEl();
+            out && (out.innerHTML = '<i>Processing...</i>');
+            setTimeout(() => {
+              const res = universalSolver(input.value);
+              out && (out.innerHTML = `<b>Result:</b> ${res}`);
+            }, 80);
+          } else if (typeof solveExpression === 'function') solveExpression();
+        }
+      }
+    });
+  })();
+
+  /***********************
+   * Final small helper: ensure no accidental HTML close
+   ***********************/
+  console.log('UniversalSolver lines up to ~1000 loaded. Keep pasting further chunks without closing HTML.');
+</script>
