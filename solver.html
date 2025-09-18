@@ -1179,3 +1179,132 @@ function displayResult(expr, fraction, decimal) {
    ***********************/
   console.log('UniversalSolver lines up to ~1000 loaded. Keep pasting further chunks without closing HTML.');
 </script>
+<!-- ===============================
+     Lines 1001–1100 of solver.html
+     (MathJax rendering + Step-by-step)
+     =============================== -->
+
+<!-- MathJax library for pretty math rendering -->
+<script>
+  (function loadMathJax() {
+    if (!window.MathJax) {
+      const script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.id = 'mathjax-script';
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      document.head.appendChild(script);
+    }
+  })();
+</script>
+
+<style>
+  #step-by-step {
+    background: #fafafa;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 10px;
+    font-family: "Segoe UI", sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    max-height: 220px;
+    overflow-y: auto;
+  }
+  #step-by-step h4 {
+    margin-top: 0;
+    color: #444;
+    font-size: 16px;
+  }
+  #step-by-step ul {
+    padding-left: 20px;
+  }
+  #step-by-step li {
+    margin-bottom: 6px;
+  }
+</style>
+
+<div id="step-by-step" style="display:none;">
+  <h4>Step-by-step solution</h4>
+  <ul id="step-list"></ul>
+</div>
+
+<script>
+  /***********************
+   * Step-by-step manager
+   ***********************/
+  function showSteps(steps) {
+    const container = document.getElementById('step-by-step');
+    const list = document.getElementById('step-list');
+    if (!container || !list) return;
+
+    if (!steps || steps.length === 0) {
+      container.style.display = 'none';
+      list.innerHTML = '';
+      return;
+    }
+
+    list.innerHTML = '';
+    for (let step of steps) {
+      const li = document.createElement('li');
+      li.textContent = step;
+      list.appendChild(li);
+    }
+    container.style.display = 'block';
+
+    // Trigger MathJax typesetting if available
+    if (window.MathJax && window.MathJax.typeset) {
+      MathJax.typeset([list]);
+    }
+  }
+
+  /***********************
+   * Example: attach step-by-step to universalSolver
+   ***********************/
+  const _origUniversalSolver = window.universalSolver;
+  if (typeof _origUniversalSolver === 'function') {
+    window.universalSolver = function(input) {
+      let result;
+      let steps = [];
+      try {
+        // Call original solver
+        result = _origUniversalSolver(input);
+
+        // Build toy steps (expand later with actual algebra lib)
+        if (/=/.test(input)) {
+          steps.push("Recognize equation: " + input);
+          steps.push("Isolate variable using algebra.js or nerdamer.");
+          steps.push("Compute result(s).");
+        } else if (/sqrt|root/.test(input) || /√/.test(input)) {
+          steps.push("Identify radical expression.");
+          steps.push("Simplify under the root.");
+          steps.push("Return simplified value.");
+        } else if (/sin|cos|tan/.test(input)) {
+          steps.push("Recognize trigonometric function.");
+          steps.push("Convert angle to radians if necessary.");
+          steps.push("Evaluate using math.js.");
+        } else {
+          steps.push("Interpret expression as plain arithmetic.");
+          steps.push("Evaluate directly.");
+        }
+      } catch (err) {
+        result = "Error: " + err.message;
+        steps.push("An error occurred while solving.");
+      }
+
+      // Show steps + return result
+      showSteps(steps);
+
+      // Pretty rendering if MathJax loaded
+      setTimeout(() => {
+        if (window.MathJax && window.MathJax.typeset) {
+          const out = getOutputEl();
+          out && MathJax.typeset([out]);
+        }
+      }, 200);
+
+      return result;
+    };
+  }
+
+  console.log("UniversalSolver extended with MathJax + step-by-step (lines 1001–1100).");
+</script>
