@@ -885,3 +885,150 @@ function displayResult(expr, fraction, decimal) {
         document.body.appendChild(notes);
       });
                               </script>
+<!-- ===============================
+         Lines 801–900 of solver.html
+         =============================== -->
+
+    <script>
+      /***********************
+       * INEQUALITIES HANDLER
+       ***********************/
+      function solveInequality(expr) {
+        try {
+          // Nerdamer can sometimes handle inequalities if rearranged
+          if (expr.includes("<") || expr.includes(">")) {
+            // Split inequality into LHS and RHS
+            let match = expr.match(/(.+?)(<=|>=|<|>)(.+)/);
+            if (match) {
+              let lhs = preprocessInput(match[1]);
+              let op = match[2];
+              let rhs = preprocessInput(match[3]);
+
+              // Convert to standard form lhs - rhs
+              let testExpr = `${lhs} - (${rhs})`;
+              let testVal = math.evaluate(testExpr);
+
+              return `Inequality: ${lhs} ${op} ${rhs}  → ${testVal} ${op} 0`;
+            }
+          }
+          return null;
+        } catch (err) {
+          return `Could not process inequality: ${err.message}`;
+        }
+      }
+
+      /***********************
+       * SYSTEM OF EQUATIONS
+       ***********************/
+      function solveSystem(equations) {
+        try {
+          let parsed = equations.map(preprocessInput);
+          let vars = new Set();
+
+          // Collect variables
+          parsed.forEach(eq => {
+            let found = eq.match(/[a-zA-Z]+/g);
+            if (found) found.forEach(v => vars.add(v));
+          });
+
+          vars = Array.from(vars);
+
+          if (parsed.length > 1) {
+            let sol = nerdamer.solveEquations(parsed);
+            return JSON.stringify(sol);
+          } else {
+            return "Provide at least 2 equations for a system.";
+          }
+        } catch (err) {
+          return `Error solving system: ${err.message}`;
+        }
+      }
+
+      /***********************
+       * FACTORIAL & COMBINATORICS
+       ***********************/
+      function solveFactorial(expr) {
+        try {
+          if (expr.includes("!")) {
+            let clean = preprocessInput(expr);
+            let result = math.evaluate(clean);
+            return `${expr} = ${result}`;
+          }
+          return null;
+        } catch (err) {
+          return `Factorial error: ${err.message}`;
+        }
+      }
+
+      /***********************
+       * DERIVATIVE & INTEGRAL
+       ***********************/
+      function solveCalculus(expr) {
+        try {
+          if (expr.startsWith("diff(")) {
+            let res = nerdamer(expr).toString();
+            return `Derivative: ${res}`;
+          }
+          if (expr.startsWith("integrate(")) {
+            let res = nerdamer(expr).toString();
+            return `Integral: ${res}`;
+          }
+          return null;
+        } catch (err) {
+          return `Calculus error: ${err.message}`;
+        }
+      }
+
+      /***********************
+       * MAIN SOLVER DISPATCH
+       ***********************/
+      function universalSolver(input) {
+        let expr = input.trim();
+
+        // Try inequalities
+        let ineq = solveInequality(expr);
+        if (ineq) return ineq;
+
+        // Try factorial
+        let fact = solveFactorial(expr);
+        if (fact) return fact;
+
+        // Try calculus
+        let calc = solveCalculus(expr);
+        if (calc) return calc;
+
+        // System of equations (split by ;)
+        if (expr.includes(";")) {
+          let parts = expr.split(";").map(e => e.trim());
+          return solveSystem(parts);
+        }
+
+        // Default solver
+        try {
+          return nerdamer(expr).toString();
+        } catch (e) {
+          try {
+            return math.evaluate(expr);
+          } catch (err) {
+            return `❌ Invalid input: ${err.message}`;
+          }
+        }
+      }
+
+      /***********************
+       * BIND SOLVE BUTTON
+       ***********************/
+      window.addEventListener("DOMContentLoaded", () => {
+        const btn = document.getElementById("solveBtn");
+        const inp = document.getElementById("mathInput");
+        const out = document.getElementById("output");
+
+        btn.addEventListener("click", () => {
+          out.innerHTML = `<i>Processing...</i>`;
+          setTimeout(() => {
+            let result = universalSolver(inp.value);
+            out.innerHTML = `<b>Result:</b> ${result}`;
+          }, 200);
+        });
+      });
+    </script>
