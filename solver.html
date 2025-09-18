@@ -778,3 +778,110 @@ function displayResult(expr, fraction, decimal) {
         </li>
     </ul>
 </div>
+<!-- ===============================
+         Lines 701–800 of solver.html
+         =============================== -->
+
+    <script>
+      /***********************
+       * BAR KEY HANDLING
+       ***********************/
+      // Preprocess "bar" notation into repeating decimal
+      function handleBarNotation(expr) {
+        // Match forms like: 31.bar69  OR  0.bar3
+        return expr.replace(/(\d*)\.?bar(\d+)/gi, (match, intPart, repeatPart) => {
+          if (!repeatPart) return match;
+          const integer = intPart || "0";
+          const nonRepeat = ""; // for now only pure repeating decimals
+          const repLength = repeatPart.length;
+
+          // Convert repeating decimal to fraction
+          // Example: 0.bar3 = 1/3, 31.bar69 = (3169-31)/(99) etc.
+          let numerator =
+            parseInt(integer + repeatPart) - parseInt(integer + nonRepeat || integer);
+          let denominator = Math.pow(10, nonRepeat.length + repLength) - Math.pow(10, nonRepeat.length);
+
+          let frac = nerdamer(`(${numerator})/(${denominator})`).toString();
+          return `(${frac})`;
+        });
+      }
+
+      /***********************
+       * PREPROCESS INPUT
+       ***********************/
+      function preprocessInput(input) {
+        let expr = input.trim();
+
+        // Handle bar key before sending to solvers
+        expr = handleBarNotation(expr);
+
+        // Convert implicit multiplication: 2x -> 2*x
+        expr = expr.replace(/(\d)([a-zA-Z])/g, "$1*$2");
+
+        // Convert ^ to pow()
+        expr = expr.replace(/(\w+)\^(\w+)/g, "pow($1,$2)");
+
+        return expr;
+      }
+
+      /***********************
+       * SOLVE + DISPLAY BOTH FORMS
+       ***********************/
+      function solveAndDisplay(input) {
+        try {
+          const pre = preprocessInput(input);
+
+          // Try nerdamer first
+          let result;
+          try {
+            result = nerdamer(pre).evaluate().toString();
+          } catch (e) {
+            // fallback to math.js
+            result = math.evaluate(pre);
+          }
+
+          // Show both fraction and decimal if possible
+          let fractionForm = result;
+          let decimalForm = "";
+
+          try {
+            fractionForm = nerdamer(result).toString();
+            decimalForm = math.format(math.evaluate(result), { precision: 10 });
+          } catch (err) {
+            // only decimal possible
+            decimalForm = result;
+          }
+
+          document.getElementById("output").innerHTML =
+            `<b>Answer:</b> ${fractionForm}` +
+            (decimalForm && fractionForm !== decimalForm
+              ? ` ≈ ${decimalForm}`
+              : "");
+        } catch (err) {
+          document.getElementById("output").innerHTML =
+            `<span style="color:red;">Invalid input: ${err.message}</span>`;
+        }
+      }
+
+      /***********************
+       * NOTE SECTION
+       ***********************/
+      window.addEventListener("DOMContentLoaded", () => {
+        const notes = document.createElement("div");
+        notes.className = "solver-notes";
+        notes.style.marginTop = "20px";
+        notes.innerHTML = `
+          <h3>📌 Notes for Students:</h3>
+          <ul>
+            <li>Always try to use brackets () to make expressions clear.  
+                Example: write (2/3)*x instead of 2/3x.</li>
+            <li>You can type <b>bar</b> after digits to represent repeating decimals.  
+                Example: <code>0.bar3</code> → 1/3, <code>31.bar69</code> → 31.696969…</li>
+            <li>The solver shows answers in both fraction and decimal form automatically.</li>
+            <li>Supports algebra, equations, inequalities, roots, trigonometry, calculus, and more.</li>
+            <li>If the expression is too complex, you may see a simplified result or scientific notation.</li>
+          </ul>
+        `;
+        document.body.appendChild(notes);
+      });
+                              </script>
