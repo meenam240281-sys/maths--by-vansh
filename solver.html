@@ -1308,3 +1308,38 @@ function displayResult(expr, fraction, decimal) {
 
   console.log("MathSolver extended with MathJax + step-by-step (lines 1001–1100).");
 </script>
+<!-- ===================== SOLVER REDIRECT HANDLER ===================== -->
+<script>
+// Detects if input should be solved in Equations.html instead
+function checkForEquations(input) {
+    let lower = input.toLowerCase();
+
+    // Trigger conditions
+    let hasIfFind = lower.includes("if") && lower.includes("find");
+    let multipleEquals = (input.match(/=/g) || []).length > 1;
+    let trigConditional = /(sin|cos|tan|cot|sec|csc).*=/.test(lower) && lower.includes("find");
+
+    if (hasIfFind || multipleEquals || trigConditional) {
+        return true;
+    }
+    return false;
+}
+
+// Main check before processing
+function handleSolverInput(rawInput) {
+    if (checkForEquations(rawInput)) {
+        // Option 1: Auto-redirect
+        window.location.href = "equations.html?query=" + encodeURIComponent(rawInput);
+
+        // Option 2 (fallback if redirect disabled):
+        // document.getElementById("output").innerHTML =
+        //     "This looks like a system of equations or conditional problem.<br>" +
+        //     "Please continue in <a href='equations.html'>Equations Solver</a>.";
+        return;
+    }
+
+    // Otherwise normal solver flow continues
+    processMathsSolver(rawInput);
+}
+</script>
+<!-- ===================== END EQUATION HANDLER BLOCK ===================== -->
