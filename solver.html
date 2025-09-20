@@ -1462,3 +1462,231 @@ function handleSolverInput(rawInput) {
 </style>
 
 <!-- ================= End of 1300 ================= -->
+<!-- ================= REPLACEMENT: Multi-variable solver (upgraded) ================= -->
+<div id="multiVarSolver" class="solver-multi">
+  <h2>Multi-Variable Solver (up to 6 variables)</h2>
+  <textarea id="multiVarInput" rows="4" placeholder="Enter equations separated by commas, semicolons or new lines.
+Example: 2x+3y=7, x-y=1
+Or: If x+y=10 and x-y=2, find x,y"></textarea>
+  <div style="margin-top:8px">
+    <button id="solveMultiBtn" onclick="solveMultiVariable()">Solve System</button>
+    <button onclick="openEquationsPage()">Open in Equations Solver</button>
+  </div>
+
+  <div id="multiVarStatus" style="margin-top:12px;"></div>
+  <div id="multiVarOutput" style="margin-top:12px"></div>
+</div>
+
+<script>
+  // Helper: filter out known function names/constants when detecting variables
+  const RESERVED_NAMES = new Set(['sin','cos','tan','cot','sec','csc','pi','e','i','sqrt','log','ln','exp','nthroot','factorial']);
+
+  function extractVariablesFromEquations(equations) {
+    const vars = new Set();
+    equations.forEach(eq => {
+      // find words made of letters (variables/functions)
+      (eq.match(/\b[a-zA-Z]+\b/g) || []).forEach(tok => {
+        const t = tok.trim();
+        if (!RESERVED_NAMES.has(t.toLowerCase())) vars.add(t);
+      });
+    });
+    return Array.from(vars);
+  }
+
+  function looksNonLinear(eq) {
+    // simple heuristics for non-linearity:
+    // - any trig/log/exp/sqrt/power usage
+    // - product of two variable names (xy or x*y)
+    // - variable to power > 1 (x^2)
+    const nonlinearPatterns = [
+      /sin|cos|tan|cot|sec|csc/i,
+      /log|ln|exp|sqrt|nthRoot/i,
+      /\^/,               // any power usage
+      /[a-zA-Z]\s*\*\s*[a-zA-Z]/, // x * y
+      /[a-zA-Z]{2,}/      // contiguous letters like xy (could be a multi-letter var name, but mostly indicates product)
+    ];
+    return nonlinearPatterns.some(rx => rx.test(eq));
+  }
+
+  function tooLargeOrComplex(equations, vars) {
+    // heuristic: avoid extremely long input or too many equations/vars for browser solving
+    const totalLength = equations.join(' ').length;
+    if (vars.length > 6) return { flag: true, reason: 'Too many variables (>6).' };
+    if (equations.length > 8) return { flag: true, reason: 'Too many equations ( > 8 ).' };
+    if (totalLength > 1500) return { flag: true, reason: 'Input too long/complex.' };
+    return { flag: false };
+  }
+
+  function openEquationsPage(rawInput = null) {
+    const base = 'equations.html';
+    if (!rawInput) {
+      window.location.href = base;
+      return;
+    }
+    const q = encodeURIComponent(rawInput);
+    window.location.href = base + '?query=' + q;
+  }
+
+  // Main upgraded solver
+  async function solveMultiVariable() {
+    const raw = document.getElementById('multiVarInput').value.trim();
+    const status = document.getElementById('multiVarStatus');
+    const out = document.getElementById('multiVarOutput');
+    status.innerHTML = '';
+    out.innerHTML = '';
+
+    if (!raw) {
+      status.innerHTML = '<span style="color:darkred">Please enter at least one equation.</span>';
+      return;
+    }
+
+    // split by comma, semicolon, or newline
+    const parts = raw.split(/\n|;|,/).map(s => s.trim()).filter(Boolean);
+    // normalize simple 'If ... find ...' style -> extract the condition portion (best-effort)
+    let equations = parts.map(p => p.replace(/^if\s+/i, '').replace(/\bfind\b[\s\S]*$/i, '').trim()).filter(Boolean);
+    if (equations.length === 0) equations = parts;
+
+    // extract variables
+    const vars = extractVariablesFromEquations(equations);
+
+    // Quick checks: non-linearity, size
+    let nonLinearDetected = equations.some(eq => looksNonLinear(eq));
+    const sizeCheck = tooLargeOrComplex(equations, vars);
+
+    // If non-linear OR too large, recommend Equations.html
+    if (nonLinearDetected || sizeCheck.flag) {
+      const reason = nonLinearDetected ? 'Non-linear functions detected (trig/log/powers/products).' : sizeCheck.reason;
+      status.innerHTML =
+        `<div style="padding:8px;border-left:4px solid #f0ad4e;background:#fffbea;">
+           This system may be <strong>too complex</strong> for the quick Maths Solver.<br>
+           Reason: ${reason}<br><br>
+           You can <button onclick="openEquationsPage(${JSON.stringify(raw)})">Open in Equations Solver</button>
+           or <button onclick="attemptSolveAnyway()">Try anyway (may take time)</button>.
+         </div>`;
+      out.innerHTML = '';
+      return;
+    }
+
+    // Now try to solve (best-effort using nerdamer)
+    status.innerHTML = '<em>Attempting to solve locally (Maths Solver)...</em>';
+    out.innerHTML = '<em>Working...</em>';
+
+    try {
+      // Prepare an array for nerdamer: ensure RHS/LHS format
+      const nerdInput = equations.map(eqStr => {
+        // if eqStr already contains '=', leave it; else assume '=' missing
+        if (eqStr.includes('=')) return eqStr;
+        // try to read '->' style? fallback: treat as expression to simplify
+        return eqStr;
+      });
+
+      // Attempt to solve with nerdamer (it handles many linear systems)
+      let sol;
+      try {
+        sol = nerdamer.solveEquations(nerdInput);
+      } catch (nerdErr) {
+        // fallback: try solving numeric linear system using math.js linear algebra,
+        // but only if all equations are linear (we already checked they appear linear)
+        try {
+          // build matrix A and vector b numerically by extracting coefficients via small symbolic trick
+          // best-effort: use nerdamer to get coefficients
+          const varsList = vars;
+          const A = [];
+          const b = [];
+          for (let eq of nerdInput) {
+            const sides = eq.split('=');
+            const lhs = sides[0];
+            const rhs = sides[1] || '0';
+            const expr = '(' + lhs + ')-(' + rhs + ')';
+            const row = [];
+            for (let v of varsList) {
+              try {
+                let coeff = 0;
+                // use nerdamer.coeff(expression, v)
+                try {
+                  const coeffObj = nerdamer(`coeff(${expr},${v})`);
+                  coeff = parseFloat(coeffObj.evaluate().text());
+                  if (isNaN(coeff)) coeff = 0;
+                } catch (cE) {
+                  coeff = 0;
+                }
+                row.push(coeff);
+              } catch (e) {
+                row.push(0);
+              }
+            }
+            // constant term: evaluate RHS as numeric
+            try {
+              const rhsVal = math.evaluate(rhs);
+              b.push(rhsVal);
+            } catch (e) {
+              b.push(0);
+            }
+            A.push(row);
+          }
+          const matA = math.matrix(A);
+          const vecB = math.matrix(b);
+          const numericSol = math.lusolve(matA, vecB); // may throw
+          sol = {};
+          for (let i = 0; i < vars.length; i++) {
+            sol[vars[i]] = numericSol.get([i, 0]);
+          }
+        } catch (linErr) {
+          throw new Error('Both symbolic and numeric solves failed.');
+        }
+      }
+
+      // Format solution for display
+      let html = '<h3>Solutions</h3>';
+      if (Array.isArray(sol)) {
+        // nerdamer may return array of pairs
+        html += '<ul>';
+        sol.forEach(pair => {
+          html += `<li><strong>${pair[0]}</strong> = ${pair[1]}</li>`;
+        });
+        html += '</ul>';
+      } else if (typeof sol === 'object') {
+        html += '<ul>';
+        for (const k of Object.keys(sol)) {
+          html += `<li><strong>${k}</strong> = ${sol[k]}</li>`;
+        }
+        html += '</ul>';
+      } else {
+        html += `<div>${String(sol)}</div>`;
+      }
+      out.innerHTML = html;
+      status.innerHTML = '<span style="color:green">Solved locally.</span>';
+    } catch (err) {
+      console.error('Multi-var solve error:', err);
+      status.innerHTML =
+        `<div style="color:darkred">Solver failed to find a solution locally. You can try Equations Solver:
+         <button onclick="openEquationsPage(${JSON.stringify(raw)})">Open Equations Solver</button></div>`;
+      out.innerHTML = '';
+    }
+  }
+
+  // "Try anyway" allows user to force an attempt even if flagged
+  function attemptSolveAnyway() {
+    const raw = document.getElementById('multiVarInput').value.trim();
+    // temporarily ignore the non-linear/size flags and try a symbolic solve
+    document.getElementById('multiVarStatus').innerHTML = '<em>Trying an advanced solve (may be slow)...</em>';
+    try {
+      const eqs = raw.split(/\n|,|;/).map(s => s.trim()).filter(Boolean);
+      const sol = nerdamer.solveEquations(eqs);
+      document.getElementById('multiVarOutput').innerHTML = `<pre>${JSON.stringify(sol, null, 2)}</pre>`;
+      document.getElementById('multiVarStatus').innerHTML = '<span style="color:green">Attempt completed.</span>';
+    } catch (e) {
+      document.getElementById('multiVarStatus').innerHTML = '<span style="color:darkred">Attempt failed — please use Equations Solver.</span>';
+    }
+  }
+</script>
+
+<style>
+  /* keep styling consistent with previous multiVar block */
+  .solver-multi { margin-top:25px; padding:15px; border-radius:10px; background:#fffdf7; }
+  .solver-multi textarea { width:100%; font-family:monospace; padding:8px; border-radius:6px; }
+  .solver-multi button { margin-right:8px; }
+  #multiVarStatus { font-size:0.95em; color:#333; }
+  #multiVarOutput { margin-top:10px; padding:8px; background:#fafafa; border:1px solid #eee; border-radius:6px; }
+</style>
+<!-- ================= End of upgraded multi-variable solver ================= -->
