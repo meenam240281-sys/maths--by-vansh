@@ -1343,3 +1343,122 @@ function handleSolverInput(rawInput) {
 }
 </script>
 <!-- ===================== END EQUATION HANDLER BLOCK ===================== -->
+<!-- ================= Lines 1200–1300 ================= -->
+
+<!-- Output Display Enhancements -->
+<div id="outputContainer" class="solver-output">
+  <h2>Result:</h2>
+  <div class="toggle-buttons">
+    <button onclick="toggleOutput('decimal')">Decimal</button>
+    <button onclick="toggleOutput('fraction')">Fraction</button>
+    <button onclick="toggleOutput('latex')">LaTeX</button>
+  </div>
+
+  <div id="outputDecimal" class="output-block"></div>
+  <div id="outputFraction" class="output-block"></div>
+  <div id="outputLatex" class="output-block mathjax"></div>
+</div>
+
+<!-- History Panel -->
+<div id="historyPanel" class="solver-history">
+  <h2>History (last 10)</h2>
+  <ul id="historyList"></ul>
+</div>
+
+<script>
+  // Store last 10 results
+  const history = [];
+
+  function updateHistory(input, outputs) {
+    if (history.length >= 10) history.shift();
+    history.push({ input, outputs });
+
+    const list = document.getElementById("historyList");
+    list.innerHTML = "";
+    history.forEach((item, idx) => {
+      const li = document.createElement("li");
+      li.innerHTML = `<strong>${idx+1}. ${item.input}</strong>: ${item.outputs.decimal}`;
+      li.onclick = () => restoreFromHistory(item);
+      list.appendChild(li);
+    });
+  }
+
+  function restoreFromHistory(item) {
+    document.getElementById("mathInput").value = item.input;
+    displayResult(item.outputs);
+  }
+
+  // Show/Hide outputs
+  function toggleOutput(type) {
+    ["decimal","fraction","latex"].forEach(t => {
+      document.getElementById("output"+capitalize(t)).style.display =
+        (t === type || type === "all") ? "block" : "none";
+    });
+  }
+
+  function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  // Display result
+  function displayResult(outputs) {
+    document.getElementById("outputDecimal").innerText = outputs.decimal || "—";
+    document.getElementById("outputFraction").innerText = outputs.fraction || "—";
+    document.getElementById("outputLatex").innerHTML = outputs.latex || "—";
+
+    if (window.MathJax) MathJax.typesetPromise();
+
+    updateHistory(outputs.input, outputs);
+  }
+
+  // Error handling improvements
+  function showError(msg) {
+    document.getElementById("outputDecimal").innerText = "⚠️ " + msg;
+    document.getElementById("outputFraction").innerText = "";
+    document.getElementById("outputLatex").innerText = "";
+  }
+</script>
+
+<style>
+  .solver-output, .solver-history {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background: #f9f9f9;
+  }
+  .toggle-buttons button {
+    margin: 0 5px;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    background: #007bff;
+    color: white;
+    cursor: pointer;
+  }
+  .toggle-buttons button:hover {
+    background: #0056b3;
+  }
+  .output-block {
+    margin: 10px 0;
+    font-size: 1.1em;
+  }
+  .mathjax {
+    font-size: 1.2em;
+    color: #222;
+  }
+  .solver-history ul {
+    list-style: none;
+    padding: 0;
+  }
+  .solver-history li {
+    padding: 5px;
+    cursor: pointer;
+    border-bottom: 1px dashed #ccc;
+  }
+  .solver-history li:hover {
+    background: #eef;
+  }
+</style>
+
+<!-- ================= End of 1300 ================= -->
